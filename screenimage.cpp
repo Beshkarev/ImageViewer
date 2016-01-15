@@ -21,7 +21,7 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
 
     _pLabel->setAlignment(Qt::AlignCenter);
 
-    QHBoxLayout *pHLayout = new QHBoxLayout;
+    QHBoxLayout *pHLayout = new QHBoxLayout(this);
     pHLayout->addWidget(_pScrollArea);
 
     setLayout(pHLayout);
@@ -32,9 +32,17 @@ bool ScreenImage::isChanged()
     return imageChanged;
 }
 
+bool ScreenImage::isEmpty()
+{
+    if(_pPixmap->isNull())
+        return true;
+    else
+        return false;
+}
+
 void ScreenImage::loadImage()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Save file"),
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
                                                              "/home/evgeniy/Pictures",
                                                 tr("All (*.*);;*.jpg;;*.bmp;;*.png;;"));
     if(!filename.isEmpty())
@@ -42,9 +50,7 @@ void ScreenImage::loadImage()
         _pPixmap->load(filename);
         if(_pPixmap->isNull())
         {
-            QMessageBox::warning(this, tr("Oops"), tr("Something went wrong!\n"
-                                                         "Maybe, not supported the file format."),
-                                QMessageBox::Ok);
+            showSomeError("Something went wrong!\nMaybe, not supported the file format.");
             return;
         }
         else
@@ -102,7 +108,8 @@ void ScreenImage::zoomInImage()
     qint32 width = _pPixmap->width();
     qint32 height = _pPixmap->height();
 
-    img = img.scaled(QSize(width * scale, height * scale));
+    img = img.scaled(QSize(width * scale, height * scale),
+                     Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     _pPixmap->convertFromImage(img);
     //_pLabel->setPixmap(QPixmap::fromImage(img));
 
@@ -132,4 +139,10 @@ void ScreenImage::showImage()
 void ScreenImage::somethingChanged()
 {
     imageChanged = true;
+}
+
+void ScreenImage::showSomeError(const QString &str)
+{
+    QMessageBox::warning(this, tr("Oops"), str,
+                        QMessageBox::Ok);
 }

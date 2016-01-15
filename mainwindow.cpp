@@ -7,29 +7,22 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QTabWidget>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), ui(new Ui::MainWindow),
-    //_pTabWidget(new QTabWidget(this)),
-    _pScreenImage(new ScreenImage(this))
+    QMainWindow(parent), _pTabWidget(new QTabWidget(this))
 {
-    ui->setupUi(this);
+
     createActions();
     createMenu();
     createConnectToSlots();
-    //_pTabWidget->addTab(_pScreenImage, "tab1");
-    //QHBoxLayout *pHLayout = new QHBoxLayout(this);
-    //pHLayout->addWidget(_pScreenImage);
-   // _pTabWidget->setAttribute(Qt::WA_DeleteOnClose);
+    qDebug() << "constructor";
+    _pTabWidget->setAttribute(Qt::WA_DeleteOnClose);
+    _pTabWidget->setMovable(true);
+    _pTabWidget->setTabsClosable(true);
 
-    setCentralWidget(_pScreenImage);
-    //setAttribute(Qt::WA_DeleteOnClose);
-    //setCentralWidget(_pTabWidget);
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
+    setGeometry(QRect(200, 200, 800, 500));
+    setCentralWidget(_pTabWidget);
 }
 
 void MainWindow::createActions()
@@ -38,21 +31,18 @@ void MainWindow::createActions()
     _pNewTabAction->setShortcut(Qt::CTRL + Qt::Key_T);
     _pNewTabAction->setStatusTip("Creating new tab");
 
-    pOpenAction = new QAction(tr("Open file"), this);
-    pOpenAction->setShortcut(QKeySequence::Open);
-    pOpenAction->setStatusTip("Opend new file");
-    //connect(pOpenAction, SIGNAL(triggered(bool)), this, SLOT(openFileSlot()));
+    _pOpenAction = new QAction(tr("Open file"), this);
+    _pOpenAction->setShortcut(QKeySequence::Open);
+    _pOpenAction->setStatusTip("Opend new file");
 
-    pSaveAction = new QAction(tr("Save file"), this);
-    pSaveAction->setShortcut(QKeySequence::Save);
-    pSaveAction->setStatusTip(tr("Save the file"));
-    //connect(pSaveAction, SIGNAL(triggered(bool)), this, SLOT(saveFileSlot()));
-    //pSaveAction->setEnabled(false);
+    _pSaveAction = new QAction(tr("Save file"), this);
+    _pSaveAction->setShortcut(QKeySequence::Save);
+    _pSaveAction->setStatusTip(tr("Save the file"));
+
 
     _pCloseImageAction = new QAction(tr("Close image"), this);
     _pCloseImageAction->setShortcut(QKeySequence::Close);
-    //connect(pCloseImageAction, SIGNAL(triggered(bool)), this, SLOT(closeFileSlot()));
-    //pCloseImageAction->setEnabled(false);
+
 
     for(int i = 0; i < maxRecentFile; ++i)
     {
@@ -64,39 +54,27 @@ void MainWindow::createActions()
 
     _pExitAction = new QAction(tr("Exit"), this);
     _pExitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
-    //connect(pExitAction, SIGNAL(triggered(bool)), this, SLOT(close()));
 
-    pHorizontalFlipAction = new QAction("Horizontal flip", this);
-
+    _pHorizontalFlipAction = new QAction("Horizontal flip", this);
     _pClockwiseRotateAction = new QAction("Rotate Clockwise", this);
-    //connect(pClockwiseRotateAction, SIGNAL(triggered(bool)), this, SLOT(rotateImageSlot()));
     _pCounterClockwiseRotateAction = new QAction("Rotate Counter clockwise", this);
-    //connect(pCounterClock_WiseRotateAction, SIGNAL(triggered(bool)), this, SLOT(rotateImageSlot()));
+    _pFitAction = new QAction("Fit to window", this);
+    _pFitAction->setCheckable(true);
+    _pZoomIn = new QAction("Zoom in", this);
+    _pZoomIn->setShortcut(Qt::CTRL + Qt::Key_Plus);
+    _pZoomOut = new QAction("Zoom out", this);
+    _pZoomOut->setShortcut(Qt::CTRL + Qt::Key_Minus);
 
-    pFitAction = new QAction("Fit to window", this);
-    pFitAction->setCheckable(true);
-    //connect(pFitAction, SIGNAL(triggered(bool)), this, SLOT(fitToWindow()));
-
-    pZoomIn = new QAction("Zoom in", this);
-    pZoomIn->setShortcut(Qt::CTRL + Qt::Key_Plus);
-    //connect(pZoomIn, SIGNAL(triggered(bool)), this, SLOT(scaleImage()));
-
-    pZoomOut = new QAction("Zoom out", this);
-    pZoomOut->setShortcut(Qt::CTRL + Qt::Key_Minus);
-    //connect(pZoomOut, SIGNAL(triggered(bool)), this, SLOT(scaleImage()));
-
-    pAboutAction = new QAction(tr("About"), this);
-   // connect(pAboutAction, SIGNAL(triggered(bool)), this, SLOT(about()));
-
-    pQtAbout = new QAction(tr("Qt About"), this);
+    _pAboutAction = new QAction(tr("About"), this);
+    _pQtAbout = new QAction(tr("Qt About"), this);
 }
 
 void MainWindow::createMenu()
 {
     pFileMenu = menuBar()->addMenu("&File");
     pFileMenu->addAction(_pNewTabAction);
-    pFileMenu->addAction(pOpenAction);
-    pFileMenu->addAction(pSaveAction);
+    pFileMenu->addAction(_pOpenAction);
+    pFileMenu->addAction(_pSaveAction);
     pFileMenu->addAction(_pCloseImageAction);
     pSeparatorAction = pFileMenu->addSeparator();
     for(int i = 0; i < maxRecentFile; ++i)
@@ -105,47 +83,51 @@ void MainWindow::createMenu()
     pFileMenu->addAction(_pExitAction);
 
     pEditMenu = menuBar()->addMenu("&Edit");
-    pEditMenu->addAction(pHorizontalFlipAction);
+    pEditMenu->addAction(_pHorizontalFlipAction);
     pEditMenu->addAction(_pClockwiseRotateAction);
     pEditMenu->addAction(_pCounterClockwiseRotateAction);
-    pEditMenu->addAction(pFitAction);
-    pEditMenu->addAction(pZoomIn);
-    pEditMenu->addAction(pZoomOut);
+    pEditMenu->addAction(_pFitAction);
+    pEditMenu->addAction(_pZoomIn);
+    pEditMenu->addAction(_pZoomOut);
 
     pHelpMenu = menuBar()->addMenu("&Help");
-    pHelpMenu->addAction(pAboutAction);
-    pHelpMenu->addAction(pQtAbout);
+    pHelpMenu->addAction(_pAboutAction);
+    pHelpMenu->addAction(_pQtAbout);
 }
 
 void MainWindow::createConnectToSlots()
 {
+    qDebug("connect");
     //File menu section
     connect(_pNewTabAction, SIGNAL(triggered(bool)),
             this, SLOT(newTab()));
-    connect(pOpenAction, SIGNAL(triggered(bool)),
-            _pScreenImage, SLOT(loadImage()));
-    connect(pSaveAction, SIGNAL(triggered(bool)),
-            _pScreenImage, SLOT(saveImage()));
-    connect(_pCloseImageAction, SIGNAL(triggered(bool)),
-            _pScreenImage, SLOT(closeImage()));
+    connect(_pOpenAction, SIGNAL(triggered(bool)),
+            this, SLOT(open()));
+    connect(_pSaveAction, SIGNAL(triggered(bool)),
+            this, SLOT(save()));
+    connect(_pTabWidget, SIGNAL(tabCloseRequested(int)),
+            this, SLOT(closeTab(int)));
+    //connect(_pCloseImageAction, SIGNAL(triggered(bool)),
+      //      this, SLOT(closeTab(int)));
     connect(_pExitAction, SIGNAL(triggered(bool)),
             this, SLOT(close()));
 
     //Edit menu section
-    connect(pHorizontalFlipAction, SIGNAL(triggered(bool)), _pScreenImage, SLOT(horizontalFlip()));
+    connect(_pHorizontalFlipAction, SIGNAL(triggered(bool)),
+            this, SLOT(horizontalFlip()));
     connect(_pCounterClockwiseRotateAction, SIGNAL(triggered(bool)),
-            _pScreenImage, SLOT(counterClockwiseRotate()));
+            this, SLOT(counterClockwiseRotate()));
     connect(_pClockwiseRotateAction, SIGNAL(triggered(bool)),
-            _pScreenImage, SLOT(clockwiseRotate()));
-//    connect(pFitAction, SIGNAL(triggered(bool)), this, SLOT(fitToWindow()));
-    connect(pZoomIn, SIGNAL(triggered(bool)),
-            _pScreenImage, SLOT(zoomInImage()));
-    connect(pZoomOut, SIGNAL(triggered(bool)),
-            _pScreenImage, SLOT(zoomOutImage()));
+            this, SLOT(clockwiseRotate()));
+    //connect(pFitAction, SIGNAL(triggered(bool)), this, SLOT(fitToWindow()));
+    connect(_pZoomIn, SIGNAL(triggered(bool)),
+            this, SLOT(zoomInImage()));
+    connect(_pZoomOut, SIGNAL(triggered(bool)),
+            this, SLOT(zoomOutImage()));
 
     //About menu section
-    connect(pAboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutApp()));
-    connect(pQtAbout, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
+    connect(_pAboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutApp()));
+    connect(_pQtAbout, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
 }
 
 void MainWindow::setRecentFile(const QString &filename)
@@ -181,11 +163,64 @@ void MainWindow::updateListRecentFiles()
 
 void MainWindow::newTab()
 {
-    QMessageBox::information(this, "Sorry",
-                             "Not implemented yet",
-                             QMessageBox::Ok);
-    //ScreenImage *pChildImage = new ScreenImage;
-    //pChildImage->show();
+//    QMessageBox::information(this, "Sorry",
+//                             "Not implemented yet",
+//                             QMessageBox::Ok);
+//
+    qDebug() << "new Tab";
+    ScreenImage *widget = new ScreenImage;
+    _pTabWidget->addTab(widget, "tab");
+    _pTabWidget->setCurrentWidget(widget);
+}
+
+void MainWindow::open()
+{
+    qDebug() << objectName() << "open() slot";
+    //if(getImageWidget()== nullptr && _pTabWidget->count() == 0)
+        newTab();
+    getImageWidget()->loadImage();
+    if(getImageWidget()->isEmpty())
+        closeTab(_pTabWidget->currentIndex());
+}
+
+void MainWindow::save()
+{
+    getImageWidget()->saveImage();
+}
+
+void MainWindow::closeTab(const int index)
+{
+    qDebug() << "MainWindow" << "closeTab() slot";
+   QWidget *deletedTab = _pTabWidget->widget(index);
+
+    _pTabWidget->removeTab(index);
+   // _pTabWidget->tabRemoved(index);
+    deletedTab->deleteLater();
+}
+
+void MainWindow::horizontalFlip()
+{
+    getImageWidget()->horizontalFlip();
+}
+
+void MainWindow::clockwiseRotate()
+{
+    getImageWidget()->clockwiseRotate();
+}
+
+void MainWindow::counterClockwiseRotate()
+{
+    getImageWidget()->counterClockwiseRotate();
+}
+
+void MainWindow::zoomInImage()
+{
+    getImageWidget()->zoomInImage();
+}
+
+void MainWindow::zoomOutImage()
+{
+    getImageWidget()->zoomOutImage();
 }
 
 void MainWindow::aboutApp()
@@ -197,30 +232,35 @@ void MainWindow::aboutApp()
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
-    if(_pScreenImage->isChanged())
+    //_pTabWidget->count()
+    while(_pTabWidget->currentIndex() != -1)
     {
-        qint32 chose;
-        chose = QMessageBox::warning(this, tr("Save changes"),
+        if(getImageWidget()->isChanged())
+        {
+            qint32 chose;
+            chose = QMessageBox::warning(this, tr("Save changes"),
                                      tr("The image has been modified.\n"
                                         "Do you want to save your changes?"),
-                                     QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
+                                        QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
 
-        if(chose == QMessageBox::Yes)
-        {
-            emit pSaveAction->trigger();
-            pClose->accept();
+            if(chose == QMessageBox::Yes)
+            {
+                emit _pSaveAction->trigger();
+                closeTab(_pTabWidget->currentIndex());
+            }
+            else if(chose == QMessageBox::No)
+                closeTab(_pTabWidget->currentIndex());
+            else if(chose == QMessageBox::Cancel)
+                pClose->ignore();
         }
-        else if(chose == QMessageBox::No)
-            pClose->accept();
-        else if(chose == QMessageBox::Cancel)
-            pClose->ignore();
+        else
+            closeTab(_pTabWidget->currentIndex());
     }
-    else
-        pClose->accept();
+    pClose->accept();
+
 }
 
-//ScreenImage *MainWindow::createScreenImage()
-//{
-//    ScreenImage *pImg = new ScreenImage;
-//    _pTabWidget->addTab(pImg, "");
-//}
+ScreenImage *MainWindow::getImageWidget()
+{
+    return static_cast<ScreenImage*>(_pTabWidget->currentWidget());
+}

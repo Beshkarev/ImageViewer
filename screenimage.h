@@ -14,6 +14,7 @@ class ScreenImage : public QWidget
 public:
     explicit ScreenImage(QWidget *pWd = 0);
     bool isChanged();
+    bool isEmpty();
 public slots:
     //File menu
     void loadImage();
@@ -29,15 +30,18 @@ private:
     QImage QimageFactory();
     void showImage();
     void somethingChanged();
+    void showSomeError(const QString &str);
 
     QScrollArea *_pScrollArea;
     QLabel *_pLabel;
     QPixmap *_pPixmap;
 
     qint32 angle;
-    enum anglevalue{clockwiseValue = 90,
-               counterClockwiseValue = -90
-              };
+    enum anglevalue
+    {
+        clockwiseValue = 90,
+        counterClockwiseValue = -90
+    };
     bool imageChanged;
     const qreal zoomIn;
     const qreal zoomOut;
