@@ -1,25 +1,27 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "tabwidget.h"
 #include <QStringList>
 #include <QDir>
-#include "screenimage.h"
 #include <QBoxLayout>
 #include <QMessageBox>
 #include <QCloseEvent>
-#include <QTabWidget>
 #include <QDebug>
+#include <QAction>
+#include <QMenu>
+#include <QMenuBar>
+#include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), _pTabWidget(new QTabWidget(this))
+    QMainWindow(parent), _pTabWidget(new TabWidget)
 {
 
     createActions();
     createMenu();
     createConnectToSlots();
     qDebug() << "constructor";
-    _pTabWidget->setAttribute(Qt::WA_DeleteOnClose);
-    _pTabWidget->setMovable(true);
-    _pTabWidget->setTabsClosable(true);
+//    _pTabWidget->setAttribute(Qt::WA_DeleteOnClose);
+//    _pTabWidget->setMovable(true);
+//    _pTabWidget->setTabsClosable(true);
 
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabWidget);
@@ -71,28 +73,28 @@ void MainWindow::createActions()
 
 void MainWindow::createMenu()
 {
-    pFileMenu = menuBar()->addMenu("&File");
-    pFileMenu->addAction(_pNewTabAction);
-    pFileMenu->addAction(_pOpenAction);
-    pFileMenu->addAction(_pSaveAction);
-    pFileMenu->addAction(_pCloseImageAction);
-    pSeparatorAction = pFileMenu->addSeparator();
+    _pFileMenu = menuBar()->addMenu("&File");
+    _pFileMenu->addAction(_pNewTabAction);
+    _pFileMenu->addAction(_pOpenAction);
+    _pFileMenu->addAction(_pSaveAction);
+    _pFileMenu->addAction(_pCloseImageAction);
+    pSeparatorAction = _pFileMenu->addSeparator();
     for(int i = 0; i < maxRecentFile; ++i)
-        pFileMenu->addAction(pRecentAction[i]);
-    pFileMenu->addSeparator();
-    pFileMenu->addAction(_pExitAction);
+        _pFileMenu->addAction(pRecentAction[i]);
+    _pFileMenu->addSeparator();
+    _pFileMenu->addAction(_pExitAction);
 
-    pEditMenu = menuBar()->addMenu("&Edit");
-    pEditMenu->addAction(_pHorizontalFlipAction);
-    pEditMenu->addAction(_pClockwiseRotateAction);
-    pEditMenu->addAction(_pCounterClockwiseRotateAction);
-    pEditMenu->addAction(_pFitAction);
-    pEditMenu->addAction(_pZoomIn);
-    pEditMenu->addAction(_pZoomOut);
+    _pEditMenu = menuBar()->addMenu("&Edit");
+    _pEditMenu->addAction(_pHorizontalFlipAction);
+    _pEditMenu->addAction(_pClockwiseRotateAction);
+    _pEditMenu->addAction(_pCounterClockwiseRotateAction);
+    _pEditMenu->addAction(_pFitAction);
+    _pEditMenu->addAction(_pZoomIn);
+    _pEditMenu->addAction(_pZoomOut);
 
-    pHelpMenu = menuBar()->addMenu("&Help");
-    pHelpMenu->addAction(_pAboutAction);
-    pHelpMenu->addAction(_pQtAbout);
+    _pHelpMenu = menuBar()->addMenu("&Help");
+    _pHelpMenu->addAction(_pAboutAction);
+    _pHelpMenu->addAction(_pQtAbout);
 }
 
 void MainWindow::createConnectToSlots()
@@ -107,8 +109,8 @@ void MainWindow::createConnectToSlots()
             this, SLOT(save()));
     connect(_pTabWidget, SIGNAL(tabCloseRequested(int)),
             this, SLOT(closeTab(int)));
-    //connect(_pCloseImageAction, SIGNAL(triggered(bool)),
-      //      this, SLOT(closeTab(int)));
+    connect(_pCloseImageAction, SIGNAL(triggered(bool)),
+            this, SLOT(closeTab(int)));
     connect(_pExitAction, SIGNAL(triggered(bool)),
             this, SLOT(close()));
 
@@ -167,60 +169,52 @@ void MainWindow::newTab()
 //                             "Not implemented yet",
 //                             QMessageBox::Ok);
 //
-    qDebug() << "new Tab";
-    ScreenImage *widget = new ScreenImage;
-    _pTabWidget->addTab(widget, "tab");
-    _pTabWidget->setCurrentWidget(widget);
+//    qDebug() << "new Tab" << _pTabWidget->count();
+//    ScreenImage *widget = new ScreenImage;
+//    _pTabWidget->addTab(widget, "tab");
+//    _pTabWidget->setCurrentWidget(widget);
+//    qDebug() << _pTabWidget->count();
+    _pTabWidget->createTab();
 }
 
 void MainWindow::open()
 {
-    qDebug() << objectName() << "open() slot";
-    //if(getImageWidget()== nullptr && _pTabWidget->count() == 0)
-        newTab();
-    getImageWidget()->loadImage();
-    if(getImageWidget()->isEmpty())
-        closeTab(_pTabWidget->currentIndex());
+    _pTabWidget->loadFiletoTab();
 }
 
 void MainWindow::save()
 {
-    getImageWidget()->saveImage();
+    _pTabWidget->saveFileOpenedInTab();
 }
 
 void MainWindow::closeTab(const int index)
 {
-    qDebug() << "MainWindow" << "closeTab() slot";
-   QWidget *deletedTab = _pTabWidget->widget(index);
-
-    _pTabWidget->removeTab(index);
-   // _pTabWidget->tabRemoved(index);
-    deletedTab->deleteLater();
+    _pTabWidget->closeTab(index);
 }
 
 void MainWindow::horizontalFlip()
 {
-    getImageWidget()->horizontalFlip();
+    _pTabWidget->horizontalFlip();
 }
 
 void MainWindow::clockwiseRotate()
 {
-    getImageWidget()->clockwiseRotate();
+    _pTabWidget->clockwiseRotate();
 }
 
 void MainWindow::counterClockwiseRotate()
 {
-    getImageWidget()->counterClockwiseRotate();
+    _pTabWidget->counterClockwiseRotate();
 }
 
 void MainWindow::zoomInImage()
 {
-    getImageWidget()->zoomInImage();
+    _pTabWidget->zoomInImage();
 }
 
 void MainWindow::zoomOutImage()
 {
-    getImageWidget()->zoomOutImage();
+    _pTabWidget->zoomOutImage();
 }
 
 void MainWindow::aboutApp()
@@ -233,34 +227,33 @@ void MainWindow::aboutApp()
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
     //_pTabWidget->count()
-    while(_pTabWidget->currentIndex() != -1)
-    {
-        if(getImageWidget()->isChanged())
-        {
-            qint32 chose;
-            chose = QMessageBox::warning(this, tr("Save changes"),
-                                     tr("The image has been modified.\n"
-                                        "Do you want to save your changes?"),
-                                        QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
-
-            if(chose == QMessageBox::Yes)
-            {
-                emit _pSaveAction->trigger();
-                closeTab(_pTabWidget->currentIndex());
-            }
-            else if(chose == QMessageBox::No)
-                closeTab(_pTabWidget->currentIndex());
-            else if(chose == QMessageBox::Cancel)
-                pClose->ignore();
-        }
-        else
-            closeTab(_pTabWidget->currentIndex());
-    }
+    for(int i = 0; i < _pTabWidget->count(); ++i)
+        _pTabWidget->closeTab(i);
     pClose->accept();
+    //while(_pTabWidget->currentIndex() != -1)
+   // {
+     //   _pTabWidget->closeTab();
+        //        if(getImageWidget()->isChanged())
+//        {
+//            qint32 chose;
+//            chose = QMessageBox::warning(this, tr("Save changes"),
+//                                     tr("The image has been modified.\n"
+//                                        "Do you want to save your changes?"),
+//                                        QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
 
-}
+//            if(chose == QMessageBox::Yes)
+//            {
+//                emit _pSaveAction->trigger();
+//                closeTab(_pTabWidget->currentIndex());
+//            }
+//            else if(chose == QMessageBox::No)
+//                closeTab(_pTabWidget->currentIndex());
+//            else if(chose == QMessageBox::Cancel)
+//                pClose->ignore();
+//        }
+//        else
+//            closeTab(_pTabWidget->currentIndex());
+    //}
+   // pClose->accept();
 
-ScreenImage *MainWindow::getImageWidget()
-{
-    return static_cast<ScreenImage*>(_pTabWidget->currentWidget());
 }

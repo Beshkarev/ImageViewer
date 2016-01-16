@@ -4,8 +4,7 @@
 #include <QMainWindow>
 
 class QAction;
-class QTabWidget;
-class ScreenImage;
+class TabWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -35,15 +34,14 @@ private slots:
 protected:
     void closeEvent(QCloseEvent *);
 private:
-    ScreenImage *getImageWidget();
 
-    QTabWidget *_pTabWidget;
+    TabWidget *_pTabWidget;
     QStringList recentFile;
     enum{maxRecentFile = 5};
 
-    QMenu *pFileMenu;
-    QMenu *pEditMenu;
-    QMenu *pHelpMenu;
+    QMenu *_pFileMenu;
+    QMenu *_pEditMenu;
+    QMenu *_pHelpMenu;
     QAction *_pNewTabAction;
     QAction *_pOpenAction;
     QAction *_pSaveAction;

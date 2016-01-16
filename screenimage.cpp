@@ -11,6 +11,7 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pScrollArea(new QScrollArea(this)),
     _pLabel(new QLabel(this)),
     _pPixmap(new QPixmap),
+    clockwiseValue(90), counterClockwiseValue(-90),
     angle(clockwiseValue), imageChanged(false),
     zoomIn(1.25), zoomOut(0.8),
     scale(zoomIn)
@@ -40,22 +41,31 @@ bool ScreenImage::isEmpty()
         return false;
 }
 
-void ScreenImage::loadImage()
+QString ScreenImage::getFileName()
+{
+    return _fileName;
+}
+
+bool ScreenImage::loadImage()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
                                                              "/home/evgeniy/Pictures",
                                                 tr("All (*.*);;*.jpg;;*.bmp;;*.png;;"));
+    if(filename.isEmpty())
+        return false;
     if(!filename.isEmpty())
     {
         _pPixmap->load(filename);
         if(_pPixmap->isNull())
         {
             showSomeError("Something went wrong!\nMaybe, not supported the file format.");
-            return;
+            return false;
         }
         else
             showImage();
     }
+    _fileName = QFileInfo(filename).fileName();
+    return true;
 }
 
 void ScreenImage::saveImage()

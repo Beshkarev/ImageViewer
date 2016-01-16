@@ -15,9 +15,11 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    screenimage.cpp
+    screenimage.cpp \
+    tabwidget.cpp
 
 HEADERS  += mainwindow.h \
-    screenimage.h
+    screenimage.h \
+    tabwidget.h
 
 FORMS    +=

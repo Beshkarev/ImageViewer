@@ -6,6 +6,7 @@
 class QPixmap;
 class QLabel;
 class QScrollArea;
+class QString;
 
 class ScreenImage : public QWidget
 {
@@ -15,9 +16,10 @@ public:
     explicit ScreenImage(QWidget *pWd = 0);
     bool isChanged();
     bool isEmpty();
-public slots:
+    QString getFileName();
+public:
     //File menu
-    void loadImage();
+    bool loadImage();
     void saveImage();
     void closeImage();
     //Edit menu
@@ -36,16 +38,17 @@ private:
     QLabel *_pLabel;
     QPixmap *_pPixmap;
 
+    const qint32 clockwiseValue;
+    const qint32 counterClockwiseValue;
+
     qint32 angle;
-    enum anglevalue
-    {
-        clockwiseValue = 90,
-        counterClockwiseValue = -90
-    };
+
     bool imageChanged;
     const qreal zoomIn;
     const qreal zoomOut;
     qreal scale;
+
+    QString _fileName;
 };
 
 #endif // SCREENIMAGE
