@@ -1,11 +1,11 @@
-#include "tabwidget.h"
+#include "tabcontroller.h"
 #include "screenimage.h"
 #include <QTabWidget>
 #include <QMessageBox>
 #include <QDebug>
 #include <QHBoxLayout>
 
-TabWidget::TabWidget(QWidget *parent/*=0*/) :
+TabController::TabController(QWidget *parent/*=0*/) :
     QTabWidget(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -16,7 +16,7 @@ TabWidget::TabWidget(QWidget *parent/*=0*/) :
             this, SLOT(closeTab(int)));
 }
 
-void TabWidget::createTab()
+void TabController::createTab()
 {
     qDebug() << "new Tab" << count();
 
@@ -27,7 +27,7 @@ void TabWidget::createTab()
     qDebug() << count();
 }
 
-void TabWidget::loadFiletoTab()
+void TabController::loadFiletoTab()
 {
     qDebug() << objectName() << "open() slot";
     ScreenImage *wdg;
@@ -60,14 +60,14 @@ void TabWidget::loadFiletoTab()
 
 }
 
-void TabWidget::saveFileOpenedInTab()
+void TabController::saveFileOpenedInTab()
 {
     ScreenImage *widget = getImageWidget();
     if(widget != nullptr)
         widget->saveImage();
 }
 
-void TabWidget::closeTab(const int index)
+void TabController::closeTab(const int index)
 {
     qDebug() << "TabWidget" << "closeTab()";
     if(count() == 0)
@@ -102,42 +102,42 @@ void TabWidget::closeTab(const int index)
         updateTabNumber();
 }
 
-void TabWidget::horizontalFlip()
+void TabController::horizontalFlip()
 {
     ScreenImage *widget = getImageWidget();
     if(widget != nullptr)
         widget->loadImage();
 }
 
-void TabWidget::clockwiseRotate()
+void TabController::clockwiseRotate()
 {
     ScreenImage *widget = getImageWidget();
     if(widget != nullptr)
         widget->clockwiseRotate();
 }
 
-void TabWidget::counterClockwiseRotate()
+void TabController::counterClockwiseRotate()
 {
     ScreenImage *widget = getImageWidget();
     if(widget != nullptr)
         widget->counterClockwiseRotate();
 }
 
-void TabWidget::zoomInImage()
+void TabController::zoomInImage()
 {
     ScreenImage *widget = getImageWidget();
     if(widget != nullptr)
         widget->zoomInImage();
 }
 
-void TabWidget::zoomOutImage()
+void TabController::zoomOutImage()
 {
     ScreenImage *widget = getImageWidget();
     if(widget != nullptr)
         widget->zoomOutImage();
 }
 
-void TabWidget::fitImage(bool checked)
+void TabController::fitImage(bool checked)
 {
     qDebug() << checked;
     ScreenImage *wdg = getImageWidget();
@@ -145,12 +145,12 @@ void TabWidget::fitImage(bool checked)
         wdg->fitImage(checked);
 }
 
-ScreenImage *TabWidget::getImageWidget()
+ScreenImage *TabController::getImageWidget()
 {
     return dynamic_cast<ScreenImage*>(currentWidget());
 }
 
-void TabWidget::updateTabNumber()
+void TabController::updateTabNumber()
 {
     for(int i = 0; i < count(); ++i)
         setTabText(i, "Tab" + QString::number(i + 1));

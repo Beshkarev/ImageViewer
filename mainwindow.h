@@ -4,7 +4,7 @@
 #include <QMainWindow>
 
 class QAction;
-class TabWidget;
+class TabController;
 
 class MainWindow : public QMainWindow
 {
@@ -36,7 +36,7 @@ protected:
     void closeEvent(QCloseEvent *);
 private:
 
-    TabWidget *_pTabWidget;
+    TabController *_pTabController;
     QStringList recentFile;
     enum{maxRecentFile = 5};
 

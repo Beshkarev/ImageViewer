@@ -1,16 +1,16 @@
-#ifndef TABWIDGET
-#define TABWIDGET
+#ifndef TABCONTROLLER
+#define TABCONTROLLER
 
 #include <QTabWidget>
 
 class ScreenImage;
 
-class TabWidget : public QTabWidget
+class TabController : public QTabWidget
 {
     Q_OBJECT
 
 public:
-    TabWidget(QWidget *parent = 0);
+    TabController(QWidget *parent = 0);
     void createTab();
     void loadFiletoTab();
     void saveFileOpenedInTab();
@@ -26,9 +26,6 @@ public:
 private:
     ScreenImage *getImageWidget();
     void updateTabNumber();
-
-
-    //QTabWidget *_pTabWidget;
 };
 
-#endif // TABWIDGET
+#endif // TABCONTROLLER

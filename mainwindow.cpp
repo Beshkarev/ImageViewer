@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "tabwidget.h"
+#include "tabcontroller.h"
 #include <QStringList>
 #include <QDir>
 #include <QBoxLayout>
@@ -12,7 +12,7 @@
 #include <QCoreApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), _pTabWidget(new TabWidget)
+    QMainWindow(parent), _pTabController(new TabController)
 {
     createActions();
     createMenu();
@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QCoreApplication::setApplicationVersion("0.4");
     setGeometry(QRect(200, 200, 800, 500));
-    setCentralWidget(_pTabWidget);
+    setCentralWidget(_pTabController);
 }
 
 void MainWindow::createActions()
@@ -165,53 +165,53 @@ void MainWindow::updateListRecentFiles()
 
 void MainWindow::newTab()
 {
-    _pTabWidget->createTab();
+    _pTabController->createTab();
 }
 
 void MainWindow::open()
 {
-    _pTabWidget->loadFiletoTab();
+    _pTabController->loadFiletoTab();
 }
 
 void MainWindow::save()
 {
-    _pTabWidget->saveFileOpenedInTab();
+    _pTabController->saveFileOpenedInTab();
 }
 
 void MainWindow::closeTabRequest()
 {
-    _pTabWidget->closeTab(_pTabWidget->currentIndex());
+    _pTabController->closeTab(_pTabController->currentIndex());
 }
 
 void MainWindow::horizontalFlip()
 {
-    _pTabWidget->horizontalFlip();
+    _pTabController->horizontalFlip();
 }
 
 void MainWindow::clockwiseRotate()
 {
-    _pTabWidget->clockwiseRotate();
+    _pTabController->clockwiseRotate();
 }
 
 void MainWindow::counterClockwiseRotate()
 {
-    _pTabWidget->counterClockwiseRotate();
+    _pTabController->counterClockwiseRotate();
 }
 
 void MainWindow::zoomInImage()
 {
-    _pTabWidget->zoomInImage();
+    _pTabController->zoomInImage();
 }
 
 void MainWindow::zoomOutImage()
 {
-    _pTabWidget->zoomOutImage();
+    _pTabController->zoomOutImage();
 }
 
 void MainWindow::fitImageRequest()
 {
     bool checked = _pFitAction->isChecked();
-    _pTabWidget->fitImage(checked);
+    _pTabController->fitImage(checked);
 }
 
 void MainWindow::aboutApp()
