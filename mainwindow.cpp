@@ -9,7 +9,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QMenuBar>
-#include <QApplication>
+#include <QCoreApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabWidget(new TabWidget)
@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     createConnectToSlots();
     qDebug() << "constructor";
 
+    QCoreApplication::setApplicationVersion("0.4");
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabWidget);
 }
