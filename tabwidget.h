@@ -25,7 +25,7 @@ public:
     void fitImage(bool);
 private:
     ScreenImage *getImageWidget();
-
+    void updateTabNumber();
 
 
     //QTabWidget *_pTabWidget;

@@ -223,9 +223,10 @@ void MainWindow::aboutApp()
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
     //_pTabWidget->count()
-    for(int i = 0; i < _pTabWidget->count(); ++i)
-        _pTabWidget->closeTab(i);
-    pClose->accept();
+    //for(int i = 0; i < _pTabWidget->count(); ++i)
+        //closeTabRequest();
+        //_pTabWidget->closeTab(i);
+    //pClose->accept();
     //while(_pTabWidget->currentIndex() != -1)
    // {
      //   _pTabWidget->closeTab();

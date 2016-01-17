@@ -1,6 +1,6 @@
 #include "tabwidget.h"
-#include <QTabWidget>
 #include "screenimage.h"
+#include <QTabWidget>
 #include <QMessageBox>
 #include <QDebug>
 #include <QHBoxLayout>
@@ -56,9 +56,8 @@ void TabWidget::loadFiletoTab()
         wdg->deleteLater();
     }
     else
-    {
         setTabText(currentIndex(), wdg->getFileName());
-    }
+
 }
 
 void TabWidget::saveFileOpenedInTab()
@@ -71,24 +70,28 @@ void TabWidget::saveFileOpenedInTab()
 void TabWidget::closeTab(const int index)
 {
     qDebug() << "TabWidget" << "closeTab()";
+    if(count() == 0)
+        return;
     ScreenImage *widg = static_cast<ScreenImage*>(widget(index));
     if(widg->isChanged())
     {
         qint32 chose;
         chose = QMessageBox::warning(this, tr("Save changes"),
-                                 tr("The image has been modified.\n"
-                                    "Do you want to save your changes?"),
+                                 tr("The image %1 has been modified.\n"
+                                    "Do you want to save your changes?").arg(widg->getFileName()),
                                     QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
         if(chose == QMessageBox::Yes)
         {
             saveFileOpenedInTab();
             removeTab(index);
             widg->deleteLater();
+            updateTabNumber();
         }
         else if(chose == QMessageBox::No)
         {
             removeTab(index);
             widg->deleteLater();
+            updateTabNumber();
         }
         else if(chose == QMessageBox::Cancel)
             return;
@@ -96,6 +99,7 @@ void TabWidget::closeTab(const int index)
     else
         removeTab(index);
         widg->deleteLater();
+        updateTabNumber();
 }
 
 void TabWidget::horizontalFlip()
@@ -144,4 +148,10 @@ void TabWidget::fitImage(bool checked)
 ScreenImage *TabWidget::getImageWidget()
 {
     return dynamic_cast<ScreenImage*>(currentWidget());
+}
+
+void TabWidget::updateTabNumber()
+{
+    for(int i = 0; i < count(); ++i)
+        setTabText(i, "Tab" + QString::number(i + 1));
 }
