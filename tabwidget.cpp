@@ -11,6 +11,9 @@ TabWidget::TabWidget(QWidget *parent/*=0*/) :
     setAttribute(Qt::WA_DeleteOnClose);
     setMovable(true);
     setTabsClosable(true);
+
+    connect(this, SIGNAL(tabCloseRequested(int)),
+            this, SLOT(closeTab(int)));
 }
 
 void TabWidget::createTab()

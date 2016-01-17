@@ -14,7 +14,9 @@ public:
     void createTab();
     void loadFiletoTab();
     void saveFileOpenedInTab();
+public slots:
     void closeTab(const int index);
+public:
     void horizontalFlip();
     void clockwiseRotate();
     void counterClockwiseRotate();

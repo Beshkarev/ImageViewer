@@ -14,14 +14,10 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabWidget(new TabWidget)
 {
-
     createActions();
     createMenu();
     createConnectToSlots();
     qDebug() << "constructor";
-//    _pTabWidget->setAttribute(Qt::WA_DeleteOnClose);
-//    _pTabWidget->setMovable(true);
-//    _pTabWidget->setTabsClosable(true);
 
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabWidget);
@@ -88,7 +84,6 @@ void MainWindow::createMenu()
     _pEditMenu->addAction(_pHorizontalFlipAction);
     _pEditMenu->addAction(_pClockwiseRotateAction);
     _pEditMenu->addAction(_pCounterClockwiseRotateAction);
-    //_pEditMenu->addAction(_pFitAction);
     _pEditMenu->addAction(_pZoomIn);
     _pEditMenu->addAction(_pZoomOut);
 
@@ -110,10 +105,8 @@ void MainWindow::createConnectToSlots()
             this, SLOT(open()));
     connect(_pSaveAction, SIGNAL(triggered(bool)),
             this, SLOT(save()));
-    connect(_pTabWidget, SIGNAL(tabCloseRequested(int)),
-            this, SLOT(closeTab(int)));
     connect(_pCloseImageAction, SIGNAL(triggered(bool)),
-            this, SLOT(closeTab(int)));
+            this, SLOT(closeTabRequest()));
     connect(_pExitAction, SIGNAL(triggered(bool)),
             this, SLOT(close()));
 
@@ -171,15 +164,6 @@ void MainWindow::updateListRecentFiles()
 
 void MainWindow::newTab()
 {
-//    QMessageBox::information(this, "Sorry",
-//                             "Not implemented yet",
-//                             QMessageBox::Ok);
-//
-//    qDebug() << "new Tab" << _pTabWidget->count();
-//    ScreenImage *widget = new ScreenImage;
-//    _pTabWidget->addTab(widget, "tab");
-//    _pTabWidget->setCurrentWidget(widget);
-//    qDebug() << _pTabWidget->count();
     _pTabWidget->createTab();
 }
 
@@ -193,9 +177,9 @@ void MainWindow::save()
     _pTabWidget->saveFileOpenedInTab();
 }
 
-void MainWindow::closeTab(const int index)
+void MainWindow::closeTabRequest()
 {
-    _pTabWidget->closeTab(index);
+    _pTabWidget->closeTab(_pTabWidget->currentIndex());
 }
 
 void MainWindow::horizontalFlip()

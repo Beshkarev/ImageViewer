@@ -23,7 +23,7 @@ private slots:
     void newTab();
     void open();
     void save();
-    void closeTab(const int index);
+    void closeTabRequest();
     void horizontalFlip();
     void clockwiseRotate();
     void counterClockwiseRotate();
