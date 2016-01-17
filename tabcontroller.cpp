@@ -36,11 +36,15 @@ void TabController::loadFiletoTab()
     {
         createTab();
         wdg = getImageWidget();
+        if(widgetIsNULL(wdg))
+            return;
         successfullyImageLoad = wdg->loadImage();
     }
     else if(count() != 0 && getImageWidget()->isEmpty())
     {
         wdg = getImageWidget();
+        if(widgetIsNULL(wdg))
+            return;
         successfullyImageLoad = wdg->loadImage();
     }
     else
@@ -57,13 +61,12 @@ void TabController::loadFiletoTab()
     }
     else
         setTabText(currentIndex(), wdg->getFileName());
-
 }
 
 void TabController::saveFileOpenedInTab()
 {
     ScreenImage *widget = getImageWidget();
-    if(widget != nullptr)
+    if(!widgetIsNULL(widget))
         widget->saveImage();
 }
 
@@ -73,6 +76,9 @@ void TabController::closeTab(const int index)
     if(count() == 0)
         return;
     ScreenImage *widg = static_cast<ScreenImage*>(widget(index));
+    if(widgetIsNULL(widg))
+        return;
+
     if(widg->isChanged())
     {
         qint32 chose;
@@ -105,35 +111,35 @@ void TabController::closeTab(const int index)
 void TabController::horizontalFlip()
 {
     ScreenImage *widget = getImageWidget();
-    if(widget != nullptr)
+    if(!widgetIsNULL(widget))
         widget->loadImage();
 }
 
 void TabController::clockwiseRotate()
 {
     ScreenImage *widget = getImageWidget();
-    if(widget != nullptr)
+    if(!widgetIsNULL(widget))
         widget->clockwiseRotate();
 }
 
 void TabController::counterClockwiseRotate()
 {
     ScreenImage *widget = getImageWidget();
-    if(widget != nullptr)
+    if(!widgetIsNULL(widget))
         widget->counterClockwiseRotate();
 }
 
 void TabController::zoomInImage()
 {
     ScreenImage *widget = getImageWidget();
-    if(widget != nullptr)
+    if(!widgetIsNULL(widget))
         widget->zoomInImage();
 }
 
 void TabController::zoomOutImage()
 {
     ScreenImage *widget = getImageWidget();
-    if(widget != nullptr)
+    if(!widgetIsNULL(widget))
         widget->zoomOutImage();
 }
 
@@ -141,7 +147,7 @@ void TabController::fitImage(bool checked)
 {
     qDebug() << checked;
     ScreenImage *wdg = getImageWidget();
-    if(wdg != nullptr)
+    if(!widgetIsNULL(wdg))
         wdg->fitImage(checked);
 }
 
@@ -152,6 +158,21 @@ ScreenImage *TabController::getImageWidget()
 
 void TabController::updateTabNumber()
 {
+    ScreenImage *wdg;
     for(int i = 0; i < count(); ++i)
-        setTabText(i, "Tab" + QString::number(i + 1));
+    {
+        wdg = static_cast<ScreenImage*>(widget(i));
+        if(widgetIsNULL(wdg))
+           return;
+        if(wdg->isEmpty())
+        {
+            qDebug() << "in updateTab";
+            setTabText(i, "Tab" + QString::number(i + 1));
+        }
+    }
+}
+
+bool TabController::widgetIsNULL(ScreenImage *wdg) const
+{
+    return wdg == nullptr ? true : false;
 }

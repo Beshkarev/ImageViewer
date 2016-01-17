@@ -26,6 +26,7 @@ public:
 private:
     ScreenImage *getImageWidget();
     void updateTabNumber();
+    bool widgetIsNULL(ScreenImage* wdg) const;
 };
 
 #endif // TABCONTROLLER
