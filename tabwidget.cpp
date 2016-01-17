@@ -1,5 +1,5 @@
 #include "tabwidget.h"
-#include <QTableWidget>
+#include <QTabWidget>
 #include "screenimage.h"
 #include <QMessageBox>
 #include <QDebug>
@@ -128,6 +128,14 @@ void TabWidget::zoomOutImage()
     ScreenImage *widget = getImageWidget();
     if(widget != nullptr)
         widget->zoomOutImage();
+}
+
+void TabWidget::fitImage(bool checked)
+{
+    qDebug() << checked;
+    ScreenImage *wdg = getImageWidget();
+    if(wdg != nullptr)
+        wdg->fitImage(checked);
 }
 
 ScreenImage *TabWidget::getImageWidget()

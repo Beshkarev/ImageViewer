@@ -20,6 +20,7 @@ public:
     void counterClockwiseRotate();
     void zoomInImage();
     void zoomOutImage();
+    void fitImage(bool);
 private:
     ScreenImage *getImageWidget();
 

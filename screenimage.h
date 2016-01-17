@@ -28,6 +28,8 @@ public:
     void counterClockwiseRotate();
     void zoomInImage();
     void zoomOutImage();
+    //View menu
+    void fitImage(bool checked);
 private:
     QImage QimageFactory();
     void showImage();

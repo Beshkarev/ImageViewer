@@ -134,6 +134,11 @@ void ScreenImage::zoomOutImage()
     zoomInImage();
 }
 
+void ScreenImage::fitImage(bool checked)
+{
+    _pLabel->setScaledContents(checked);
+}
+
 QImage ScreenImage::QimageFactory()
 {
     QImage img(_pPixmap->toImage());

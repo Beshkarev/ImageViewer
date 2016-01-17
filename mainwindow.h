@@ -29,6 +29,7 @@ private slots:
     void counterClockwiseRotate();
     void zoomInImage();
     void zoomOutImage();
+    void fitImageRequest();
 
     void aboutApp();
 protected:
@@ -41,6 +42,7 @@ private:
 
     QMenu *_pFileMenu;
     QMenu *_pEditMenu;
+    QMenu *_pViewMenu;
     QMenu *_pHelpMenu;
     QAction *_pNewTabAction;
     QAction *_pOpenAction;

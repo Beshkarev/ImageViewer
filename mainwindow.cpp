@@ -88,9 +88,12 @@ void MainWindow::createMenu()
     _pEditMenu->addAction(_pHorizontalFlipAction);
     _pEditMenu->addAction(_pClockwiseRotateAction);
     _pEditMenu->addAction(_pCounterClockwiseRotateAction);
-    _pEditMenu->addAction(_pFitAction);
+    //_pEditMenu->addAction(_pFitAction);
     _pEditMenu->addAction(_pZoomIn);
     _pEditMenu->addAction(_pZoomOut);
+
+    _pViewMenu = menuBar()->addMenu("&View");
+    _pViewMenu->addAction(_pFitAction);
 
     _pHelpMenu = menuBar()->addMenu("&Help");
     _pHelpMenu->addAction(_pAboutAction);
@@ -121,11 +124,14 @@ void MainWindow::createConnectToSlots()
             this, SLOT(counterClockwiseRotate()));
     connect(_pClockwiseRotateAction, SIGNAL(triggered(bool)),
             this, SLOT(clockwiseRotate()));
-    //connect(pFitAction, SIGNAL(triggered(bool)), this, SLOT(fitToWindow()));
     connect(_pZoomIn, SIGNAL(triggered(bool)),
             this, SLOT(zoomInImage()));
     connect(_pZoomOut, SIGNAL(triggered(bool)),
             this, SLOT(zoomOutImage()));
+
+    //View menu section
+    connect(_pFitAction, SIGNAL(triggered(bool)),
+            this, SLOT(fitImageRequest()));
 
     //About menu section
     connect(_pAboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutApp()));
@@ -215,6 +221,12 @@ void MainWindow::zoomInImage()
 void MainWindow::zoomOutImage()
 {
     _pTabWidget->zoomOutImage();
+}
+
+void MainWindow::fitImageRequest()
+{
+    bool checked = _pFitAction->isChecked();
+    _pTabWidget->fitImage(checked);
 }
 
 void MainWindow::aboutApp()
