@@ -54,11 +54,11 @@ void TabController::loadFiletoTab(const QString &file)
         updateTabText(currentIndex(), wdg->getFileName());
 }
 
-void TabController::saveFileOpenedInTab()
+void TabController::saveFileOpenedInTab(const QString &file)
 {
     ScreenImage *widget = getImageWidget();
     if(!widgetIsNULL(widget))
-        widget->saveImage();
+        widget->saveImage(file);
 }
 
 void TabController::closeImage()
@@ -88,7 +88,7 @@ void TabController::closeTab(const int index)
                                     QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
         if(chose == QMessageBox::Yes)
         {
-            saveFileOpenedInTab();
+            saveFileOpenedInTab(getImageWidget()->getFileName());
             removeTab(index);
             widg->deleteLater();
             updateTabNumber();

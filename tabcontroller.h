@@ -14,7 +14,7 @@ public:
     TabController(QWidget *parent = 0);
     void createTab();
     void loadFiletoTab(const QString &file);
-    void saveFileOpenedInTab();
+    void saveFileOpenedInTab(const QString &file);
     void closeImage();
 public slots:
     void closeTab(const int index);

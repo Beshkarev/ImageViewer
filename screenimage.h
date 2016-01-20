@@ -20,7 +20,7 @@ public:
 public:
     //File menu
     bool loadImage(const QString &filename);
-    void saveImage();
+    void saveImage(const QString &filename) const;
     void closeImage();
     //Edit menu
     void horizontalFlip();

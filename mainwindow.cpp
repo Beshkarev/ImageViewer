@@ -12,7 +12,6 @@
 #include <QMenuBar>
 #include <QCoreApplication>
 #include <QToolBar>
-#include <QPushButton>
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -30,9 +29,10 @@ MainWindow::MainWindow(QWidget *parent) :
     _pDirIt = new QDirIterator(QDir::homePath() + "/Pictures", supportedFormats,
                                QDir::Files, QDirIterator::Subdirectories);
 
-    QCoreApplication::setApplicationVersion("0.4");
+    QCoreApplication::setApplicationVersion("0.5");
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
+    updateListRecentFiles();
 }
 
 void MainWindow::createActions()
@@ -62,9 +62,7 @@ void MainWindow::createActions()
     {
         pRecentAction[i] = new QAction(this);
         pRecentAction[i]->setVisible(false);
-        //connect(pRecentAction[i], SIGNAL(triggered(bool)), this, SLOT(openRecentFile()));
     }
-    //RecentFileUpdate();
 
     _pExitAction = new QAction(tr("Exit"), this);
     _pExitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
@@ -128,13 +126,16 @@ void MainWindow::createConnectToSlots()
     connect(_pOpenAction, SIGNAL(triggered(bool)),
             this, SLOT(openFile()));
     connect(_pSaveAction, SIGNAL(triggered(bool)),
-            this, SLOT(save()));
+            this, SLOT(saveFile()));
     connect(_pNextFileAction, SIGNAL(triggered(bool)),
             this, SLOT(nextFile()));
     connect(_pCloseTabAction, SIGNAL(triggered(bool)),
             this, SLOT(closeTabRequest()));
     connect(_pCloseFileAction, SIGNAL(triggered(bool)),
             this, SLOT(closeFileRequest()));
+    for(int i = 0; i < maxRecentFile; ++i)
+        connect(pRecentAction[i], SIGNAL(triggered(bool)),
+                this, SLOT(openRecentFile()));
     connect(_pExitAction, SIGNAL(triggered(bool)),
             this, SLOT(close()));
 
@@ -155,8 +156,10 @@ void MainWindow::createConnectToSlots()
             this, SLOT(fitImageRequest()));
 
     //About menu section
-    connect(_pAboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutApp()));
-    connect(_pQtAbout, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
+    connect(_pAboutAction, SIGNAL(triggered(bool)),
+            this, SLOT(aboutApp()));
+    connect(_pQtAbout, SIGNAL(triggered(bool)),
+            qApp, SLOT(aboutQt()));
 }
 
 void MainWindow::setRecentFile(const QString &filename)
@@ -203,19 +206,31 @@ void MainWindow::openFile()
                                                        "*.ppm;;*.xbm;;*.xpm"));
     if(!filename.isEmpty())
         loadFileRequest(filename);
+
+    setRecentFile(filename);
+    updateListRecentFiles();
 }
 
-void MainWindow::save()
+void MainWindow::saveFile()
 {
-    _pTabController->saveFileOpenedInTab();
+    const QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
+                                                    QDir::homePath() + "/Pictures",
+                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;"));
+    _pTabController->saveFileOpenedInTab(filename);
 }
 
 void MainWindow::nextFile()
 {
+    QString file;
     if(_pDirIt->hasNext())
-        loadFileRequest(_pDirIt->next());
+    {
+        file = _pDirIt->next();
+        loadFileRequest(file);
+    }
     else
         openFile();
+    setRecentFile(file);
+    updateListRecentFiles();
 }
 
 void MainWindow::closeFileRequest()
@@ -226,6 +241,12 @@ void MainWindow::closeFileRequest()
 void MainWindow::closeTabRequest()
 {
     _pTabController->closeTab(_pTabController->currentIndex());
+}
+
+void MainWindow::openRecentFile()
+{
+    QAction *pAction = qobject_cast<QAction *>(sender());
+    loadFileRequest(pAction->data().toString());
 }
 
 void MainWindow::horizontalFlip()

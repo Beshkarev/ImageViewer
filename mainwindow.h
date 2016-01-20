@@ -24,10 +24,11 @@ private:
 private slots:
     void newTab();
     void openFile();
-    void save();
+    void saveFile();
     void nextFile();
     void closeFileRequest();
     void closeTabRequest();
+    void openRecentFile();
     void horizontalFlip();
     void clockwiseRotate();
     void counterClockwiseRotate();

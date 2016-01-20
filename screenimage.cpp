@@ -10,7 +10,6 @@
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pScrollArea(new QScrollArea(this)),
     _pLabel(new QLabel(this)),
-    //_pImage(new QImage),
     clockwiseValue(90), counterClockwiseValue(-90),
     angle(clockwiseValue), imageChanged(false),
     zoomIn(1.25), zoomOut(0.8),
@@ -63,11 +62,8 @@ bool ScreenImage::loadImage(const QString &filename)
     return true;
 }
 
-void ScreenImage::saveImage()
+void ScreenImage::saveImage(const QString &filename) const
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Save file"),
-                                                    "/home/evgeniy/Pictures",
-                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;"));
     m_Image.save(filename);
 }
 
@@ -82,7 +78,8 @@ void ScreenImage::horizontalFlip()
 {
     m_Image = m_Image.mirrored(true, false);
     showImage();
-    imageWasChanged();
+    if(!isEmpty())
+        imageWasChanged();
 }
 
 void ScreenImage::clockwiseRotate()
@@ -92,7 +89,8 @@ void ScreenImage::clockwiseRotate()
 
     m_Image = m_Image.transformed(transform);
     showImage();
-    imageWasChanged();
+    if(!isEmpty())
+        imageWasChanged();
     angle = clockwiseValue;
 }
 
@@ -100,7 +98,8 @@ void ScreenImage::counterClockwiseRotate()
 {
     angle = counterClockwiseValue;
     clockwiseRotate();
-    imageWasChanged();
+    if(!isEmpty())
+        imageWasChanged();
 }
 
 void ScreenImage::zoomInImage()
