@@ -51,8 +51,11 @@ void MainWindow::createActions()
 
     _pNextFileAction = new QAction(tr("Next file"), this);
 
-    _pCloseImageAction = new QAction(tr("Close image"), this);
-    _pCloseImageAction->setShortcut(QKeySequence::Close);
+    _pCloseFileAction = new QAction(tr("Close image"), this);
+    _pCloseFileAction->setStatusTip(tr("Closing image"));
+
+    _pCloseTabAction = new QAction(tr("Close tab"), this);
+    _pCloseTabAction->setShortcut(QKeySequence::Close);
 
 
     for(int i = 0; i < maxRecentFile; ++i)
@@ -86,7 +89,8 @@ void MainWindow::createMenu()
     _pFileMenu->addAction(_pNewTabAction);
     _pFileMenu->addAction(_pOpenAction);
     _pFileMenu->addAction(_pSaveAction);
-    _pFileMenu->addAction(_pCloseImageAction);
+    _pFileMenu->addAction(_pCloseFileAction);
+    _pFileMenu->addAction(_pCloseTabAction);
     pSeparatorAction = _pFileMenu->addSeparator();
     for(int i = 0; i < maxRecentFile; ++i)
         _pFileMenu->addAction(pRecentAction[i]);
@@ -127,8 +131,10 @@ void MainWindow::createConnectToSlots()
             this, SLOT(save()));
     connect(_pNextFileAction, SIGNAL(triggered(bool)),
             this, SLOT(nextFile()));
-    connect(_pCloseImageAction, SIGNAL(triggered(bool)),
+    connect(_pCloseTabAction, SIGNAL(triggered(bool)),
             this, SLOT(closeTabRequest()));
+    connect(_pCloseFileAction, SIGNAL(triggered(bool)),
+            this, SLOT(closeFileRequest()));
     connect(_pExitAction, SIGNAL(triggered(bool)),
             this, SLOT(close()));
 
@@ -210,6 +216,11 @@ void MainWindow::nextFile()
         loadFileRequest(_pDirIt->next());
     else
         openFile();
+}
+
+void MainWindow::closeFileRequest()
+{
+    _pTabController->closeImage();
 }
 
 void MainWindow::closeTabRequest()

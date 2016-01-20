@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-class QPixmap;
+class QImage;
 class QLabel;
 class QScrollArea;
 class QString;
@@ -33,7 +33,6 @@ public:
 protected:
     void resizeEvent(QResizeEvent *);
 private:
-    QImage createQImage();
     void showImage();
     void imageWasChanged();
     void showSomeError(const QString &str);
@@ -41,7 +40,7 @@ private:
 
     QScrollArea *_pScrollArea;
     QLabel *_pLabel;
-    QPixmap *_pPixmap;
+    QImage m_Image;
 
     const qint32 clockwiseValue;
     const qint32 counterClockwiseValue;

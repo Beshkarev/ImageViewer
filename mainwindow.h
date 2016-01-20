@@ -26,6 +26,7 @@ private slots:
     void openFile();
     void save();
     void nextFile();
+    void closeFileRequest();
     void closeTabRequest();
     void horizontalFlip();
     void clockwiseRotate();
@@ -54,7 +55,8 @@ private:
     QAction *_pOpenAction;
     QAction *_pSaveAction;
     QAction *_pNextFileAction;
-    QAction *_pCloseImageAction;
+    QAction *_pCloseFileAction;
+    QAction *_pCloseTabAction;
     QAction *pRecentAction[maxRecentFile];
     QAction *pSeparatorAction;
     QAction *_pExitAction;

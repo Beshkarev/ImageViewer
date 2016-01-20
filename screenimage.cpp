@@ -1,9 +1,8 @@
 #include "screenimage.h"
 #include <QFileDialog>
-#include <QPixmap>
+#include <QImage>
 #include <QBoxLayout>
 #include <QLabel>
-#include <QFileDialog>
 #include <QScrollArea>
 #include <QMessageBox>
 #include <QDebug>
@@ -11,7 +10,7 @@
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pScrollArea(new QScrollArea(this)),
     _pLabel(new QLabel(this)),
-    _pPixmap(new QPixmap),
+    //_pImage(new QImage),
     clockwiseValue(90), counterClockwiseValue(-90),
     angle(clockwiseValue), imageChanged(false),
     zoomIn(1.25), zoomOut(0.8),
@@ -36,7 +35,7 @@ bool ScreenImage::isChanged() const
 
 bool ScreenImage::isEmpty() const
 {
-    if(_pPixmap->isNull())
+    if(m_Image.isNull())
         return true;
     else
         return false;
@@ -51,8 +50,8 @@ bool ScreenImage::loadImage(const QString &filename)
 {
 
     qDebug() << filename;
-    _pPixmap->load(filename);
-    if(_pPixmap->isNull())
+    m_Image.load(filename);
+    if(m_Image.isNull())
     {
         showSomeError("Something went wrong!\nMaybe, not supported the file format.");
         return false;
@@ -69,36 +68,29 @@ void ScreenImage::saveImage()
     QString filename = QFileDialog::getOpenFileName(this, tr("Save file"),
                                                     "/home/evgeniy/Pictures",
                                                     tr("All (*.*);;*.jpg;;*.bmp;;*.png;;"));
-    _pPixmap->save(filename);
+    m_Image.save(filename);
 }
 
 void ScreenImage::closeImage()
 {
     _pLabel->clear();
     _pScrollArea->hide();
+    m_Image = QImage();
 }
 
 void ScreenImage::horizontalFlip()
 {
-    QImage img = createQImage();
-    if(img.isNull())
-        return;
-    img = img.mirrored(true, false);
-    _pPixmap->convertFromImage(img);
+    m_Image = m_Image.mirrored(true, false);
     showImage();
     imageWasChanged();
 }
 
 void ScreenImage::clockwiseRotate()
 {
-    QImage img = createQImage();
-    if(img.isNull())
-        return;
     QTransform transform;
     transform.rotate(angle);
 
-    img = img.transformed(transform);
-    _pPixmap->convertFromImage(img);
+    m_Image = m_Image.transformed(transform);
     showImage();
     imageWasChanged();
     angle = clockwiseValue;
@@ -113,10 +105,10 @@ void ScreenImage::counterClockwiseRotate()
 
 void ScreenImage::zoomInImage()
 {
-    qint32 width = _pPixmap->width();
-    qint32 height = _pPixmap->height();
+    qint32 width = m_Image.width();
+    qint32 height = m_Image.height();
 
-    *_pPixmap = _pPixmap->scaled(QSize(width * scale, height * scale),
+    m_Image = m_Image.scaled(QSize(width * scale, height * scale),
                      Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     showImage();
     scale = zoomIn;
@@ -138,15 +130,9 @@ void ScreenImage::resizeEvent(QResizeEvent *)
     bestImageGeometry();
 }
 
-QImage ScreenImage::createQImage()
-{
-    QImage img(_pPixmap->toImage());
-    return img;
-}
-
 void ScreenImage::showImage()
 {
-    _pLabel->setPixmap(*_pPixmap);
+    _pLabel->setPixmap(QPixmap::fromImage(m_Image));
     if(_pScrollArea->isHidden())
         _pScrollArea->show();
 }
@@ -164,7 +150,7 @@ void ScreenImage::showSomeError(const QString &str)
 
 void ScreenImage::bestImageGeometry()
 {
-    *_pPixmap = _pPixmap->scaled(width(), height(),
-                                 Qt::KeepAspectRatio);
+    m_Image = m_Image.scaled(width(), height(),
+                                 Qt::KeepAspectRatio, Qt::SmoothTransformation);
     showImage();
 }

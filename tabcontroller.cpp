@@ -61,6 +61,16 @@ void TabController::saveFileOpenedInTab()
         widget->saveImage();
 }
 
+void TabController::closeImage()
+{
+    ScreenImage *wdg = getImageWidget();
+    if(!widgetIsNULL(wdg))
+    {
+        wdg->closeImage();
+        updateTabNumber();
+    }
+}
+
 void TabController::closeTab(const int index)
 {
     qDebug() << "TabWidget" << "closeTab()";
