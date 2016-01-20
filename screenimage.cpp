@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QScrollArea>
 #include <QMessageBox>
+#include <QDebug>
 
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pScrollArea(new QScrollArea(this)),
@@ -28,12 +29,12 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     setLayout(pHLayout);
 }
 
-bool ScreenImage::isChanged()
+bool ScreenImage::isChanged() const
 {
     return imageChanged;
 }
 
-bool ScreenImage::isEmpty()
+bool ScreenImage::isEmpty() const
 {
     if(_pPixmap->isNull())
         return true;
@@ -41,36 +42,31 @@ bool ScreenImage::isEmpty()
         return false;
 }
 
-QString ScreenImage::getFileName()
+QString ScreenImage::getFileName() const
 {
     return _fileName;
 }
 
-bool ScreenImage::loadImage()
+bool ScreenImage::loadImage(const QString &filename)
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
-                                                             "/home/evgeniy/Pictures",
-                                                tr("All (*.*);;*.jpg;;*.bmp;;*.png;;"));
-    if(filename.isEmpty())
-        return false;
-    if(!filename.isEmpty())
+
+    qDebug() << filename;
+    _pPixmap->load(filename);
+    if(_pPixmap->isNull())
     {
-        _pPixmap->load(filename);
-        if(_pPixmap->isNull())
-        {
-            showSomeError("Something went wrong!\nMaybe, not supported the file format.");
-            return false;
-        }
-        else
-            showImage();
+        showSomeError("Something went wrong!\nMaybe, not supported the file format.");
+        return false;
     }
+    else
+        showImage();
+        bestImageGeometry();
     _fileName = QFileInfo(filename).fileName();
     return true;
 }
 
 void ScreenImage::saveImage()
 {
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
+    QString filename = QFileDialog::getOpenFileName(this, tr("Save file"),
                                                     "/home/evgeniy/Pictures",
                                                     tr("All (*.*);;*.jpg;;*.bmp;;*.png;;"));
     _pPixmap->save(filename);
@@ -80,28 +76,31 @@ void ScreenImage::closeImage()
 {
     _pLabel->clear();
     _pScrollArea->hide();
-    //_pScrollArea->isWindowModified()
 }
 
 void ScreenImage::horizontalFlip()
 {
-    QImage img = QimageFactory();
+    QImage img = createQImage();
+    if(img.isNull())
+        return;
     img = img.mirrored(true, false);
     _pPixmap->convertFromImage(img);
     showImage();
-    somethingChanged();
+    imageWasChanged();
 }
 
 void ScreenImage::clockwiseRotate()
 {
-    QImage img = QimageFactory();
+    QImage img = createQImage();
+    if(img.isNull())
+        return;
     QTransform transform;
     transform.rotate(angle);
 
     img = img.transformed(transform);
     _pPixmap->convertFromImage(img);
     showImage();
-    somethingChanged();
+    imageWasChanged();
     angle = clockwiseValue;
 }
 
@@ -109,22 +108,17 @@ void ScreenImage::counterClockwiseRotate()
 {
     angle = counterClockwiseValue;
     clockwiseRotate();
-    somethingChanged();
+    imageWasChanged();
 }
 
 void ScreenImage::zoomInImage()
 {
-    QImage img = QimageFactory();
     qint32 width = _pPixmap->width();
     qint32 height = _pPixmap->height();
 
-    img = img.scaled(QSize(width * scale, height * scale),
+    *_pPixmap = _pPixmap->scaled(QSize(width * scale, height * scale),
                      Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    _pPixmap->convertFromImage(img);
-    //_pLabel->setPixmap(QPixmap::fromImage(img));
-
     showImage();
-    //somethingChanged();
     scale = zoomIn;
 }
 
@@ -139,7 +133,12 @@ void ScreenImage::fitImage(bool checked)
     _pLabel->setScaledContents(checked);
 }
 
-QImage ScreenImage::QimageFactory()
+void ScreenImage::resizeEvent(QResizeEvent *)
+{
+    bestImageGeometry();
+}
+
+QImage ScreenImage::createQImage()
 {
     QImage img(_pPixmap->toImage());
     return img;
@@ -148,10 +147,11 @@ QImage ScreenImage::QimageFactory()
 void ScreenImage::showImage()
 {
     _pLabel->setPixmap(*_pPixmap);
-    _pScrollArea->show();
+    if(_pScrollArea->isHidden())
+        _pScrollArea->show();
 }
 
-void ScreenImage::somethingChanged()
+void ScreenImage::imageWasChanged()
 {
     imageChanged = true;
 }
@@ -159,5 +159,12 @@ void ScreenImage::somethingChanged()
 void ScreenImage::showSomeError(const QString &str)
 {
     QMessageBox::warning(this, tr("Oops"), str,
-                        QMessageBox::Ok);
+                         QMessageBox::Ok);
+}
+
+void ScreenImage::bestImageGeometry()
+{
+    *_pPixmap = _pPixmap->scaled(width(), height(),
+                                 Qt::KeepAspectRatio);
+    showImage();
 }

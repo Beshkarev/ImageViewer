@@ -2,6 +2,7 @@
 #include "tabcontroller.h"
 #include <QStringList>
 #include <QDir>
+#include <QDirIterator>
 #include <QBoxLayout>
 #include <QMessageBox>
 #include <QCloseEvent>
@@ -10,14 +11,24 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QCoreApplication>
+#include <QToolBar>
+#include <QPushButton>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), _pTabController(new TabController)
+    QMainWindow(parent), _pTabController(new TabController),
+    _pToolBar(new QToolBar)
 {
     createActions();
     createMenu();
+    createToolBar();
     createConnectToSlots();
     qDebug() << "constructor";
+
+    QStringList supportedFormats;
+    supportedFormats << "*.jpg" << "*.bmp" << ".png";
+    _pDirIt = new QDirIterator(QDir::homePath() + "/Pictures", supportedFormats,
+                               QDir::Files, QDirIterator::Subdirectories);
 
     QCoreApplication::setApplicationVersion("0.4");
     setGeometry(QRect(200, 200, 800, 500));
@@ -38,6 +49,7 @@ void MainWindow::createActions()
     _pSaveAction->setShortcut(QKeySequence::Save);
     _pSaveAction->setStatusTip(tr("Save the file"));
 
+    _pNextFileAction = new QAction(tr("Next file"), this);
 
     _pCloseImageAction = new QAction(tr("Close image"), this);
     _pCloseImageAction->setShortcut(QKeySequence::Close);
@@ -96,6 +108,13 @@ void MainWindow::createMenu()
     _pHelpMenu->addAction(_pQtAbout);
 }
 
+void MainWindow::createToolBar()
+{
+    _pToolBar = addToolBar("file");
+    _pToolBar->addAction(_pNextFileAction);
+    _pToolBar->setToolButtonStyle(Qt::ToolButtonTextOnly);
+}
+
 void MainWindow::createConnectToSlots()
 {
     qDebug("connect");
@@ -103,9 +122,11 @@ void MainWindow::createConnectToSlots()
     connect(_pNewTabAction, SIGNAL(triggered(bool)),
             this, SLOT(newTab()));
     connect(_pOpenAction, SIGNAL(triggered(bool)),
-            this, SLOT(open()));
+            this, SLOT(openFile()));
     connect(_pSaveAction, SIGNAL(triggered(bool)),
             this, SLOT(save()));
+    connect(_pNextFileAction, SIGNAL(triggered(bool)),
+            this, SLOT(nextFile()));
     connect(_pCloseImageAction, SIGNAL(triggered(bool)),
             this, SLOT(closeTabRequest()));
     connect(_pExitAction, SIGNAL(triggered(bool)),
@@ -168,14 +189,27 @@ void MainWindow::newTab()
     _pTabController->createTab();
 }
 
-void MainWindow::open()
+void MainWindow::openFile()
 {
-    _pTabController->loadFiletoTab();
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
+                                                    QDir::homePath() + "/Pictures",
+                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg"
+                                                       "*.ppm;;*.xbm;;*.xpm"));
+    if(!filename.isEmpty())
+        loadFileRequest(filename);
 }
 
 void MainWindow::save()
 {
     _pTabController->saveFileOpenedInTab();
+}
+
+void MainWindow::nextFile()
+{
+    if(_pDirIt->hasNext())
+        loadFileRequest(_pDirIt->next());
+    else
+        openFile();
 }
 
 void MainWindow::closeTabRequest()
@@ -223,35 +257,10 @@ void MainWindow::aboutApp()
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
-    //_pTabWidget->count()
-    //for(int i = 0; i < _pTabWidget->count(); ++i)
-        //closeTabRequest();
-        //_pTabWidget->closeTab(i);
-    //pClose->accept();
-    //while(_pTabWidget->currentIndex() != -1)
-   // {
-     //   _pTabWidget->closeTab();
-        //        if(getImageWidget()->isChanged())
-//        {
-//            qint32 chose;
-//            chose = QMessageBox::warning(this, tr("Save changes"),
-//                                     tr("The image has been modified.\n"
-//                                        "Do you want to save your changes?"),
-//                                        QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
 
-//            if(chose == QMessageBox::Yes)
-//            {
-//                emit _pSaveAction->trigger();
-//                closeTab(_pTabWidget->currentIndex());
-//            }
-//            else if(chose == QMessageBox::No)
-//                closeTab(_pTabWidget->currentIndex());
-//            else if(chose == QMessageBox::Cancel)
-//                pClose->ignore();
-//        }
-//        else
-//            closeTab(_pTabWidget->currentIndex());
-    //}
-   // pClose->accept();
+}
 
+void MainWindow::loadFileRequest(const QString &file)
+{
+    _pTabController->loadFiletoTab(file);
 }

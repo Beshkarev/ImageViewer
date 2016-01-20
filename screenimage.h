@@ -14,12 +14,12 @@ class ScreenImage : public QWidget
 
 public:
     explicit ScreenImage(QWidget *pWd = 0);
-    bool isChanged();
-    bool isEmpty();
-    QString getFileName();
+    bool isChanged() const;
+    bool isEmpty() const;
+    QString getFileName() const;
 public:
     //File menu
-    bool loadImage();
+    bool loadImage(const QString &filename);
     void saveImage();
     void closeImage();
     //Edit menu
@@ -30,11 +30,14 @@ public:
     void zoomOutImage();
     //View menu
     void fitImage(bool checked);
+protected:
+    void resizeEvent(QResizeEvent *);
 private:
-    QImage QimageFactory();
+    QImage createQImage();
     void showImage();
-    void somethingChanged();
+    void imageWasChanged();
     void showSomeError(const QString &str);
+    void bestImageGeometry();
 
     QScrollArea *_pScrollArea;
     QLabel *_pLabel;

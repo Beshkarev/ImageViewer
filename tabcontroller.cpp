@@ -27,40 +27,31 @@ void TabController::createTab()
     qDebug() << count();
 }
 
-void TabController::loadFiletoTab()
+void TabController::loadFiletoTab(const QString &file)
 {
     qDebug() << objectName() << "open() slot";
     ScreenImage *wdg;
     bool successfullyImageLoad;
+
     if(count() == 0)
     {
         createTab();
         wdg = getImageWidget();
-        if(widgetIsNULL(wdg))
-            return;
-        successfullyImageLoad = wdg->loadImage();
-    }
-    else if(count() != 0 && getImageWidget()->isEmpty())
-    {
-        wdg = getImageWidget();
-        if(widgetIsNULL(wdg))
-            return;
-        successfullyImageLoad = wdg->loadImage();
     }
     else
-    {
-        createTab();
         wdg = getImageWidget();
-        successfullyImageLoad = wdg->loadImage();
-    }
 
+    if(widgetIsNULL(wdg))
+        return;
+
+    successfullyImageLoad = wdg->loadImage(file);
     if(!successfullyImageLoad)
     {
         removeTab(currentIndex());
         wdg->deleteLater();
     }
     else
-        setTabText(currentIndex(), wdg->getFileName());
+        updateTabText(currentIndex(), wdg->getFileName());
 }
 
 void TabController::saveFileOpenedInTab()
@@ -73,8 +64,7 @@ void TabController::saveFileOpenedInTab()
 void TabController::closeTab(const int index)
 {
     qDebug() << "TabWidget" << "closeTab()";
-    if(count() == 0)
-        return;
+
     ScreenImage *widg = static_cast<ScreenImage*>(widget(index));
     if(widgetIsNULL(widg))
         return;
@@ -112,7 +102,7 @@ void TabController::horizontalFlip()
 {
     ScreenImage *widget = getImageWidget();
     if(!widgetIsNULL(widget))
-        widget->loadImage();
+        widget->horizontalFlip();
 }
 
 void TabController::clockwiseRotate()
@@ -153,7 +143,7 @@ void TabController::fitImage(bool checked)
 
 ScreenImage *TabController::getImageWidget()
 {
-    return dynamic_cast<ScreenImage*>(currentWidget());
+    return static_cast<ScreenImage*>(currentWidget());
 }
 
 void TabController::updateTabNumber()
@@ -167,7 +157,7 @@ void TabController::updateTabNumber()
         if(wdg->isEmpty())
         {
             qDebug() << "in updateTab";
-            setTabText(i, "Tab" + QString::number(i + 1));
+            updateTabText(i, "Tab" + QString::number(i + 1));
         }
     }
 }
@@ -175,4 +165,9 @@ void TabController::updateTabNumber()
 bool TabController::widgetIsNULL(ScreenImage *wdg) const
 {
     return wdg == nullptr ? true : false;
+}
+
+void TabController::updateTabText(const int index, const QString &text)
+{
+    setTabText(index, text);
 }

@@ -4,6 +4,7 @@
 #include <QTabWidget>
 
 class ScreenImage;
+class QString;
 
 class TabController : public QTabWidget
 {
@@ -12,7 +13,7 @@ class TabController : public QTabWidget
 public:
     TabController(QWidget *parent = 0);
     void createTab();
-    void loadFiletoTab();
+    void loadFiletoTab(const QString &file);
     void saveFileOpenedInTab();
 public slots:
     void closeTab(const int index);
@@ -27,6 +28,7 @@ private:
     ScreenImage *getImageWidget();
     void updateTabNumber();
     bool widgetIsNULL(ScreenImage* wdg) const;
+    void updateTabText(const int index, const QString &text);
 };
 
 #endif // TABCONTROLLER

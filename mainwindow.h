@@ -5,6 +5,7 @@
 
 class QAction;
 class TabController;
+class QDirIterator;
 
 class MainWindow : public QMainWindow
 {
@@ -16,13 +17,15 @@ public:
 private:
     void createActions();
     void createMenu();
+    void createToolBar();
     void createConnectToSlots();
     void setRecentFile(const QString &filename);
     void updateListRecentFiles();
 private slots:
     void newTab();
-    void open();
+    void openFile();
     void save();
+    void nextFile();
     void closeTabRequest();
     void horizontalFlip();
     void clockwiseRotate();
@@ -36,8 +39,11 @@ protected:
     void closeEvent(QCloseEvent *);
 private:
 
+    void loadFileRequest(const QString &file);
+
     TabController *_pTabController;
     QStringList recentFile;
+    QDirIterator *_pDirIt;
     enum{maxRecentFile = 5};
 
     QMenu *_pFileMenu;
@@ -47,6 +53,7 @@ private:
     QAction *_pNewTabAction;
     QAction *_pOpenAction;
     QAction *_pSaveAction;
+    QAction *_pNextFileAction;
     QAction *_pCloseImageAction;
     QAction *pRecentAction[maxRecentFile];
     QAction *pSeparatorAction;
@@ -62,6 +69,10 @@ private:
 
     QAction *_pAboutAction;
     QAction *_pQtAbout;
+
+    QToolBar *_pToolBar;
+
+
 };
 
 #endif // MAINWINDOW_H
