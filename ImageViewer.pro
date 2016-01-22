@@ -13,6 +13,9 @@ TEMPLATE = app
 
 CONFIG += c++11
 
+INCLUDEPATH += /usr/local/include/opencv-3.1.0/include/
+LIBS += -L/usr/local/include/opencv-3.1.0/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui
+
 SOURCES += main.cpp\
         mainwindow.cpp \
     screenimage.cpp \

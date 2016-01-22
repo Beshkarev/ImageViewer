@@ -3,7 +3,6 @@
 #include <QTabWidget>
 #include <QMessageBox>
 #include <QDebug>
-#include <QHBoxLayout>
 
 TabController::TabController(QWidget *parent/*=0*/) :
     QTabWidget(parent)

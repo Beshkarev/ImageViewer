@@ -27,14 +27,25 @@ MainWindow::MainWindow(QWidget *parent) :
     QStringList supportedFormats;
     supportedFormats << "*.jpg" << "*.bmp" << ".png";
     _pDirIt = new QDirIterator(QDir::homePath() + "/Pictures", supportedFormats,
-                               QDir::Files, QDirIterator::Subdirectories);
+                               QDir::Files);
 
     QCoreApplication::setApplicationVersion("0.5");
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
     updateListRecentFiles();
 }
-
+///да,вот про это хотел сказать и кнопок нет,неудонно через едит все время,где он?можно сделать автоподгон
+/// он есть, но у меня в общем со скейлом проблемы. и как видишь качество теряется
+/// ну качество всегда теряется при изменение розмера
+/// но не так сильно и возвращается если вернутся в исходное разрешение
+/// в общем со скейлом там много проблем и ничего не гуглится
+/// пашут,только что проверил,новым окном не сделать?
+/// тебе не нравятся вкладки?
+/// ну вплане просмотра изображений что то новое,забавно,просто можно было добавить,у каждого же свои вкусы
+/// угу. я думал сделать в настройках выбор вкладочного интерфейса или обычного. но это все в планах
+/// а вот и автоподгон кстати
+/// да но изображение ужасное становится, смотри
+/// тут еще норм из за того что разрешение там родное, а вот не для родного
 void MainWindow::createActions()
 {
     _pNewTabAction = new QAction(tr("New Tab"), this);
@@ -112,9 +123,10 @@ void MainWindow::createMenu()
 
 void MainWindow::createToolBar()
 {
-    _pToolBar = addToolBar("file");
-    _pToolBar->addAction(_pNextFileAction);
     _pToolBar->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    _pToolBar = addToolBar("file");
+
+    _pToolBar->addAction(_pNextFileAction);
 }
 
 void MainWindow::createConnectToSlots()
