@@ -13,9 +13,11 @@
 #include <QCoreApplication>
 #include <QToolBar>
 #include <QFileDialog>
+#include <QStringListIterator>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(new TabController),
+    filesLisIterator(QStringListIterator(filesList)),
     _pToolBar(new QToolBar)
 {
     createActions();
@@ -24,28 +26,14 @@ MainWindow::MainWindow(QWidget *parent) :
     createConnectToSlots();
     qDebug() << "constructor";
 
-    QStringList supportedFormats;
-    supportedFormats << "*.jpg" << "*.bmp" << ".png";
-    _pDirIt = new QDirIterator(QDir::homePath() + "/Pictures", supportedFormats,
-                               QDir::Files);
+    entryList();
 
     QCoreApplication::setApplicationVersion("0.5");
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
     updateListRecentFiles();
 }
-///да,вот про это хотел сказать и кнопок нет,неудонно через едит все время,где он?можно сделать автоподгон
-/// он есть, но у меня в общем со скейлом проблемы. и как видишь качество теряется
-/// ну качество всегда теряется при изменение розмера
-/// но не так сильно и возвращается если вернутся в исходное разрешение
-/// в общем со скейлом там много проблем и ничего не гуглится
-/// пашут,только что проверил,новым окном не сделать?
-/// тебе не нравятся вкладки?
-/// ну вплане просмотра изображений что то новое,забавно,просто можно было добавить,у каждого же свои вкусы
-/// угу. я думал сделать в настройках выбор вкладочного интерфейса или обычного. но это все в планах
-/// а вот и автоподгон кстати
-/// да но изображение ужасное становится, смотри
-/// тут еще норм из за того что разрешение там родное, а вот не для родного
+
 void MainWindow::createActions()
 {
     _pNewTabAction = new QAction(tr("New Tab"), this);
@@ -61,6 +49,10 @@ void MainWindow::createActions()
     _pSaveAction->setStatusTip(tr("Save the file"));
 
     _pNextFileAction = new QAction(tr("Next file"), this);
+    _pNextFileAction->setShortcut(Qt::Key_Right);
+
+    _pPreviousFileAction = new QAction(tr("Previous file"), this);
+    _pPreviousFileAction->setShortcut(Qt::Key_Left);
 
     _pCloseFileAction = new QAction(tr("Close image"), this);
     _pCloseFileAction->setStatusTip(tr("Closing image"));
@@ -84,9 +76,9 @@ void MainWindow::createActions()
     _pFitAction = new QAction("Fit to window", this);
     _pFitAction->setCheckable(true);
     _pZoomIn = new QAction("Zoom in", this);
-    _pZoomIn->setShortcut(Qt::CTRL + Qt::Key_Plus);
+    _pZoomIn->setShortcut(QKeySequence::ZoomIn);
     _pZoomOut = new QAction("Zoom out", this);
-    _pZoomOut->setShortcut(Qt::CTRL + Qt::Key_Minus);
+    _pZoomOut->setShortcut(QKeySequence::ZoomOut);
 
     _pAboutAction = new QAction(tr("About"), this);
     _pQtAbout = new QAction(tr("Qt About"), this);
@@ -98,6 +90,8 @@ void MainWindow::createMenu()
     _pFileMenu->addAction(_pNewTabAction);
     _pFileMenu->addAction(_pOpenAction);
     _pFileMenu->addAction(_pSaveAction);
+    _pFileMenu->addAction(_pNextFileAction);
+    _pFileMenu->addAction(_pPreviousFileAction);
     _pFileMenu->addAction(_pCloseFileAction);
     _pFileMenu->addAction(_pCloseTabAction);
     pSeparatorAction = _pFileMenu->addSeparator();
@@ -126,6 +120,7 @@ void MainWindow::createToolBar()
     _pToolBar->setToolButtonStyle(Qt::ToolButtonTextOnly);
     _pToolBar = addToolBar("file");
 
+    _pToolBar->addAction(_pPreviousFileAction);
     _pToolBar->addAction(_pNextFileAction);
 }
 
@@ -141,6 +136,8 @@ void MainWindow::createConnectToSlots()
             this, SLOT(saveFile()));
     connect(_pNextFileAction, SIGNAL(triggered(bool)),
             this, SLOT(nextFile()));
+    connect(_pPreviousFileAction, SIGNAL(triggered(bool)),
+            this, SLOT(previousFile()));
     connect(_pCloseTabAction, SIGNAL(triggered(bool)),
             this, SLOT(closeTabRequest()));
     connect(_pCloseFileAction, SIGNAL(triggered(bool)),
@@ -205,6 +202,23 @@ void MainWindow::updateListRecentFiles()
     pSeparatorAction->setVisible(!recentFile.isEmpty());
 }
 
+void MainWindow::entryList()
+{
+    QStringList supportedFormats;
+    supportedFormats << "*.jpg" << "*.bmp" << ".png";
+    QDir dir(QDir::homePath() + "/Pictures/");
+    filesList = dir.entryList(supportedFormats, QDir::Files,
+                              QDir::LocaleAware);
+
+    filesLisIterator = QStringListIterator(filesList);
+}
+
+QString MainWindow::getAbsolutePathToFile(const QString &file)
+{
+    QDir dir(QDir::homePath() + "/Pictures");
+    return dir.absoluteFilePath(file);
+}
+
 void MainWindow::newTab()
 {
     _pTabController->createTab();
@@ -230,17 +244,41 @@ void MainWindow::saveFile()
                                                     tr("All (*.*);;*.jpg;;*.bmp;;*.png;;"));
     _pTabController->saveFileOpenedInTab(filename);
 }
-
+//Переделать
 void MainWindow::nextFile()
 {
     QString file;
-    if(_pDirIt->hasNext())
+
+    if(filesLisIterator.hasNext())
     {
-        file = _pDirIt->next();
+        file = getAbsolutePathToFile(filesLisIterator.next());
         loadFileRequest(file);
     }
     else
-        openFile();
+    {
+        filesLisIterator.toFront();
+        file = getAbsolutePathToFile(filesLisIterator.next());
+        loadFileRequest(file);
+    }
+    setRecentFile(file);
+    updateListRecentFiles();
+}
+//Переделать
+void MainWindow::previousFile()
+{
+    QString file;
+
+    if(filesLisIterator.hasPrevious())
+    {
+        file = getAbsolutePathToFile(filesLisIterator.previous());
+        loadFileRequest(file);
+    }
+    else
+    {
+        filesLisIterator.toBack();
+        file = getAbsolutePathToFile(filesLisIterator.previous());
+        loadFileRequest(file);
+    }
     setRecentFile(file);
     updateListRecentFiles();
 }

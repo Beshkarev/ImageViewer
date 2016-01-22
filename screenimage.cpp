@@ -129,7 +129,7 @@ void ScreenImage::fitImage(bool checked)
 
 void ScreenImage::resizeEvent(QResizeEvent *)
 {
-    //bestImageGeometry();
+    bestImageGeometry();
     //showImage();
 }
 
@@ -153,7 +153,13 @@ void ScreenImage::showSomeError(const QString &str)
 
 void ScreenImage::bestImageGeometry()
 {
+    /*qreal zoom = static_cast<qreal>(width()) / static_cast<qreal>(m_Image.height());
+    qreal zoom1 = static_cast<qreal>(height()) / static_cast<qreal>(m_Image.width());
 
+    zoom = zoom / zoom1;
+    qDebug() << zoom;
+    //zoomImage(zoom);
+    */
 }
 
 void ScreenImage::zoomImage(const qreal zoomFactor)
