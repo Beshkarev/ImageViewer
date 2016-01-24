@@ -77,10 +77,22 @@ void ScreenImage::closeImage()
 
 void ScreenImage::horizontalFlip()
 {
-    m_Image = m_Image.mirrored(true, false);
-    showImage();
+    flipImge(true, false);;
     if(!isEmpty())
+    {
         imageWasChanged();
+        showImage();
+    }
+}
+
+void ScreenImage::verticalFlip()
+{
+    flipImge(false, true);
+    if(!isEmpty())
+    {
+        imageWasChanged();
+        showImage();
+    }
 }
 
 void ScreenImage::clockwiseRotate()
@@ -89,11 +101,13 @@ void ScreenImage::clockwiseRotate()
     transform.rotate(angle);
 
     m_Image = m_Image.transformed(transform);
-    showImage();
     if(!isEmpty())
+    {
         imageWasChanged();
-    angle = clockwiseValue;
-    bestImageGeometry();
+        showImage();
+        angle = clockwiseValue;
+        bestImageGeometry();
+    }
 }
 
 void ScreenImage::counterClockwiseRotate()
@@ -101,8 +115,10 @@ void ScreenImage::counterClockwiseRotate()
     angle = counterClockwiseValue;
     clockwiseRotate();
     if(!isEmpty())
+    {
         imageWasChanged();
-    bestImageGeometry();
+        bestImageGeometry();
+    }
 }
 
 void ScreenImage::zoomInImage()
@@ -183,4 +199,9 @@ void ScreenImage::zoomImage(const qreal zoomFactor)
     m_Image.setDevicePixelRatio(zoomFactor);
 
     showImage();
+}
+
+void ScreenImage::flipImge(const bool horizontal, const bool vertical)
+{
+    m_Image = m_Image.mirrored(horizontal, vertical);
 }

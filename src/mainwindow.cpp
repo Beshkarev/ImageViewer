@@ -69,14 +69,14 @@ void MainWindow::createActions()
     _pExitAction = new QAction(tr("Exit"), this);
     _pExitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
 
-    _pHorizontalFlipAction = new QAction("Horizontal flip", this);
-    _pClockwiseRotateAction = new QAction("Rotate Clockwise", this);
-    _pCounterClockwiseRotateAction = new QAction("Rotate Counter clockwise", this);
-    _pFitAction = new QAction("Fit to window", this);
-    _pFitAction->setCheckable(true);
-    _pZoomIn = new QAction("Zoom in", this);
+    _pHorizontalFlipAction = new QAction(tr("Horizontal flip"), this);
+    _pVerticalFlipAction = new QAction("Vertical flip", this);
+    _pClockwiseRotateAction = new QAction(tr("Rotate Clockwise"), this);
+    _pCounterClockwiseRotateAction = new QAction(tr("Rotate Counter clockwise"), this);
+    _pFitAction = new QAction(tr("Fit to window"), this);
+    _pZoomIn = new QAction(tr("Zoom in"), this);
     _pZoomIn->setShortcut(QKeySequence::ZoomIn);
-    _pZoomOut = new QAction("Zoom out", this);
+    _pZoomOut = new QAction(tr("Zoom out"), this);
     _pZoomOut->setShortcut(QKeySequence::ZoomOut);
 
     _pAboutAction = new QAction(tr("About"), this);
@@ -88,10 +88,12 @@ void MainWindow::createMenu()
     _pFileMenu = menuBar()->addMenu("&File");
     _pFileMenu->addAction(_pNewTabAction);
     _pFileMenu->addSeparator();
+
     _pFileMenu->addAction(_pOpenAction);
     _pFileMenu->addAction(_pSaveAction);
     _pFileMenu->addAction(_pSaveAsAction);
     _pFileMenu->addSeparator();
+
     _pFileMenu->addAction(_pCloseFileAction);
     _pFileMenu->addAction(_pCloseTabAction);
     _pSeparatorAction = _pFileMenu->addSeparator();
@@ -102,10 +104,16 @@ void MainWindow::createMenu()
 
     _pEditMenu = menuBar()->addMenu("&Edit");
     _pEditMenu->addAction(_pHorizontalFlipAction);
+    _pEditMenu->addAction(_pVerticalFlipAction);
+    _pEditMenu->addSeparator();
+
     _pEditMenu->addAction(_pClockwiseRotateAction);
     _pEditMenu->addAction(_pCounterClockwiseRotateAction);
+    _pEditMenu->addSeparator();
+
     _pEditMenu->addAction(_pZoomIn);
     _pEditMenu->addAction(_pZoomOut);
+    _pEditMenu->addSeparator();
 
     _pViewMenu = menuBar()->addMenu("&View");
     _pViewMenu->addAction(_pFitAction);
@@ -152,6 +160,8 @@ void MainWindow::createConnectToSlots()
     //Edit menu section
     connect(_pHorizontalFlipAction, SIGNAL(triggered(bool)),
             this, SLOT(horizontalFlip()));
+    connect(_pVerticalFlipAction, SIGNAL(triggered(bool)),
+            this, SLOT(verticalFlip()));
     connect(_pCounterClockwiseRotateAction, SIGNAL(triggered(bool)),
             this, SLOT(counterClockwiseRotate()));
     connect(_pClockwiseRotateAction, SIGNAL(triggered(bool)),
@@ -207,7 +217,7 @@ void MainWindow::entryList()
 {
     QStringList supportedFormats;
     supportedFormats << "*.jpg" << "*.bmp" << "*.png";
-    QDir dir(QDir::homePath() + "/Pictures/");
+    QDir dir(QDir::homePath() + "/Pictures/.Camera");
     filesList = dir.entryList(supportedFormats, QDir::Files,
                               QDir::LocaleAware);
 
@@ -216,7 +226,7 @@ void MainWindow::entryList()
 
 QString MainWindow::getAbsolutePathToFile(const QString &file)
 {
-    QDir dir(QDir::homePath() + "/Pictures");
+    QDir dir(QDir::homePath() + "/Pictures/.Camera");
     return dir.absoluteFilePath(file);
 }
 
@@ -317,6 +327,11 @@ void MainWindow::openRecentFile()
 void MainWindow::horizontalFlip()
 {
     _pTabController->horizontalFlip();
+}
+
+void MainWindow::verticalFlip()
+{
+    _pTabController->verticalFlip();
 }
 
 void MainWindow::clockwiseRotate()

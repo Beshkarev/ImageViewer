@@ -110,6 +110,13 @@ void TabController::horizontalFlip()
         widget->horizontalFlip();
 }
 
+void TabController::verticalFlip()
+{
+    ScreenImage *widget = getImageWidget();
+    if(!widgetIsNULL(widget))
+        widget->verticalFlip();
+}
+
 void TabController::clockwiseRotate()
 {
     ScreenImage *widget = getImageWidget();

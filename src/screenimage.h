@@ -24,6 +24,7 @@ public:
     void closeImage();
     //Edit menu
     void horizontalFlip();
+    void verticalFlip();
     void clockwiseRotate();
     void counterClockwiseRotate();
     void zoomInImage();
@@ -38,6 +39,7 @@ private:
     void showSomeError(const QString &str);
     void bestImageGeometry();
     void zoomImage(const qreal zoomFactor);
+    void flipImge(const bool horizontal, const bool vertical);
 
     QScrollArea *_pScrollArea;
     QLabel *_pLabel;

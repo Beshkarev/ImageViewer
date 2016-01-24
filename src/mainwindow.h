@@ -35,6 +35,7 @@ private slots:
     qint32 closeTabRequest();
     void openRecentFile();
     void horizontalFlip();
+    void verticalFlip();
     void clockwiseRotate();
     void counterClockwiseRotate();
     void zoomInImage();
@@ -71,6 +72,7 @@ private:
     QAction *_pExitAction;
 
     QAction *_pHorizontalFlipAction;
+    QAction *_pVerticalFlipAction;
     QAction *_pClockwiseRotateAction;
     QAction *_pCounterClockwiseRotateAction;
     QAction *_pFitAction;

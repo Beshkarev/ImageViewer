@@ -21,6 +21,7 @@ public slots:
     qint32 closeTab(const int index);
 public:
     void horizontalFlip();
+    void verticalFlip();
     void clockwiseRotate();
     void counterClockwiseRotate();
     void zoomInImage();
