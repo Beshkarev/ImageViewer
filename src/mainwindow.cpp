@@ -13,7 +13,6 @@
 #include <QCoreApplication>
 #include <QToolBar>
 #include <QFileDialog>
-#include <QStringListIterator>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(new TabController),
@@ -45,6 +44,8 @@ void MainWindow::createActions()
     _pSaveAction = new QAction(tr("Save file"), this);
     _pSaveAction->setShortcut(QKeySequence::Save);
     _pSaveAction->setStatusTip(tr("Save the file"));
+
+    _pSaveAsAction = new QAction(tr("Save file as"), this);
 
     _pNextFileAction = new QAction(tr("Next file"), this);
     _pNextFileAction->setShortcut(Qt::Key_Right);
@@ -89,6 +90,7 @@ void MainWindow::createMenu()
     _pFileMenu->addSeparator();
     _pFileMenu->addAction(_pOpenAction);
     _pFileMenu->addAction(_pSaveAction);
+    _pFileMenu->addAction(_pSaveAsAction);
     _pFileMenu->addSeparator();
     _pFileMenu->addAction(_pCloseFileAction);
     _pFileMenu->addAction(_pCloseTabAction);
@@ -131,6 +133,8 @@ void MainWindow::createConnectToSlots()
             this, SLOT(openFile()));
     connect(_pSaveAction, SIGNAL(triggered(bool)),
             this, SLOT(saveFile()));
+    connect(_pSaveAsAction, SIGNAL(triggered(bool)),
+            this, SLOT(saveAs()));
     connect(_pNextFileAction, SIGNAL(triggered(bool)),
             this, SLOT(nextFile()));
     connect(_pPreviousFileAction, SIGNAL(triggered(bool)),
@@ -247,11 +251,16 @@ void MainWindow::openFile()
 
 void MainWindow::saveFile()
 {
+    _pTabController->saveFileOpenedInTab();
+}
+
+void MainWindow::saveAs()
+{
     const QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
                                                     QDir::homePath() + "/Pictures",
                                                     tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
                                                        "*.ppm;;*.xbm;;*.xpm"));
-    _pTabController->saveFileOpenedInTab(filename);
+    _pTabController->saveAsFileOpenedInTab(filename);
 }
 
 void MainWindow::nextFile()
@@ -294,9 +303,9 @@ void MainWindow::closeFileRequest()
     _pTabController->closeImage();
 }
 
-void MainWindow::closeTabRequest()
+qint32 MainWindow::closeTabRequest()
 {
-    _pTabController->closeTab(_pTabController->currentIndex());
+    return _pTabController->closeTab(_pTabController->currentIndex());
 }
 
 void MainWindow::openRecentFile()
@@ -345,7 +354,17 @@ void MainWindow::aboutApp()
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
-
+    qint32 userChoise;
+    while(_pTabController->count() != 0)
+    {
+        userChoise = closeTabRequest();
+        if(userChoise == QMessageBox::Cancel)
+        {
+            pClose->ignore();
+            return;
+        }
+    }
+    pClose->accept();
 }
 
 void MainWindow::loadFileRequest(const QString &file)

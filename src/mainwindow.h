@@ -28,10 +28,11 @@ private slots:
     void newTab();
     void openFile();
     void saveFile();
+    void saveAs();
     void nextFile();
     void previousFile();
     void closeFileRequest();
-    void closeTabRequest();
+    qint32 closeTabRequest();
     void openRecentFile();
     void horizontalFlip();
     void clockwiseRotate();
@@ -60,6 +61,7 @@ private:
     QAction *_pNewTabAction;
     QAction *_pOpenAction;
     QAction *_pSaveAction;
+    QAction *_pSaveAsAction;
     QAction *_pNextFileAction;
     QAction *_pPreviousFileAction;
     QAction *_pCloseFileAction;

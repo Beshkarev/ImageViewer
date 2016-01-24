@@ -14,10 +14,11 @@ public:
     TabController(QWidget *parent = 0);
     void createTab();
     void loadFiletoTab(const QString &file);
-    void saveFileOpenedInTab(const QString &file);
+    void saveAsFileOpenedInTab(const QString &file);
+    void saveFileOpenedInTab();
     void closeImage();
 public slots:
-    void closeTab(const int index);
+    qint32 closeTab(const int index);
 public:
     void horizontalFlip();
     void clockwiseRotate();
@@ -30,6 +31,7 @@ private:
     void updateTabNumber();
     bool widgetIsNULL(ScreenImage* wdg) const;
     void updateTabText(const int index, const QString &text);
+    void deleteTab(const qint32 index, ScreenImage *wdg);
 };
 
 #endif // TABCONTROLLER

@@ -64,7 +64,8 @@ bool ScreenImage::loadImage(const QString &filename)
 
 void ScreenImage::saveImage(const QString &filename) const
 {
-    m_Image.save(filename);
+   bool save = m_Image.save(filename);
+   qDebug() << save;
 }
 
 void ScreenImage::closeImage()

@@ -53,7 +53,14 @@ void TabController::loadFiletoTab(const QString &file)
         updateTabText(currentIndex(), wdg->getFileName());
 }
 
-void TabController::saveFileOpenedInTab(const QString &file)
+void TabController::saveFileOpenedInTab()
+{
+    ScreenImage *widg = getImageWidget();
+    if(!widgetIsNULL(widg))
+        widg->saveImage(widg->getFileName());
+}
+
+void TabController::saveAsFileOpenedInTab(const QString &file)
 {
     ScreenImage *widget = getImageWidget();
     if(!widgetIsNULL(widget))
@@ -70,13 +77,13 @@ void TabController::closeImage()
     }
 }
 
-void TabController::closeTab(const int index)
+qint32 TabController::closeTab(const int index)
 {
     qDebug() << "TabWidget" << "closeTab()";
 
     ScreenImage *widg = static_cast<ScreenImage*>(widget(index));
     if(widgetIsNULL(widg))
-        return;
+        return -1;
 
     if(widg->isChanged())
     {
@@ -87,24 +94,19 @@ void TabController::closeTab(const int index)
                                     QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
         if(chose == QMessageBox::Yes)
         {
-            saveFileOpenedInTab(getImageWidget()->getFileName());
-            removeTab(index);
-            widg->deleteLater();
-            updateTabNumber();
+            saveFileOpenedInTab();
+            deleteTab(index, widg);
+            return QMessageBox::Yes;
         }
         else if(chose == QMessageBox::No)
         {
-            removeTab(index);
-            widg->deleteLater();
-            updateTabNumber();
+            deleteTab(index, widg);
         }
         else if(chose == QMessageBox::Cancel)
-            return;
+            return QMessageBox::Cancel;
     }
     else
-        removeTab(index);
-        widg->deleteLater();
-        updateTabNumber();
+        deleteTab(index, widg);
 }
 
 void TabController::horizontalFlip()
@@ -179,4 +181,11 @@ bool TabController::widgetIsNULL(ScreenImage *wdg) const
 void TabController::updateTabText(const int index, const QString &text)
 {
     setTabText(index, text);
+}
+
+void TabController::deleteTab(const qint32 index, ScreenImage *wdg)
+{
+    removeTab(index);
+    wdg->deleteLater();
+    updateTabNumber();
 }
