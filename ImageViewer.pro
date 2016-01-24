@@ -16,13 +16,13 @@ CONFIG += c++11
 INCLUDEPATH += /usr/local/include/opencv-3.1.0/include/
 LIBS += -L/usr/local/include/opencv-3.1.0/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    screenimage.cpp \
-    tabcontroller.cpp
+SOURCES += src/main.cpp\
+        src/mainwindow.cpp \
+    src/screenimage.cpp \
+    src/tabcontroller.cpp
 
-HEADERS  += mainwindow.h \
-    screenimage.h \
-    tabcontroller.h
+HEADERS  += src/mainwindow.h \
+    src/screenimage.h \
+    src/tabcontroller.h
 
 FORMS    +=
