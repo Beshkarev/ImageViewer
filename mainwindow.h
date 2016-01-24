@@ -5,9 +5,7 @@
 
 class QAction;
 class TabController;
-class QDirIterator;
 class QStringList;
-class QDir;
 
 class MainWindow : public QMainWindow
 {
@@ -25,6 +23,7 @@ private:
     void updateListRecentFiles();
     void entryList();
     QString getAbsolutePathToFile(const QString &file);
+    void fileForLoad(const QString &file);
 private slots:
     void newTab();
     void openFile();
@@ -50,10 +49,8 @@ private:
 
     TabController *_pTabController;
     QStringList recentFile;
-    //QDirIterator *_pDirIt;
     QStringList filesList;
-    QStringListIterator filesLisIterator;
-
+    QStringList::const_iterator it;
     enum{maxRecentFile = 5};
 
     QMenu *_pFileMenu;
@@ -67,8 +64,8 @@ private:
     QAction *_pPreviousFileAction;
     QAction *_pCloseFileAction;
     QAction *_pCloseTabAction;
-    QAction *pRecentAction[maxRecentFile];
-    QAction *pSeparatorAction;
+    QAction *_pRecentAction[maxRecentFile];
+    QAction *_pSeparatorAction;
     QAction *_pExitAction;
 
     QAction *_pHorizontalFlipAction;

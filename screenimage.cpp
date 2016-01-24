@@ -48,11 +48,11 @@ QString ScreenImage::getFileName() const
 
 bool ScreenImage::loadImage(const QString &filename)
 {
-    qDebug() << filename;
+    //qDebug() << filename;
     m_Image.load(filename);
     if(m_Image.isNull())
     {
-        showSomeError("Something went wrong!\nMaybe, not supported the file format.");
+        showSomeError(tr("Something went wrong!\nMaybe, not supported the file format."));
         return false;
     }
     bestImageGeometry();
@@ -104,11 +104,11 @@ void ScreenImage::counterClockwiseRotate()
 
 void ScreenImage::zoomInImage()
 {
-    qDebug("zoomIn");
+    //qDebug("zoomIn");
 
     zoomFactor *= zoomInValue;
 
-    qDebug() << "zoomFactor in zoomIn" << zoomFactor;
+    //qDebug() << "zoomFactor in zoomIn" << zoomFactor;
 
     zoomImage(zoomFactor);
 }
@@ -117,7 +117,7 @@ void ScreenImage::zoomOutImage()
 {
     zoomFactor *= zoomOutValue;
 
-    qDebug() << "zoomFactor in zoomOut" << zoomFactor;
+    //qDebug() << "zoomFactor in zoomOut" << zoomFactor;
 
     zoomImage(zoomFactor);
 }

@@ -17,14 +17,12 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(new TabController),
-    filesLisIterator(QStringListIterator(filesList)),
     _pToolBar(new QToolBar)
 {
     createActions();
     createMenu();
     createToolBar();
     createConnectToSlots();
-    qDebug() << "constructor";
 
     entryList();
 
@@ -63,8 +61,8 @@ void MainWindow::createActions()
 
     for(int i = 0; i < maxRecentFile; ++i)
     {
-        pRecentAction[i] = new QAction(this);
-        pRecentAction[i]->setVisible(false);
+        _pRecentAction[i] = new QAction(this);
+        _pRecentAction[i]->setVisible(false);
     }
 
     _pExitAction = new QAction(tr("Exit"), this);
@@ -88,15 +86,15 @@ void MainWindow::createMenu()
 {
     _pFileMenu = menuBar()->addMenu("&File");
     _pFileMenu->addAction(_pNewTabAction);
+    _pFileMenu->addSeparator();
     _pFileMenu->addAction(_pOpenAction);
     _pFileMenu->addAction(_pSaveAction);
-    _pFileMenu->addAction(_pNextFileAction);
-    _pFileMenu->addAction(_pPreviousFileAction);
+    _pFileMenu->addSeparator();
     _pFileMenu->addAction(_pCloseFileAction);
     _pFileMenu->addAction(_pCloseTabAction);
-    pSeparatorAction = _pFileMenu->addSeparator();
+    _pSeparatorAction = _pFileMenu->addSeparator();
     for(int i = 0; i < maxRecentFile; ++i)
-        _pFileMenu->addAction(pRecentAction[i]);
+        _pFileMenu->addAction(_pRecentAction[i]);
     _pFileMenu->addSeparator();
     _pFileMenu->addAction(_pExitAction);
 
@@ -126,7 +124,6 @@ void MainWindow::createToolBar()
 
 void MainWindow::createConnectToSlots()
 {
-    qDebug("connect");
     //File menu section
     connect(_pNewTabAction, SIGNAL(triggered(bool)),
             this, SLOT(newTab()));
@@ -143,7 +140,7 @@ void MainWindow::createConnectToSlots()
     connect(_pCloseFileAction, SIGNAL(triggered(bool)),
             this, SLOT(closeFileRequest()));
     for(int i = 0; i < maxRecentFile; ++i)
-        connect(pRecentAction[i], SIGNAL(triggered(bool)),
+        connect(_pRecentAction[i], SIGNAL(triggered(bool)),
                 this, SLOT(openRecentFile()));
     connect(_pExitAction, SIGNAL(triggered(bool)),
             this, SLOT(close()));
@@ -192,31 +189,40 @@ void MainWindow::updateListRecentFiles()
     {
         if(i < recentFile.count())
         {
-            pRecentAction[i]->setText(tr("&%1 %2").arg(i + 1)
+            _pRecentAction[i]->setText(tr("&%1 %2").arg(i + 1)
                                       .arg(QFileInfo(recentFile[i]).fileName()));
-            pRecentAction[i]->setData(recentFile[i]);
-            pRecentAction[i]->setVisible(true);
+            _pRecentAction[i]->setData(recentFile[i]);
+            _pRecentAction[i]->setVisible(true);
         }
-        else pRecentAction[i]->setVisible(false);
+        else _pRecentAction[i]->setVisible(false);
     }
-    pSeparatorAction->setVisible(!recentFile.isEmpty());
+    _pSeparatorAction->setVisible(!recentFile.isEmpty());
 }
 
 void MainWindow::entryList()
 {
     QStringList supportedFormats;
-    supportedFormats << "*.jpg" << "*.bmp" << ".png";
+    supportedFormats << "*.jpg" << "*.bmp" << "*.png";
     QDir dir(QDir::homePath() + "/Pictures/");
     filesList = dir.entryList(supportedFormats, QDir::Files,
                               QDir::LocaleAware);
 
-    filesLisIterator = QStringListIterator(filesList);
+    it = filesList.begin();
 }
 
 QString MainWindow::getAbsolutePathToFile(const QString &file)
 {
     QDir dir(QDir::homePath() + "/Pictures");
     return dir.absoluteFilePath(file);
+}
+
+void MainWindow::fileForLoad(const QString &file)
+{
+    QString fileForLoad = getAbsolutePathToFile(file);
+    loadFileRequest(fileForLoad);
+
+    setRecentFile(fileForLoad);
+    updateListRecentFiles();
 }
 
 void MainWindow::newTab()
@@ -228,11 +234,13 @@ void MainWindow::openFile()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
                                                     QDir::homePath() + "/Pictures",
-                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg"
+                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
                                                        "*.ppm;;*.xbm;;*.xpm"));
     if(!filename.isEmpty())
+    {
+        newTab();
         loadFileRequest(filename);
-
+    }
     setRecentFile(filename);
     updateListRecentFiles();
 }
@@ -241,46 +249,44 @@ void MainWindow::saveFile()
 {
     const QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
                                                     QDir::homePath() + "/Pictures",
-                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;"));
+                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
+                                                       "*.ppm;;*.xbm;;*.xpm"));
     _pTabController->saveFileOpenedInTab(filename);
 }
-//Переделать
+
 void MainWindow::nextFile()
 {
-    QString file;
-
-    if(filesLisIterator.hasNext())
+    if(it != filesList.cend())
     {
-        file = getAbsolutePathToFile(filesLisIterator.next());
-        loadFileRequest(file);
+        qDebug() << "nextFile()" << "hasNext section";
+        fileForLoad(*it);
+        ++it;
     }
     else
     {
-        filesLisIterator.toFront();
-        file = getAbsolutePathToFile(filesLisIterator.next());
-        loadFileRequest(file);
+        qDebug() << "nextFile()" << "else section";
+
+        it = filesList.cbegin();
+        fileForLoad(*it);
+        ++it;
     }
-    setRecentFile(file);
-    updateListRecentFiles();
 }
-//Переделать
+
 void MainWindow::previousFile()
 {
-    QString file;
-
-    if(filesLisIterator.hasPrevious())
+    if(it != filesList.cbegin())
     {
-        file = getAbsolutePathToFile(filesLisIterator.previous());
-        loadFileRequest(file);
+        qDebug() << "previous file" << "hasPrevous section";
+        --it;
+        fileForLoad(*it);
     }
     else
     {
-        filesLisIterator.toBack();
-        file = getAbsolutePathToFile(filesLisIterator.previous());
-        loadFileRequest(file);
+        qDebug() << "previous file" << "else section";
+        it = filesList.cend();
+        --it;
+        fileForLoad(*it);
     }
-    setRecentFile(file);
-    updateListRecentFiles();
 }
 
 void MainWindow::closeFileRequest()
