@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     entryList();
 
-    QCoreApplication::setApplicationVersion("0.5");
+    QCoreApplication::setApplicationVersion("0.6");
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
     updateListRecentFiles();
