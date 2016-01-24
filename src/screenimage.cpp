@@ -176,22 +176,21 @@ void ScreenImage::bestImageGeometry()
     qreal imgHeight = static_cast<qreal>(m_Image.height());
     qreal screenWidth = static_cast<qreal>(width());
     qreal screenHeight = static_cast<qreal>(height());
-    qreal zoomfacor = 0.0;
 
     if(imgWidth < screenWidth && imgHeight < screenHeight)
         return;
     if(imgWidth > screenWidth)
     {
         //m_Image.setDotsPerMeterX(screenWidth);
-        zoomfacor = imgWidth / screenWidth;
+        zoomFactor = imgWidth / screenWidth;
     }
     if(imgHeight > screenHeight)
     {
         //m_Image.setDotsPerMeterY(screenHeight);
-        zoomfacor = imgHeight / screenHeight;
+        zoomFactor = imgHeight / screenHeight;
     }
     //qDebug() << zoomfacor;
-    zoomImage(zoomfacor);
+    zoomImage(zoomFactor);
 }
 
 void ScreenImage::zoomImage(const qreal zoomFactor)
