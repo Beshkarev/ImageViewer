@@ -29,7 +29,7 @@ public:
     void zoomInImage();
     void zoomOutImage();
     //View menu
-    void fitImage(bool checked);
+    void fitImage();
 protected:
     void resizeEvent(QResizeEvent *);
 private:
@@ -57,4 +57,3 @@ private:
 };
 
 #endif // SCREENIMAGE
-

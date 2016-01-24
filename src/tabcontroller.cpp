@@ -17,13 +17,9 @@ TabController::TabController(QWidget *parent/*=0*/) :
 
 void TabController::createTab()
 {
-    qDebug() << "new Tab" << count();
-
     ScreenImage *widget = new ScreenImage;
     addTab(widget, tr("Tab%1").arg(count()+1));
     setCurrentWidget(widget);
-
-    qDebug() << count();
 }
 
 void TabController::loadFiletoTab(const QString &file)
@@ -79,8 +75,6 @@ void TabController::closeImage()
 
 qint32 TabController::closeTab(const int index)
 {
-    qDebug() << "TabWidget" << "closeTab()";
-
     ScreenImage *widg = static_cast<ScreenImage*>(widget(index));
     if(widgetIsNULL(widg))
         return -1;
@@ -144,12 +138,11 @@ void TabController::zoomOutImage()
         widget->zoomOutImage();
 }
 
-void TabController::fitImage(bool checked)
+void TabController::fitImage()
 {
-    qDebug() << checked;
     ScreenImage *wdg = getImageWidget();
     if(!widgetIsNULL(wdg))
-        wdg->fitImage(checked);
+        wdg->fitImage();
 }
 
 ScreenImage *TabController::getImageWidget()

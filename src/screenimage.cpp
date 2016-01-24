@@ -65,7 +65,7 @@ bool ScreenImage::loadImage(const QString &filename)
 void ScreenImage::saveImage(const QString &filename) const
 {
    bool save = m_Image.save(filename);
-   qDebug() << save;
+   //qDebug() << save;
 }
 
 void ScreenImage::closeImage()
@@ -93,6 +93,7 @@ void ScreenImage::clockwiseRotate()
     if(!isEmpty())
         imageWasChanged();
     angle = clockwiseValue;
+    bestImageGeometry();
 }
 
 void ScreenImage::counterClockwiseRotate()
@@ -101,6 +102,7 @@ void ScreenImage::counterClockwiseRotate()
     clockwiseRotate();
     if(!isEmpty())
         imageWasChanged();
+    bestImageGeometry();
 }
 
 void ScreenImage::zoomInImage()
@@ -123,9 +125,9 @@ void ScreenImage::zoomOutImage()
     zoomImage(zoomFactor);
 }
 
-void ScreenImage::fitImage(bool checked)
+void ScreenImage::fitImage()
 {
-    _pLabel->setScaledContents(checked);
+    bestImageGeometry();
 }
 
 void ScreenImage::resizeEvent(QResizeEvent *)
@@ -154,13 +156,26 @@ void ScreenImage::showSomeError(const QString &str)
 
 void ScreenImage::bestImageGeometry()
 {
-    /*qreal zoom = static_cast<qreal>(width()) / static_cast<qreal>(m_Image.height());
-    qreal zoom1 = static_cast<qreal>(height()) / static_cast<qreal>(m_Image.width());
+    qreal imgWidth = static_cast<qreal>(m_Image.width());
+    qreal imgHeight = static_cast<qreal>(m_Image.height());
+    qreal screenWidth = static_cast<qreal>(width());
+    qreal screenHeight = static_cast<qreal>(height());
+    qreal zoomfacor = 0.0;
 
-    zoom = zoom / zoom1;
-    qDebug() << zoom;
-    //zoomImage(zoom);
-    */
+    if(imgWidth < screenWidth && imgHeight < screenHeight)
+        return;
+    if(imgWidth > screenWidth)
+    {
+        //m_Image.setDotsPerMeterX(screenWidth);
+        zoomfacor = imgWidth / screenWidth;
+    }
+    if(imgHeight > screenHeight)
+    {
+        //m_Image.setDotsPerMeterY(screenHeight);
+        zoomfacor = imgHeight / screenHeight;
+    }
+    //qDebug() << zoomfacor;
+    zoomImage(zoomfacor);
 }
 
 void ScreenImage::zoomImage(const qreal zoomFactor)

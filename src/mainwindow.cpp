@@ -341,8 +341,7 @@ void MainWindow::zoomOutImage()
 
 void MainWindow::fitImageRequest()
 {
-    bool checked = _pFitAction->isChecked();
-    _pTabController->fitImage(checked);
+    _pTabController->fitImage();
 }
 
 void MainWindow::aboutApp()

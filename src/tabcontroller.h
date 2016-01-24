@@ -25,7 +25,7 @@ public:
     void counterClockwiseRotate();
     void zoomInImage();
     void zoomOutImage();
-    void fitImage(bool);
+    void fitImage();
 private:
     ScreenImage *getImageWidget();
     void updateTabNumber();
