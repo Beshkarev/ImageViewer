@@ -2,6 +2,7 @@
 #define SCREENIMAGE
 
 #include <QWidget>
+#include <QMap>
 
 class QImage;
 class QLabel;
@@ -19,7 +20,7 @@ public:
     QString getFileName() const;
 public:
     //File menu
-    bool loadImage(const QString &filename);
+    bool loadImage(const QString &file);
     void saveImage(const QString &filename) const;
     void closeImage();
     //Edit menu
@@ -36,10 +37,13 @@ protected:
 private:
     void showImage();
     void imageWasChanged();
-    void showSomeError(const QString &str);
+    void showSomeError(const QString &title, const QString &str);
     void bestImageGeometry();
     void zoomImage(const qreal zoomFactor);
     void flipImge(const bool horizontal, const bool vertical);
+    //void addChangedImageToMemory(const QString &name,
+    //                             const QImage &img);
+    //bool thisImageWasChanged(const QString &key);
 
     QScrollArea *_pScrollArea;
     QLabel *_pLabel;
@@ -56,6 +60,7 @@ private:
     qreal zoomFactor;
 
     QString _fileName;
+    static QMap<QString, QImage> imageChangedContainer;
 };
 
 #endif // SCREENIMAGE

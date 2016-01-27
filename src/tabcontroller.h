@@ -2,6 +2,7 @@
 #define TABCONTROLLER
 
 #include <QTabWidget>
+#include <QStack>
 
 class ScreenImage;
 class QString;
@@ -14,6 +15,8 @@ public:
     TabController(QWidget *parent = 0);
     void createTab();
     void loadFiletoTab(const QString &file);
+    void nextFile();
+    void previousFile();
     void saveAsFileOpenedInTab(const QString &file);
     void saveFileOpenedInTab();
     void closeImage();
@@ -33,6 +36,14 @@ private:
     bool widgetIsNULL(ScreenImage* wdg) const;
     void updateTabText(const int index, const QString &text);
     void deleteTab(const qint32 index, ScreenImage *wdg);
+    void saveIterator();
+    void putTochangedFiles(ScreenImage *img);
+    ScreenImage *getChangedFiles();
+    QStringList::const_iterator getIterator();
+    bool hasChangedFiles();
+
+    //QMap<qint32, QStringList::const_iterator> fileIterator;
+    QStack<ScreenImage *> changedFiles;
 };
 
 #endif // TABCONTROLLER

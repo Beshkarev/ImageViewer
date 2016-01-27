@@ -19,6 +19,7 @@ private:
     void createMenu();
     void createToolBar();
     void createConnectToSlots();
+    void showStatusBarMessage(const QString &message);
     void setRecentFile(const QString &filename);
     void updateListRecentFiles();
     void entryList();
@@ -71,8 +72,8 @@ private:
     QAction *_pSeparatorAction;
     QAction *_pExitAction;
 
-    QAction *_pHorizontalFlipAction;
     QAction *_pVerticalFlipAction;
+    QAction *_pHorizontalFlipAction;
     QAction *_pClockwiseRotateAction;
     QAction *_pCounterClockwiseRotateAction;
     QAction *_pFitAction;
@@ -85,7 +86,7 @@ private:
 
     QToolBar *_pToolBar;
 
-
+    QString currentPath;
 };
 
 #endif // MAINWINDOW_H

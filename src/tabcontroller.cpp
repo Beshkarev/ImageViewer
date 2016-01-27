@@ -24,7 +24,6 @@ void TabController::createTab()
 
 void TabController::loadFiletoTab(const QString &file)
 {
-    qDebug() << objectName() << "open() slot";
     ScreenImage *wdg;
     bool successfullyImageLoad;
 
@@ -41,12 +40,27 @@ void TabController::loadFiletoTab(const QString &file)
 
     successfullyImageLoad = wdg->loadImage(file);
     if(!successfullyImageLoad)
-    {
-        removeTab(currentIndex());
-        wdg->deleteLater();
-    }
+        deleteTab(currentIndex(), wdg);
     else
         updateTabText(currentIndex(), wdg->getFileName());
+}
+
+void TabController::nextFile()
+{
+    /*if(it != filesList.cend())
+    {
+        qDebug() << "nextFile()" << "hasNext section";
+        fileForLoad(*it);
+        ++it;
+    }
+    else
+    {
+        qDebug() << "nextFile()" << "else section";
+
+        it = filesList.cbegin();
+        fileForLoad(*it);
+        ++it;
+    }*/
 }
 
 void TabController::saveFileOpenedInTab()
@@ -72,7 +86,7 @@ void TabController::closeImage()
         updateTabNumber();
     }
 }
-
+//To think how make better
 qint32 TabController::closeTab(const int index)
 {
     ScreenImage *widg = static_cast<ScreenImage*>(widget(index));
@@ -82,7 +96,7 @@ qint32 TabController::closeTab(const int index)
     if(widg->isChanged())
     {
         qint32 chose;
-        chose = QMessageBox::warning(this, tr("Save changes"),
+        chose = QMessageBox::warning(this, tr("Unsaved changes"),
                                  tr("The image %1 has been modified.\n"
                                     "Do you want to save your changes?").arg(widg->getFileName()),
                                     QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
@@ -188,4 +202,32 @@ void TabController::deleteTab(const qint32 index, ScreenImage *wdg)
     removeTab(index);
     wdg->deleteLater();
     updateTabNumber();
+}
+
+void TabController::saveIterator()
+{
+
+}
+
+void TabController::putTochangedFiles(ScreenImage *img)
+{
+    changedFiles.push(img);
+}
+
+ScreenImage *TabController::getChangedFiles()
+{
+    if(changedFiles.isEmpty())
+       return nullptr;
+
+    return changedFiles.pop();
+}
+
+QStringList::const_iterator TabController::getIterator()
+{
+
+}
+
+bool TabController::hasChangedFiles()
+{
+    return changedFiles.isEmpty() ? false : true;
 }

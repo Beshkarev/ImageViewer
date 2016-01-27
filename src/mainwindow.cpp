@@ -13,10 +13,12 @@
 #include <QCoreApplication>
 #include <QToolBar>
 #include <QFileDialog>
+#include <QStatusBar>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(new TabController),
-    _pToolBar(new QToolBar)
+    _pToolBar(new QToolBar),
+    currentPath(QDir::homePath() + "/Pictures")
 {
     createActions();
     createMenu();
@@ -35,11 +37,11 @@ void MainWindow::createActions()
 {
     _pNewTabAction = new QAction(tr("New Tab"), this);
     _pNewTabAction->setShortcut(Qt::CTRL + Qt::Key_T);
-    _pNewTabAction->setStatusTip("Creating new tab");
+    _pNewTabAction->setStatusTip(tr("Creating new tab"));
 
     _pOpenAction = new QAction(tr("Open file"), this);
     _pOpenAction->setShortcut(QKeySequence::Open);
-    _pOpenAction->setStatusTip("Opend new file");
+    _pOpenAction->setStatusTip(tr("Open new file"));
 
     _pSaveAction = new QAction(tr("Save file"), this);
     _pSaveAction->setShortcut(QKeySequence::Save);
@@ -69,8 +71,8 @@ void MainWindow::createActions()
     _pExitAction = new QAction(tr("Exit"), this);
     _pExitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
 
-    _pHorizontalFlipAction = new QAction(tr("Horizontal flip"), this);
     _pVerticalFlipAction = new QAction("Vertical flip", this);
+    _pHorizontalFlipAction = new QAction(tr("Horizontal flip"), this);
     _pClockwiseRotateAction = new QAction(tr("Rotate Clockwise"), this);
     _pCounterClockwiseRotateAction = new QAction(tr("Rotate Counter clockwise"), this);
     _pFitAction = new QAction(tr("Fit to window"), this);
@@ -103,8 +105,8 @@ void MainWindow::createMenu()
     _pFileMenu->addAction(_pExitAction);
 
     _pEditMenu = menuBar()->addMenu("&Edit");
-    _pEditMenu->addAction(_pHorizontalFlipAction);
     _pEditMenu->addAction(_pVerticalFlipAction);
+    _pEditMenu->addAction(_pHorizontalFlipAction);
     _pEditMenu->addSeparator();
 
     _pEditMenu->addAction(_pClockwiseRotateAction);
@@ -182,6 +184,11 @@ void MainWindow::createConnectToSlots()
             qApp, SLOT(aboutQt()));
 }
 
+void MainWindow::showStatusBarMessage(const QString &message)
+{
+    statusBar()->showMessage(message, 2000);
+}
+
 void MainWindow::setRecentFile(const QString &filename)
 {
     if(!filename.isEmpty())
@@ -217,7 +224,7 @@ void MainWindow::entryList()
 {
     QStringList supportedFormats;
     supportedFormats << "*.jpg" << "*.bmp" << "*.png";
-    QDir dir(QDir::homePath() + "/Pictures/.Camera");
+    QDir dir(currentPath);
     filesList = dir.entryList(supportedFormats, QDir::Files,
                               QDir::LocaleAware);
 
@@ -226,7 +233,7 @@ void MainWindow::entryList()
 
 QString MainWindow::getAbsolutePathToFile(const QString &file)
 {
-    QDir dir(QDir::homePath() + "/Pictures/.Camera");
+    QDir dir(currentPath);
     return dir.absoluteFilePath(file);
 }
 
@@ -247,7 +254,7 @@ void MainWindow::newTab()
 void MainWindow::openFile()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
-                                                    QDir::homePath() + "/Pictures",
+                                                    currentPath,
                                                     tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
                                                        "*.ppm;;*.xbm;;*.xpm"));
     if(!filename.isEmpty())
@@ -257,6 +264,7 @@ void MainWindow::openFile()
     }
     setRecentFile(filename);
     updateListRecentFiles();
+
 }
 
 void MainWindow::saveFile()
@@ -267,7 +275,7 @@ void MainWindow::saveFile()
 void MainWindow::saveAs()
 {
     const QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
-                                                    QDir::homePath() + "/Pictures",
+                                                    currentPath,
                                                     tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
                                                        "*.ppm;;*.xbm;;*.xpm"));
     _pTabController->saveAsFileOpenedInTab(filename);
@@ -278,16 +286,14 @@ void MainWindow::nextFile()
     if(it != filesList.cend())
     {
         qDebug() << "nextFile()" << "hasNext section";
-        fileForLoad(*it);
-        ++it;
+        fileForLoad(*(it++));
     }
     else
     {
         qDebug() << "nextFile()" << "else section";
 
         it = filesList.cbegin();
-        fileForLoad(*it);
-        ++it;
+        fileForLoad(*(it++));
     }
 }
 
@@ -296,15 +302,13 @@ void MainWindow::previousFile()
     if(it != filesList.cbegin())
     {
         qDebug() << "previous file" << "hasPrevous section";
-        --it;
-        fileForLoad(*it);
+        fileForLoad(*(--it));
     }
     else
     {
         qDebug() << "previous file" << "else section";
         it = filesList.cend();
-        --it;
-        fileForLoad(*it);
+        fileForLoad(*(--it));
     }
 }
 

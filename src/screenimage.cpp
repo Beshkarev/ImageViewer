@@ -46,19 +46,24 @@ QString ScreenImage::getFileName() const
     return _fileName;
 }
 
-bool ScreenImage::loadImage(const QString &filename)
+bool ScreenImage::loadImage(const QString &file)
 {
     //qDebug() << filename;
-    m_Image.load(filename);
+    //bool changedImage = thisImageWasChanged(filename);
+    //if(changedImage)
+       // return true;
+
+    m_Image.load(file);
     if(m_Image.isNull())
     {
-        showSomeError(tr("Something went wrong!\nMaybe, not supported the file format."));
+        showSomeError(tr("Oops"), tr("Something went wrong!\n"
+                                   "Maybe, not supported the file format."));
         return false;
     }
     bestImageGeometry();
     showImage();
 
-    _fileName = QFileInfo(filename).fileName();
+    _fileName = QFileInfo(file).fileName();
     return true;
 }
 
@@ -123,11 +128,7 @@ void ScreenImage::counterClockwiseRotate()
 
 void ScreenImage::zoomInImage()
 {
-    //qDebug("zoomIn");
-
     zoomFactor *= zoomInValue;
-
-    //qDebug() << "zoomFactor in zoomIn" << zoomFactor;
 
     zoomImage(zoomFactor);
 }
@@ -135,8 +136,6 @@ void ScreenImage::zoomInImage()
 void ScreenImage::zoomOutImage()
 {
     zoomFactor *= zoomOutValue;
-
-    //qDebug() << "zoomFactor in zoomOut" << zoomFactor;
 
     zoomImage(zoomFactor);
 }
@@ -149,7 +148,6 @@ void ScreenImage::fitImage()
 void ScreenImage::resizeEvent(QResizeEvent *)
 {
     bestImageGeometry();
-    //showImage();
 }
 
 void ScreenImage::showImage()
@@ -164,9 +162,9 @@ void ScreenImage::imageWasChanged()
     imageChanged = true;
 }
 
-void ScreenImage::showSomeError(const QString &str)
+void ScreenImage::showSomeError(const QString &title, const QString &str)
 {
-    QMessageBox::warning(this, tr("Oops"), str,
+    QMessageBox::warning(this, title, str,
                          QMessageBox::Ok);
 }
 
@@ -179,17 +177,13 @@ void ScreenImage::bestImageGeometry()
 
     if(imgWidth < screenWidth && imgHeight < screenHeight)
         return;
+
     if(imgWidth > screenWidth)
-    {
-        //m_Image.setDotsPerMeterX(screenWidth);
         zoomFactor = imgWidth / screenWidth;
-    }
+
     if(imgHeight > screenHeight)
-    {
-        //m_Image.setDotsPerMeterY(screenHeight);
         zoomFactor = imgHeight / screenHeight;
-    }
-    //qDebug() << zoomfacor;
+
     zoomImage(zoomFactor);
 }
 
@@ -204,3 +198,20 @@ void ScreenImage::flipImge(const bool horizontal, const bool vertical)
 {
     m_Image = m_Image.mirrored(horizontal, vertical);
 }
+
+/*void ScreenImage::addChangedImageToMemory(const QString &name,
+                                          const QImage &img)
+{
+    imageChangedContainer.insert(name, img);
+}*/
+
+/*bool ScreenImage::thisImageWasChanged(const QString &key)
+{
+    QMap<QString, QImage>::const_iterator it = imageChangedContainer.find(key);
+    if(it == imageChangedContainer.cend())
+        return false;
+
+    m_Image = it.value();
+    showImage();
+    return true;
+}*/
