@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "tabcontroller.h"
+#include "changedimages.h"
 #include <QStringList>
 #include <QDir>
 #include <QDirIterator>
@@ -17,12 +18,11 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(new TabController),
-    _pToolBar(new QToolBar),
     currentPath(QDir::homePath() + "/Pictures")
 {
     createActions();
     createMenu();
-    createToolBar();
+    addToolBar(createToolBar());
     createConnectToSlots();
 
     entryList();
@@ -76,10 +76,10 @@ void MainWindow::createActions()
     _pClockwiseRotateAction = new QAction(tr("Rotate Clockwise"), this);
     _pCounterClockwiseRotateAction = new QAction(tr("Rotate Counter clockwise"), this);
     _pFitAction = new QAction(tr("Fit to window"), this);
-    _pZoomIn = new QAction(tr("Zoom in"), this);
-    _pZoomIn->setShortcut(QKeySequence::ZoomIn);
-    _pZoomOut = new QAction(tr("Zoom out"), this);
-    _pZoomOut->setShortcut(QKeySequence::ZoomOut);
+    _pZoomInAction = new QAction(tr("Zoom in"), this);
+    _pZoomInAction->setShortcut(QKeySequence::ZoomIn);
+    _pZoomOutAction = new QAction(tr("Zoom out"), this);
+    _pZoomOutAction->setShortcut(QKeySequence::ZoomOut);
 
     _pAboutAction = new QAction(tr("About"), this);
     _pQtAbout = new QAction(tr("Qt About"), this);
@@ -113,8 +113,8 @@ void MainWindow::createMenu()
     _pEditMenu->addAction(_pCounterClockwiseRotateAction);
     _pEditMenu->addSeparator();
 
-    _pEditMenu->addAction(_pZoomIn);
-    _pEditMenu->addAction(_pZoomOut);
+    _pEditMenu->addAction(_pZoomInAction);
+    _pEditMenu->addAction(_pZoomOutAction);
     _pEditMenu->addSeparator();
 
     _pViewMenu = menuBar()->addMenu("&View");
@@ -125,13 +125,23 @@ void MainWindow::createMenu()
     _pHelpMenu->addAction(_pQtAbout);
 }
 
-void MainWindow::createToolBar()
+QToolBar *MainWindow::createToolBar()
 {
-    _pToolBar->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    _pToolBar = addToolBar("file");
+    QToolBar *pToolBar = new QToolBar(this);
+    pToolBar->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    pToolBar->setAllowedAreas(Qt::TopToolBarArea
+                              | Qt::BottomToolBarArea);
 
-    _pToolBar->addAction(_pPreviousFileAction);
-    _pToolBar->addAction(_pNextFileAction);
+    pToolBar->addAction(_pPreviousFileAction);
+    pToolBar->addAction(_pNextFileAction);
+    pToolBar->insertSeparator(_pVerticalFlipAction);
+
+    pToolBar->addAction(_pVerticalFlipAction);
+    pToolBar->addAction(_pZoomInAction);
+    pToolBar->addAction(_pZoomOutAction);
+    pToolBar->addAction(_pFitAction);
+
+    return pToolBar;
 }
 
 void MainWindow::createConnectToSlots()
@@ -168,9 +178,9 @@ void MainWindow::createConnectToSlots()
             this, SLOT(counterClockwiseRotate()));
     connect(_pClockwiseRotateAction, SIGNAL(triggered(bool)),
             this, SLOT(clockwiseRotate()));
-    connect(_pZoomIn, SIGNAL(triggered(bool)),
+    connect(_pZoomInAction, SIGNAL(triggered(bool)),
             this, SLOT(zoomInImage()));
-    connect(_pZoomOut, SIGNAL(triggered(bool)),
+    connect(_pZoomOutAction, SIGNAL(triggered(bool)),
             this, SLOT(zoomOutImage()));
 
     //View menu section
@@ -283,18 +293,33 @@ void MainWindow::saveAs()
 
 void MainWindow::nextFile()
 {
-    if(it != filesList.cend())
+    if(*it != filesList.last())
     {
         qDebug() << "nextFile()" << "hasNext section";
-        fileForLoad(*(it++));
+        fileForLoad(*it);
+        ++it;
     }
     else
     {
         qDebug() << "nextFile()" << "else section";
 
+        fileForLoad(*it);
         it = filesList.cbegin();
-        fileForLoad(*(it++));
+        ++it;
     }
+    //it++;
+    /*if(it == filesList.cbegin())
+    {
+        fileForLoad(*it);
+        ++it;
+    }
+    else if(*it == filesList.last())
+    {
+        fileForLoad(*it);
+        it = filesList.cbegin();
+    }
+    else
+        fileForLoad(*(it++));*/
 }
 
 void MainWindow::previousFile()
@@ -372,7 +397,7 @@ void MainWindow::aboutApp()
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
-    qint32 userChoise;
+    /*qint32 userChoise;
     while(_pTabController->count() != 0)
     {
         userChoise = closeTabRequest();
@@ -382,7 +407,19 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
             return;
         }
     }
-    pClose->accept();
+    pClose->accept();*/
+
+      ChangedImages *pChanges = new ChangedImages;
+      if(!pChanges->isEmpty())
+      {
+          //pChanges->show();
+      }
+//    if(!pChanges->isEmpty())
+//    {
+//        pChanges->showChangedImages();
+//    }
+//    setCentralWidget(pChanges);
+//    _pTabController->deleteLater();
 }
 
 void MainWindow::loadFileRequest(const QString &file)

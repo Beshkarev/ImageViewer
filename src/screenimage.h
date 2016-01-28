@@ -41,8 +41,9 @@ private:
     void bestImageGeometry();
     void zoomImage(const qreal zoomFactor);
     void flipImge(const bool horizontal, const bool vertical);
-    //void addChangedImageToMemory(const QString &name,
-    //                             const QImage &img);
+
+    void addChangedImageToMemory(const QString &name,
+                                 const QImage &img);
     //bool thisImageWasChanged(const QString &key);
 
     QScrollArea *_pScrollArea;

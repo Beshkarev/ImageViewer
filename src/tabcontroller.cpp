@@ -92,8 +92,8 @@ qint32 TabController::closeTab(const int index)
     ScreenImage *widg = static_cast<ScreenImage*>(widget(index));
     if(widgetIsNULL(widg))
         return -1;
-
-    if(widg->isChanged())
+    widg->closeImage();
+    /*if(widg->isChanged())
     {
         qint32 chose;
         chose = QMessageBox::warning(this, tr("Unsaved changes"),
@@ -112,9 +112,9 @@ qint32 TabController::closeTab(const int index)
         }
         else if(chose == QMessageBox::Cancel)
             return QMessageBox::Cancel;
-    }
-    else
-        deleteTab(index, widg);
+    }*/
+    //else
+    deleteTab(index, widg);
 }
 
 void TabController::horizontalFlip()

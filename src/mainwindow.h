@@ -17,7 +17,7 @@ public:
 private:
     void createActions();
     void createMenu();
-    void createToolBar();
+    QToolBar *createToolBar();
     void createConnectToSlots();
     void showStatusBarMessage(const QString &message);
     void setRecentFile(const QString &filename);
@@ -78,13 +78,11 @@ private:
     QAction *_pCounterClockwiseRotateAction;
     QAction *_pFitAction;
     QAction *_pNormalSizeAction;
-    QAction *_pZoomIn;
-    QAction *_pZoomOut;
+    QAction *_pZoomInAction;
+    QAction *_pZoomOutAction;
 
     QAction *_pAboutAction;
     QAction *_pQtAbout;
-
-    QToolBar *_pToolBar;
 
     QString currentPath;
 };

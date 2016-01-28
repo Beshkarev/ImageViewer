@@ -1,4 +1,5 @@
 #include "screenimage.h"
+#include "changedimages.h"
 #include <QFileDialog>
 #include <QImage>
 #include <QBoxLayout>
@@ -6,6 +7,7 @@
 #include <QScrollArea>
 #include <QMessageBox>
 #include <QDebug>
+
 
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pScrollArea(new QScrollArea(this)),
@@ -48,13 +50,16 @@ QString ScreenImage::getFileName() const
 
 bool ScreenImage::loadImage(const QString &file)
 {
-    //qDebug() << filename;
+    qDebug() << file;
     //bool changedImage = thisImageWasChanged(filename);
     //if(changedImage)
        // return true;
+    if(isChanged())
+        addChangedImageToMemory(_fileName, m_Image);
 
     m_Image.load(file);
-    if(m_Image.isNull())
+    if(m_Image.isNull() &&
+            m_Image.format() == QImage::Format_Invalid)
     {
         showSomeError(tr("Oops"), tr("Something went wrong!\n"
                                    "Maybe, not supported the file format."));
@@ -75,6 +80,10 @@ void ScreenImage::saveImage(const QString &filename) const
 
 void ScreenImage::closeImage()
 {
+    if(isChanged())
+        addChangedImageToMemory(_fileName, m_Image);
+
+    imageChanged = false;
     _pLabel->clear();
     _pScrollArea->hide();
     m_Image = QImage();
@@ -199,11 +208,12 @@ void ScreenImage::flipImge(const bool horizontal, const bool vertical)
     m_Image = m_Image.mirrored(horizontal, vertical);
 }
 
-/*void ScreenImage::addChangedImageToMemory(const QString &name,
+void ScreenImage::addChangedImageToMemory(const QString &name,
                                           const QImage &img)
 {
-    imageChangedContainer.insert(name, img);
-}*/
+    if(isChanged())
+        ChangedImages::addImage(name, img);
+}
 
 /*bool ScreenImage::thisImageWasChanged(const QString &key)
 {

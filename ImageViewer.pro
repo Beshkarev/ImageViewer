@@ -19,10 +19,12 @@ LIBS += -L/usr/local/include/opencv-3.1.0/lib -lopencv_core -lopencv_imgcodecs -
 SOURCES += src/main.cpp\
         src/mainwindow.cpp \
     src/screenimage.cpp \
-    src/tabcontroller.cpp
+    src/tabcontroller.cpp \
+    src/changedimages.cpp
 
 HEADERS  += src/mainwindow.h \
     src/screenimage.h \
-    src/tabcontroller.h
+    src/tabcontroller.h \
+    src/changedimages.h
 
 FORMS    +=
