@@ -1,36 +1,38 @@
 #include "changedimages.h"
 #include "screenimage.h"
-#include <QGridLayout>
-#include <QLabel>
 #include <QBoxLayout>
-#include <QCheckBox>
-#include <QTextEdit>
-#include <QTableWidget>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QDebug>
 
 QMap<QString, QImage> ChangedImages::images;
 
 ChangedImages::ChangedImages(QWidget *pWdg):
-    QDialog(pWdg), _pTableWidget(new QTableWidget(this))
+    QDialog(pWdg)
 {
-    //QGroupBox *pGroupBox = new QGroupBox(tr("Unsaved changes"), this);
+    QTreeWidget *pTreeWidget = new QTreeWidget(this);
+    pTreeWidget->setColumnCount(2);
+    pTreeWidget->setIconSize(QSize(100, 80));
+    QTreeWidgetItem *pTreeItem = new QTreeWidgetItem(pTreeWidget);
+    //pTreeItem->setFlags(Qt::ItemIsUserCheckable);
+    pTreeItem->setText(0, tr("Image"));
+    //pTreeItem->setTextAlignment(0, Qt::Align);
+    pTreeItem->setText(1, tr("Name"));
+
     QMap<QString, QImage>::const_iterator it;
     it = images.cbegin();
-    qint32 rown = 0;
+
     while(it != images.cend())
     {
-        _pTableWidget->setCellWidget(rown++, 0,
-                                     new TableWidgetItem(it.key(), it.value()));
+        addTreeItem(pTreeItem, it.key(), it.value());
         ++it;
-
     }
-    //_pTableWidget->resize(200, 300);
+    QHBoxLayout *pMainLayout = new QHBoxLayout(this);
+    pMainLayout->addWidget(pTreeWidget);
 
-    QVBoxLayout *pVLayout = new QVBoxLayout(this);
-    pVLayout->addWidget(_pTableWidget);
+    setLayout(pMainLayout);
 
-    setLayout(pVLayout);
-    //resize(100, 600);
-    //show();
+    //setFixedSize(QSize(400, 500));
 }
 
 
@@ -49,47 +51,13 @@ bool ChangedImages::isEmpty()
     return images.empty();
 }
 
-/*void ChangedImages::showChangedImages()
+void ChangedImages::addTreeItem(QTreeWidgetItem *parent,
+                                const QString &name,
+                                const QImage &image)
 {
-    if(isEmpty())
-        return;
-    QMap<QString, QImage>::const_iterator it;
-    it = images.cbegin();
-    QGridLayout *pGridLayout = new QGridLayout(this);
-    QLabel *pLabel = new QLabel(this);
-    //QScrollArea *pArea = new QScrollArea(this);
-    //pArea->setWidget();
-
-    //qint32 row = 0, column = 0;
-    while(it != images.cend())
-    {
-        pLabel->setPixmap(QPixmap::fromImage(it.value()));
-        pGridLayout->addWidget(pLabel);
-    }
-    setLayout(pGridLayout);
-}*/
-
-TableWidgetItem::TableWidgetItem(const QString &name,
-                                 const QImage &img,
-                                 QWidget *pWdg):
-    QWidget(pWdg), _pCheckBox(new QCheckBox(this))
-{
-    QLabel *pLabel = new QLabel(this);
-    pLabel->setPixmap(QPixmap::fromImage(img));
-    pLabel->resize(50, 50);
-    QTextEdit *pTextEdit = new QTextEdit(name, this);
-    pTextEdit->setReadOnly(true);
-
-    QHBoxLayout *pItemLayout = new QHBoxLayout(this);
-    pItemLayout->addWidget(_pCheckBox);
-    pItemLayout->addWidget(pLabel);
-    pItemLayout->addWidget(pTextEdit);
-
-    setLayout(pItemLayout);
-    show();
-}
-
-bool TableWidgetItem::isChecked()
-{
-    return _pCheckBox->isChecked();
+    QTreeWidgetItem *pTreeItem = new QTreeWidgetItem;
+    pTreeItem->setSizeHint(0, QSize(100, 80));
+    pTreeItem->setIcon(0, QIcon(QPixmap::fromImage(image)));
+    pTreeItem->setText(1, name);
+    parent->addChild(pTreeItem);
 }

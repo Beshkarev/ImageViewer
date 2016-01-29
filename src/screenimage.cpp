@@ -213,6 +213,7 @@ void ScreenImage::addChangedImageToMemory(const QString &name,
 {
     if(isChanged())
         ChangedImages::addImage(name, img);
+    imageChanged = true;
 }
 
 /*bool ScreenImage::thisImageWasChanged(const QString &key)

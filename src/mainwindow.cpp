@@ -412,7 +412,7 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
       ChangedImages *pChanges = new ChangedImages;
       if(!pChanges->isEmpty())
       {
-          //pChanges->show();
+          pChanges->show();
       }
 //    if(!pChanges->isEmpty())
 //    {

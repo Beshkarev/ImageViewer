@@ -6,7 +6,7 @@
 
 class QString;
 class QImage;
-class QTableWidget;
+class QTreeWidgetItem;
 
 class ChangedImages : public QDialog
 {
@@ -15,24 +15,11 @@ public:
     static void addImage(const QString &name,
                          const QImage &image);
     bool isEmpty();
-    //void showChangedImages();
 private:
-    QTableWidget *_pTableWidget;
+    void addTreeItem(QTreeWidgetItem *parent,
+                     const QString &name,
+                     const QImage &image);
     static QMap<QString, QImage> images;
-};
-
-class QCheckBox;
-class QLabel;
-
-class TableWidgetItem : public QWidget
-{
-public:
-    TableWidgetItem(const QString &name,
-                    const QImage &img,
-                    QWidget *pWdg = 0);
-    bool isChecked();
-private:
-    QCheckBox *_pCheckBox;
 };
 
 #endif // CHANGEDIMAGES
