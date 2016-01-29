@@ -1,5 +1,5 @@
 #include "screenimage.h"
-#include "changedimages.h"
+#include "saveconfirmation.h"
 #include <QFileDialog>
 #include <QImage>
 #include <QBoxLayout>
@@ -7,7 +7,6 @@
 #include <QScrollArea>
 #include <QMessageBox>
 #include <QDebug>
-
 
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pScrollArea(new QScrollArea(this)),
@@ -37,10 +36,7 @@ bool ScreenImage::isChanged() const
 
 bool ScreenImage::isEmpty() const
 {
-    if(m_Image.isNull())
-        return true;
-    else
-        return false;
+    return m_Image.isNull();
 }
 
 QString ScreenImage::getFileName() const
@@ -50,12 +46,7 @@ QString ScreenImage::getFileName() const
 
 bool ScreenImage::loadImage(const QString &file)
 {
-    qDebug() << file;
-    //bool changedImage = thisImageWasChanged(filename);
-    //if(changedImage)
-       // return true;
-    if(isChanged())
-        addChangedImageToMemory(_fileName, m_Image);
+    addChangedImageToMemory(_fileName, m_Image);
 
     m_Image.load(file);
     if(m_Image.isNull() &&
@@ -80,8 +71,7 @@ void ScreenImage::saveImage(const QString &filename) const
 
 void ScreenImage::closeImage()
 {
-    if(isChanged())
-        addChangedImageToMemory(_fileName, m_Image);
+    addChangedImageToMemory(_fileName, m_Image);
 
     imageChanged = false;
     _pLabel->clear();
@@ -212,17 +202,6 @@ void ScreenImage::addChangedImageToMemory(const QString &name,
                                           const QImage &img)
 {
     if(isChanged())
-        ChangedImages::addImage(name, img);
-    imageChanged = true;
+        SaveConfirmation::addImage(name, img);
+    imageChanged = false;
 }
-
-/*bool ScreenImage::thisImageWasChanged(const QString &key)
-{
-    QMap<QString, QImage>::const_iterator it = imageChangedContainer.find(key);
-    if(it == imageChangedContainer.cend())
-        return false;
-
-    m_Image = it.value();
-    showImage();
-    return true;
-}*/

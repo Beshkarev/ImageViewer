@@ -1,22 +1,27 @@
-#include "changedimages.h"
+#include "saveconfirmation.h"
 #include "screenimage.h"
 #include <QBoxLayout>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QDebug>
+#include <QDialogButtonBox>
 
-QMap<QString, QImage> ChangedImages::images;
+QMap<QString, QImage> SaveConfirmation::images;
 
-ChangedImages::ChangedImages(QWidget *pWdg):
+SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     QDialog(pWdg)
 {
     QTreeWidget *pTreeWidget = new QTreeWidget(this);
     pTreeWidget->setColumnCount(2);
     pTreeWidget->setIconSize(QSize(100, 80));
+    pTreeWidget->setColumnWidth(0, 176);
+    pTreeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
     QTreeWidgetItem *pTreeItem = new QTreeWidgetItem(pTreeWidget);
-    //pTreeItem->setFlags(Qt::ItemIsUserCheckable);
+    pTreeItem->setFlags(Qt::ItemIsSelectable |
+                        Qt::ItemIsUserCheckable |
+                        Qt::ItemIsEnabled);
+
     pTreeItem->setText(0, tr("Image"));
-    //pTreeItem->setTextAlignment(0, Qt::Align);
     pTreeItem->setText(1, tr("Name"));
 
     QMap<QString, QImage>::const_iterator it;
@@ -27,16 +32,28 @@ ChangedImages::ChangedImages(QWidget *pWdg):
         addTreeItem(pTreeItem, it.key(), it.value());
         ++it;
     }
-    QHBoxLayout *pMainLayout = new QHBoxLayout(this);
+
+    QDialogButtonBox *pButtons = new QDialogButtonBox(this);
+    pButtons->addButton(QDialogButtonBox::SaveAll);
+    pButtons->addButton(QDialogButtonBox::Cancel);
+    pButtons->addButton(QDialogButtonBox::Close);
+
+    connect(pButtons, SIGNAL(accepted()),
+            this, SLOT(saveImages()));
+    connect(pButtons, SIGNAL(rejected()),
+            this, SLOT(reject()));
+
+    QVBoxLayout *pMainLayout = new QVBoxLayout(this);
     pMainLayout->addWidget(pTreeWidget);
+    pMainLayout->addWidget(pButtons);
 
     setLayout(pMainLayout);
 
-    //setFixedSize(QSize(400, 500));
+    setFixedSize(QSize(600, 400));
+
 }
 
-
-void ChangedImages::addImage(const QString &name,
+void SaveConfirmation::addImage(const QString &name,
                         const QImage &image)
 {
     QString str;
@@ -46,12 +63,18 @@ void ChangedImages::addImage(const QString &name,
     images.insert(str, img);
 }
 
-bool ChangedImages::isEmpty()
+bool SaveConfirmation::isEmpty()
 {
     return images.empty();
 }
 
-void ChangedImages::addTreeItem(QTreeWidgetItem *parent,
+void SaveConfirmation::saveImages()
+{
+    qDebug() << "accept";
+    accept();
+}
+
+void SaveConfirmation::addTreeItem(QTreeWidgetItem *parent,
                                 const QString &name,
                                 const QImage &image)
 {

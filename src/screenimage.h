@@ -2,7 +2,6 @@
 #define SCREENIMAGE
 
 #include <QWidget>
-#include <QMap>
 
 class QImage;
 class QLabel;
@@ -44,7 +43,6 @@ private:
 
     void addChangedImageToMemory(const QString &name,
                                  const QImage &img);
-    //bool thisImageWasChanged(const QString &key);
 
     QScrollArea *_pScrollArea;
     QLabel *_pLabel;
@@ -61,7 +59,6 @@ private:
     qreal zoomFactor;
 
     QString _fileName;
-    static QMap<QString, QImage> imageChangedContainer;
 };
 
 #endif // SCREENIMAGE

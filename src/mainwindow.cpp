@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "tabcontroller.h"
-#include "changedimages.h"
+#include "saveconfirmation.h"
 #include <QStringList>
 #include <QDir>
 #include <QDirIterator>
@@ -307,19 +307,6 @@ void MainWindow::nextFile()
         it = filesList.cbegin();
         ++it;
     }
-    //it++;
-    /*if(it == filesList.cbegin())
-    {
-        fileForLoad(*it);
-        ++it;
-    }
-    else if(*it == filesList.last())
-    {
-        fileForLoad(*it);
-        it = filesList.cbegin();
-    }
-    else
-        fileForLoad(*(it++));*/
 }
 
 void MainWindow::previousFile()
@@ -342,9 +329,9 @@ void MainWindow::closeFileRequest()
     _pTabController->closeImage();
 }
 
-qint32 MainWindow::closeTabRequest()
+void MainWindow::closeTabRequest()
 {
-    return _pTabController->closeTab(_pTabController->currentIndex());
+    _pTabController->closeTab(_pTabController->currentIndex());
 }
 
 void MainWindow::openRecentFile()
@@ -397,29 +384,28 @@ void MainWindow::aboutApp()
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
-    /*qint32 userChoise;
-    while(_pTabController->count() != 0)
+    SaveConfirmation *pChanges = new SaveConfirmation;
+    if(!pChanges->isEmpty())
     {
-        userChoise = closeTabRequest();
-        if(userChoise == QMessageBox::Cancel)
+        qint32 ret;
+        ret = pChanges->exec();
+
+        if(ret == QDialog::Accepted)
         {
+            pChanges->deleteLater();
+            pClose->accept();
+        }
+        else if(ret == QDialog::Rejected)
+        {
+            pChanges->deleteLater();
             pClose->ignore();
-            return;
         }
     }
-    pClose->accept();*/
-
-      ChangedImages *pChanges = new ChangedImages;
-      if(!pChanges->isEmpty())
-      {
-          pChanges->show();
-      }
-//    if(!pChanges->isEmpty())
-//    {
-//        pChanges->showChangedImages();
-//    }
-//    setCentralWidget(pChanges);
-//    _pTabController->deleteLater();
+    else
+    {
+        pChanges->deleteLater();
+        pClose->accept();
+    }
 }
 
 void MainWindow::loadFileRequest(const QString &file)

@@ -1,5 +1,5 @@
-#ifndef CHANGEDIMAGES
-#define CHANGEDIMAGES
+#ifndef SAVECONFIRMATION
+#define SAVECONFIRMATION
 
 #include <QMap>
 #include <QDialog>
@@ -8,13 +8,17 @@ class QString;
 class QImage;
 class QTreeWidgetItem;
 
-class ChangedImages : public QDialog
+class SaveConfirmation : public QDialog
 {
+    Q_OBJECT
+
 public:
-    ChangedImages(QWidget *pWdg = 0);
+    SaveConfirmation(QWidget *pWdg = 0);
     static void addImage(const QString &name,
                          const QImage &image);
     bool isEmpty();
+private slots:
+    void saveImages();
 private:
     void addTreeItem(QTreeWidgetItem *parent,
                      const QString &name,
@@ -22,5 +26,4 @@ private:
     static QMap<QString, QImage> images;
 };
 
-#endif // CHANGEDIMAGES
-
+#endif

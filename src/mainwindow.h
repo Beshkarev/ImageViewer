@@ -33,7 +33,7 @@ private slots:
     void nextFile();
     void previousFile();
     void closeFileRequest();
-    qint32 closeTabRequest();
+    void closeTabRequest();
     void openRecentFile();
     void horizontalFlip();
     void verticalFlip();

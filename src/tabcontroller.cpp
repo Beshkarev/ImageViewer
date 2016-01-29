@@ -1,7 +1,6 @@
 #include "tabcontroller.h"
 #include "screenimage.h"
 #include <QTabWidget>
-#include <QMessageBox>
 #include <QDebug>
 
 TabController::TabController(QWidget *parent/*=0*/) :
@@ -40,7 +39,7 @@ void TabController::loadFiletoTab(const QString &file)
 
     successfullyImageLoad = wdg->loadImage(file);
     if(!successfullyImageLoad)
-        deleteTab(currentIndex(), wdg);
+        deleteTab(currentIndex());
     else
         updateTabText(currentIndex(), wdg->getFileName());
 }
@@ -86,35 +85,11 @@ void TabController::closeImage()
         updateTabNumber();
     }
 }
-//To think how make better
-qint32 TabController::closeTab(const int index)
-{
-    ScreenImage *widg = static_cast<ScreenImage*>(widget(index));
-    if(widgetIsNULL(widg))
-        return -1;
-    widg->closeImage();
-    /*if(widg->isChanged())
-    {
-        qint32 chose;
-        chose = QMessageBox::warning(this, tr("Unsaved changes"),
-                                 tr("The image %1 has been modified.\n"
-                                    "Do you want to save your changes?").arg(widg->getFileName()),
-                                    QMessageBox::Yes | QMessageBox::Cancel | QMessageBox::No);
-        if(chose == QMessageBox::Yes)
-        {
-            saveFileOpenedInTab();
-            deleteTab(index, widg);
-            return QMessageBox::Yes;
-        }
-        else if(chose == QMessageBox::No)
-        {
-            deleteTab(index, widg);
-        }
-        else if(chose == QMessageBox::Cancel)
-            return QMessageBox::Cancel;
-    }*/
-    //else
-    deleteTab(index, widg);
+
+void TabController::closeTab(const int index)
+{  
+    closeImage();
+    deleteTab(index);
 }
 
 void TabController::horizontalFlip()
@@ -197,37 +172,10 @@ void TabController::updateTabText(const int index, const QString &text)
     setTabText(index, text);
 }
 
-void TabController::deleteTab(const qint32 index, ScreenImage *wdg)
+void TabController::deleteTab(const qint32 index)
 {
+    QWidget *pWdg = widget(index);
     removeTab(index);
-    wdg->deleteLater();
+    pWdg->deleteLater();
     updateTabNumber();
-}
-
-void TabController::saveIterator()
-{
-
-}
-
-void TabController::putTochangedFiles(ScreenImage *img)
-{
-    changedFiles.push(img);
-}
-
-ScreenImage *TabController::getChangedFiles()
-{
-    if(changedFiles.isEmpty())
-       return nullptr;
-
-    return changedFiles.pop();
-}
-
-QStringList::const_iterator TabController::getIterator()
-{
-
-}
-
-bool TabController::hasChangedFiles()
-{
-    return changedFiles.isEmpty() ? false : true;
 }
