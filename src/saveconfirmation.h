@@ -6,7 +6,8 @@
 
 class QString;
 class QImage;
-class QTreeWidgetItem;
+class QListWidget;
+class QListWidgetItem;
 
 class SaveConfirmation : public QDialog
 {
@@ -20,10 +21,11 @@ public:
 private slots:
     void saveImages();
 private:
-    void addTreeItem(QTreeWidgetItem *parent,
-                     const QString &name,
-                     const QImage &image);
+    void createItem(const QString &name,
+                 const QImage &image);
     static QMap<QString, QImage> images;
+
+    QListWidget *_pListWidget;
 };
 
 #endif

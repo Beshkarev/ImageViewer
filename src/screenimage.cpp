@@ -41,7 +41,7 @@ bool ScreenImage::isEmpty() const
 
 QString ScreenImage::getFileName() const
 {
-    return _fileName;
+    return QFileInfo(_fileName).fileName();
 }
 
 bool ScreenImage::loadImage(const QString &file)
@@ -59,7 +59,7 @@ bool ScreenImage::loadImage(const QString &file)
     bestImageGeometry();
     showImage();
 
-    _fileName = QFileInfo(file).fileName();
+    _fileName = file;
     return true;
 }
 

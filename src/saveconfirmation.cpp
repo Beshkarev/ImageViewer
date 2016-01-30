@@ -1,56 +1,42 @@
 #include "saveconfirmation.h"
 #include "screenimage.h"
 #include <QBoxLayout>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
 #include <QDebug>
 #include <QDialogButtonBox>
+#include <QListWidget>
 
 QMap<QString, QImage> SaveConfirmation::images;
 
 SaveConfirmation::SaveConfirmation(QWidget *pWdg):
-    QDialog(pWdg)
+    QDialog(pWdg), _pListWidget(new QListWidget(this))
 {
-    QTreeWidget *pTreeWidget = new QTreeWidget(this);
-    pTreeWidget->setColumnCount(2);
-    pTreeWidget->setIconSize(QSize(100, 80));
-    pTreeWidget->setColumnWidth(0, 176);
-    pTreeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
-    QTreeWidgetItem *pTreeItem = new QTreeWidgetItem(pTreeWidget);
-    pTreeItem->setFlags(Qt::ItemIsSelectable |
-                        Qt::ItemIsUserCheckable |
-                        Qt::ItemIsEnabled);
-
-    pTreeItem->setText(0, tr("Image"));
-    pTreeItem->setText(1, tr("Name"));
+    _pListWidget->setIconSize(QSize(100, 80));
+    _pListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
     QMap<QString, QImage>::const_iterator it;
     it = images.cbegin();
-
     while(it != images.cend())
     {
-        addTreeItem(pTreeItem, it.key(), it.value());
+        createItem(it.key(), it.value());
         ++it;
     }
 
-    QDialogButtonBox *pButtons = new QDialogButtonBox(this);
-    pButtons->addButton(QDialogButtonBox::SaveAll);
-    pButtons->addButton(QDialogButtonBox::Cancel);
-    pButtons->addButton(QDialogButtonBox::Close);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(this);
+    pButtonBox->addButton(QDialogButtonBox::SaveAll);
+    pButtonBox->addButton(QDialogButtonBox::Cancel);
+    pButtonBox->addButton(QDialogButtonBox::Close);
 
-    connect(pButtons, SIGNAL(accepted()),
+    connect(pButtonBox, SIGNAL(accepted()),
             this, SLOT(saveImages()));
-    connect(pButtons, SIGNAL(rejected()),
+    connect(pButtonBox, SIGNAL(rejected()),
             this, SLOT(reject()));
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
-    pMainLayout->addWidget(pTreeWidget);
-    pMainLayout->addWidget(pButtons);
+    pMainLayout->addWidget(_pListWidget);
+    pMainLayout->addWidget(pButtonBox);
 
     setLayout(pMainLayout);
-
     setFixedSize(QSize(600, 400));
-
 }
 
 void SaveConfirmation::addImage(const QString &name,
@@ -71,16 +57,35 @@ bool SaveConfirmation::isEmpty()
 void SaveConfirmation::saveImages()
 {
     qDebug() << "accept";
+    QList<QListWidgetItem *> selectedItems;
+    selectedItems = _pListWidget->selectedItems();
+    QList<QListWidgetItem *>::const_iterator itItems;
+    itItems = selectedItems.cbegin();
+
+    QImage img;
+    QMap<QString, QImage>::const_iterator itFinded;
+    bool successSaved;
+    while(itItems != selectedItems.cend())
+    {
+        itFinded = images.find((*itItems)->text());
+        img = itFinded.value().copy();
+        successSaved = img.save(itFinded.key());
+        if(successSaved)
+            _pListWidget->removeItemWidget(*itItems);
+        ++itItems;
+    }
+
     accept();
 }
 
-void SaveConfirmation::addTreeItem(QTreeWidgetItem *parent,
-                                const QString &name,
-                                const QImage &image)
+void SaveConfirmation::createItem(const QString &name,
+                                  const QImage &image)
 {
-    QTreeWidgetItem *pTreeItem = new QTreeWidgetItem;
-    pTreeItem->setSizeHint(0, QSize(100, 80));
-    pTreeItem->setIcon(0, QIcon(QPixmap::fromImage(image)));
-    pTreeItem->setText(1, name);
-    parent->addChild(pTreeItem);
+    QListWidgetItem *pListItem = new QListWidgetItem;
+
+    pListItem->setIcon(QIcon(QPixmap::fromImage(image)));
+    pListItem->setText(name);
+    _pListWidget->insertItem(_pListWidget->count() + 1,
+                             pListItem);
+    pListItem->setSelected(true);
 }
