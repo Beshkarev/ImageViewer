@@ -15,6 +15,7 @@
 #include <QToolBar>
 #include <QFileDialog>
 #include <QStatusBar>
+#include <QDialogButtonBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(new TabController),
@@ -390,7 +391,8 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
         qint32 ret;
         ret = pChanges->exec();
 
-        if(ret == QDialog::Accepted)
+        if(ret == QDialog::Accepted ||
+                ret == QDialogButtonBox::Close)
         {
             pChanges->deleteLater();
             pClose->accept();

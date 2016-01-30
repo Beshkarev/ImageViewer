@@ -2,6 +2,7 @@
 #include "screenimage.h"
 #include <QBoxLayout>
 #include <QDebug>
+#include <QPushButton>
 #include <QDialogButtonBox>
 #include <QListWidget>
 
@@ -21,19 +22,29 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
         ++it;
     }
 
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(this);
-    pButtonBox->addButton(QDialogButtonBox::SaveAll);
-    pButtonBox->addButton(QDialogButtonBox::Cancel);
-    pButtonBox->addButton(QDialogButtonBox::Close);
+    QPushButton *pButtonSaveAll = new QPushButton(this);
+    QPushButton *pButtonNo = new QPushButton(this);
+    QPushButton *pButtonCancel = new QPushButton(this);
+    pButtonSaveAll->setText(tr("Save all"));
+    pButtonSaveAll->setDefault(true);
+    pButtonNo->setText(tr("Close without saving"));
+    pButtonCancel->setText(tr("Cancel"));
 
-    connect(pButtonBox, SIGNAL(accepted()),
+    connect(pButtonSaveAll, SIGNAL(released()),
             this, SLOT(saveImages()));
-    connect(pButtonBox, SIGNAL(rejected()),
+    connect(pButtonNo, SIGNAL(released()),
+            this, SLOT(closeWithoutSaving()));
+    connect(pButtonCancel, SIGNAL(released()),
             this, SLOT(reject()));
+
+    QHBoxLayout *pHLayout = new QHBoxLayout;
+    pHLayout->addWidget(pButtonNo);
+    pHLayout->addWidget(pButtonCancel);
+    pHLayout->addWidget(pButtonSaveAll);
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
     pMainLayout->addWidget(_pListWidget);
-    pMainLayout->addWidget(pButtonBox);
+    pMainLayout->addLayout(pHLayout);
 
     setLayout(pMainLayout);
     setFixedSize(QSize(600, 400));
@@ -56,7 +67,6 @@ bool SaveConfirmation::isEmpty()
 
 void SaveConfirmation::saveImages()
 {
-    qDebug() << "accept";
     QList<QListWidgetItem *> selectedItems;
     selectedItems = _pListWidget->selectedItems();
     QList<QListWidgetItem *>::const_iterator itItems;
@@ -76,6 +86,12 @@ void SaveConfirmation::saveImages()
     }
 
     accept();
+}
+
+void SaveConfirmation::closeWithoutSaving()
+{
+
+    done(QDialogButtonBox::Close);
 }
 
 void SaveConfirmation::createItem(const QString &name,
