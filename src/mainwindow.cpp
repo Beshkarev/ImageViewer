@@ -15,11 +15,10 @@
 #include <QToolBar>
 #include <QFileDialog>
 #include <QStatusBar>
-#include <QDialogButtonBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(new TabController),
-    currentPath(QDir::homePath() + "/Pictures")
+    currentPath(QDir::homePath() + "/Pictures/.Camera")
 {
     createActions();
     createMenu();
@@ -83,7 +82,7 @@ void MainWindow::createActions()
     _pZoomOutAction->setShortcut(QKeySequence::ZoomOut);
 
     _pAboutAction = new QAction(tr("About"), this);
-    _pQtAbout = new QAction(tr("Qt About"), this);
+    _pQtAbout = new QAction(tr("About Qt"), this);
 }
 
 void MainWindow::createMenu()
@@ -294,7 +293,7 @@ void MainWindow::saveAs()
 
 void MainWindow::nextFile()
 {
-    if(*it != filesList.last())
+    if(it != filesList.cend())
     {
         qDebug() << "nextFile()" << "hasNext section";
         fileForLoad(*it);
@@ -304,8 +303,8 @@ void MainWindow::nextFile()
     {
         qDebug() << "nextFile()" << "else section";
 
-        fileForLoad(*it);
         it = filesList.cbegin();
+        fileForLoad(*it);
         ++it;
     }
 }
@@ -391,8 +390,7 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
         qint32 ret;
         ret = pChanges->exec();
 
-        if(ret == QDialog::Accepted ||
-                ret == QDialogButtonBox::Close)
+        if(ret == QDialog::Accepted)
         {
             pChanges->deleteLater();
             pClose->accept();

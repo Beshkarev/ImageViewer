@@ -88,7 +88,7 @@ void TabController::closeImage()
 
 void TabController::closeTab(const int index)
 {  
-    closeImage();
+    //closeImage();
     deleteTab(index);
 }
 

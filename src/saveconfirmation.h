@@ -20,7 +20,6 @@ public:
     bool isEmpty();
 private slots:
     void saveImages();
-    void closeWithoutSaving();
 private:
     void createItem(const QString &name,
                  const QImage &image);

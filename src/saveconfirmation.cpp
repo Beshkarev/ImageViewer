@@ -1,9 +1,7 @@
 #include "saveconfirmation.h"
 #include "screenimage.h"
 #include <QBoxLayout>
-#include <QDebug>
 #include <QPushButton>
-#include <QDialogButtonBox>
 #include <QListWidget>
 
 QMap<QString, QImage> SaveConfirmation::images;
@@ -30,11 +28,11 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     pButtonNo->setText(tr("Close without saving"));
     pButtonCancel->setText(tr("Cancel"));
 
-    connect(pButtonSaveAll, SIGNAL(released()),
+    connect(pButtonSaveAll, SIGNAL(clicked(bool)),
             this, SLOT(saveImages()));
-    connect(pButtonNo, SIGNAL(released()),
-            this, SLOT(closeWithoutSaving()));
-    connect(pButtonCancel, SIGNAL(released()),
+    connect(pButtonNo, SIGNAL(clicked(bool)),
+            this, SLOT(accept()));
+    connect(pButtonCancel, SIGNAL(clicked(bool)),
             this, SLOT(reject()));
 
     QHBoxLayout *pHLayout = new QHBoxLayout;
@@ -48,6 +46,7 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
 
     setLayout(pMainLayout);
     setFixedSize(QSize(600, 400));
+    setWindowTitle(tr("Unsaved changes"));
 }
 
 void SaveConfirmation::addImage(const QString &name,
@@ -86,12 +85,6 @@ void SaveConfirmation::saveImages()
     }
 
     accept();
-}
-
-void SaveConfirmation::closeWithoutSaving()
-{
-
-    done(QDialogButtonBox::Close);
 }
 
 void SaveConfirmation::createItem(const QString &name,
