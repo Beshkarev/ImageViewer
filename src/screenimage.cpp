@@ -7,6 +7,7 @@
 #include <QScrollArea>
 #include <QMessageBox>
 #include <QDebug>
+#include <QMouseEvent>
 
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pScrollArea(new QScrollArea(this)),
@@ -19,6 +20,7 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
 {
     _pScrollArea->setWidget(_pLabel);
     _pScrollArea->setWidgetResizable(true);
+    _pScrollArea->setAttribute(Qt::WA_TransparentForMouseEvents);
     _pScrollArea->hide();
 
     _pLabel->setAlignment(Qt::AlignCenter);
@@ -146,6 +148,14 @@ void ScreenImage::fitImage()
 void ScreenImage::resizeEvent(QResizeEvent *)
 {
     bestImageGeometry();
+}
+
+void ScreenImage::wheelEvent(QWheelEvent *pEvent)
+{
+    if(pEvent->delta() > 0)
+        zoomInImage();
+    if(pEvent->delta() < 0)
+        zoomOutImage();
 }
 
 void ScreenImage::showImage()

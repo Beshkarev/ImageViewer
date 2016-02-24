@@ -33,6 +33,7 @@ public:
     void fitImage();
 protected:
     void resizeEvent(QResizeEvent *);
+    virtual void wheelEvent(QWheelEvent *pEvent);
 private:
     void showImage();
     void imageWasChanged();
