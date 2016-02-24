@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "tabcontroller.h"
 #include "saveconfirmation.h"
+#include "filesystem.h"
 #include <QStringList>
 #include <QDir>
 #include <QDirIterator>
@@ -18,7 +19,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(new TabController),
-    currentPath(QDir::homePath() + "/Pictures/.Camera")
+    currentPath(QDir::homePath() + "/Pictures/")
 {
     createActions();
     createMenu();
@@ -147,6 +148,8 @@ QToolBar *MainWindow::createToolBar()
 void MainWindow::createConnectToSlots()
 {
     //File menu section
+    //FileSystem *pFileSystem = FileSystem::instance();
+
     connect(_pNewTabAction, SIGNAL(triggered(bool)),
             this, SLOT(newTab()));
     connect(_pOpenAction, SIGNAL(triggered(bool)),
@@ -228,6 +231,7 @@ void MainWindow::updateListRecentFiles()
         else _pRecentAction[i]->setVisible(false);
     }
     _pSeparatorAction->setVisible(!recentFile.isEmpty());
+
 }
 
 void MainWindow::entryList()
@@ -384,31 +388,25 @@ void MainWindow::aboutApp()
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
-    SaveConfirmation *pChanges = new SaveConfirmation;
+
+    std::shared_ptr<SaveConfirmation> pChanges(new SaveConfirmation);
     if(!pChanges->isEmpty())
     {
         qint32 ret;
         ret = pChanges->exec();
 
         if(ret == QDialog::Accepted)
-        {
-            pChanges->deleteLater();
             pClose->accept();
-        }
+
         else if(ret == QDialog::Rejected)
-        {
-            pChanges->deleteLater();
             pClose->ignore();
-        }
     }
     else
-    {
-        pChanges->deleteLater();
         pClose->accept();
-    }
 }
 
 void MainWindow::loadFileRequest(const QString &file)
 {
     _pTabController->loadFiletoTab(file);
 }
+

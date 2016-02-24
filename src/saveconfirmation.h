@@ -1,13 +1,13 @@
 #ifndef SAVECONFIRMATION
 #define SAVECONFIRMATION
 
-#include <QMap>
+#include <QHash>
 #include <QDialog>
 
 class QString;
 class QImage;
 class QListWidget;
-class QListWidgetItem;
+//class QListWidgetItem;
 
 class SaveConfirmation : public QDialog
 {
@@ -15,15 +15,17 @@ class SaveConfirmation : public QDialog
 
 public:
     SaveConfirmation(QWidget *pWdg = 0);
-    static void addImage(const QString &name,
-                         const QImage &image);
+    static void addImage(const QString name,
+                         const QImage image);
     bool isEmpty();
+    static bool imageIsExist(const QString &name);
+    static QImage getChagedImage(const QString &name);
 private slots:
     void saveImages();
 private:
     void createItem(const QString &name,
                  const QImage &image);
-    static QMap<QString, QImage> images;
+    static QHash<QString, QImage> images;
 
     QListWidget *_pListWidget;
 };

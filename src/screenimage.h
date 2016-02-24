@@ -19,7 +19,7 @@ public:
     QString getFileName() const;
 public:
     //File menu
-    bool loadImage(const QString &file);
+    bool loadImage(const QImage &img, const QString &name);
     void saveImage(const QString &filename) const;
     void closeImage();
     //Edit menu
@@ -40,9 +40,6 @@ private:
     void bestImageGeometry();
     void zoomImage(const qreal zoomFactor);
     void flipImge(const bool horizontal, const bool vertical);
-
-    void addChangedImageToMemory(const QString &name,
-                                 const QImage &img);
 
     QScrollArea *_pScrollArea;
     QLabel *_pLabel;

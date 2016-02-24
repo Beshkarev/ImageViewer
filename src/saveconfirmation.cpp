@@ -4,7 +4,7 @@
 #include <QPushButton>
 #include <QListWidget>
 
-QMap<QString, QImage> SaveConfirmation::images;
+QHash<QString, QImage> SaveConfirmation::images;
 
 SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     QDialog(pWdg), _pListWidget(new QListWidget(this))
@@ -12,7 +12,7 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     _pListWidget->setIconSize(QSize(100, 80));
     _pListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
-    QMap<QString, QImage>::const_iterator it;
+    QHash<QString, QImage>::const_iterator it;
     it = images.cbegin();
     while(it != images.cend())
     {
@@ -49,19 +49,40 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     setWindowTitle(tr("Unsaved changes"));
 }
 
-void SaveConfirmation::addImage(const QString &name,
-                        const QImage &image)
+void SaveConfirmation::addImage(const QString name,
+                        const QImage image)
 {
-    QString str;
-    str = name;
-    QImage img;
-    img = image.copy();
-    images.insert(str, img);
+    QHash<QString, QImage>::iterator it;
+    it = images.find(name);
+    //if image already exist
+    if(it != images.end())
+    {
+        images.remove(name);
+        images.insert(name, image);
+    }
+    //if the new image
+    else
+        images.insert(name, image);
 }
 
 bool SaveConfirmation::isEmpty()
 {
     return images.empty();
+}
+
+bool SaveConfirmation::imageIsExist(const QString &name)
+{
+    return images.find(name) != images.end() ? true : false;
+}
+
+QImage SaveConfirmation::getChagedImage(const QString &name)
+{
+    QHash<QString, QImage>::const_iterator it;
+    it = images.find(name);
+    if(it != images.cend())
+        return it.value();
+    else
+        return QImage();
 }
 
 void SaveConfirmation::saveImages()
@@ -72,13 +93,14 @@ void SaveConfirmation::saveImages()
     itItems = selectedItems.cbegin();
 
     QImage img;
-    QMap<QString, QImage>::const_iterator itFinded;
+    QHash<QString, QImage>::const_iterator itFinded;
     bool successSaved;
     while(itItems != selectedItems.cend())
     {
         itFinded = images.find((*itItems)->text());
         img = itFinded.value().copy();
         successSaved = img.save(itFinded.key());
+
         if(successSaved)
             _pListWidget->removeItemWidget(*itItems);
         ++itItems;

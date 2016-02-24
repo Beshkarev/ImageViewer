@@ -44,11 +44,11 @@ QString ScreenImage::getFileName() const
     return QFileInfo(_fileName).fileName();
 }
 
-bool ScreenImage::loadImage(const QString &file)
+bool ScreenImage::loadImage(const QImage &img,
+                            const QString &name)
 {
-    addChangedImageToMemory(_fileName, m_Image);
+    m_Image = img.copy();
 
-    m_Image.load(file);
     if(m_Image.isNull() &&
             m_Image.format() == QImage::Format_Invalid)
     {
@@ -59,7 +59,8 @@ bool ScreenImage::loadImage(const QString &file)
     bestImageGeometry();
     showImage();
 
-    _fileName = file;
+    _fileName = name;
+    imageChanged = false;
     return true;
 }
 
@@ -71,8 +72,6 @@ void ScreenImage::saveImage(const QString &filename) const
 
 void ScreenImage::closeImage()
 {
-    addChangedImageToMemory(_fileName, m_Image);
-
     imageChanged = false;
     _pLabel->clear();
     _pScrollArea->hide();
@@ -159,6 +158,7 @@ void ScreenImage::showImage()
 void ScreenImage::imageWasChanged()
 {
     imageChanged = true;
+    SaveConfirmation::addImage(_fileName, m_Image);
 }
 
 void ScreenImage::showSomeError(const QString &title, const QString &str)
@@ -196,12 +196,4 @@ void ScreenImage::zoomImage(const qreal zoomFactor)
 void ScreenImage::flipImge(const bool horizontal, const bool vertical)
 {
     m_Image = m_Image.mirrored(horizontal, vertical);
-}
-
-void ScreenImage::addChangedImageToMemory(const QString &name,
-                                          const QImage &img)
-{
-    if(isChanged())
-        SaveConfirmation::addImage(name, img);
-    imageChanged = false;
 }

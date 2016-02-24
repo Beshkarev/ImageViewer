@@ -2,6 +2,7 @@
 #define TABCONTROLLER
 
 #include <QTabWidget>
+#include <QHash>
 
 class ScreenImage;
 class QString;
@@ -14,11 +15,11 @@ public:
     TabController(QWidget *parent = 0);
     void createTab();
     void loadFiletoTab(const QString &file);
-    void nextFile();
-    void previousFile();
     void saveAsFileOpenedInTab(const QString &file);
     void saveFileOpenedInTab();
     void closeImage();
+    QString workDirectory(const qint32 index)const;
+    QWidget *getCurrentWidget();
 public slots:
     void closeTab(const int index);
 public:
@@ -35,6 +36,9 @@ private:
     bool widgetIsNULL(ScreenImage* wdg) const;
     void updateTabText(const int index, const QString &text);
     void deleteTab(const qint32 index);
+    void addWorkDirectory(QWidget *wdg, const QString &file);
+
+    QHash<QWidget*, QString> directorys;
 };
 
 #endif // TABCONTROLLER

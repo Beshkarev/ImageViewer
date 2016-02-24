@@ -1,5 +1,7 @@
 #include "tabcontroller.h"
 #include "screenimage.h"
+#include "filesystem.h"
+#include "saveconfirmation.h"
 #include <QTabWidget>
 #include <QDebug>
 
@@ -19,6 +21,8 @@ void TabController::createTab()
     ScreenImage *widget = new ScreenImage;
     addTab(widget, tr("Tab%1").arg(count()+1));
     setCurrentWidget(widget);
+    addWorkDirectory(widget, "");
+    qDebug() << "Index just creadted tab" << currentIndex();
 }
 
 void TabController::loadFiletoTab(const QString &file)
@@ -34,32 +38,23 @@ void TabController::loadFiletoTab(const QString &file)
     else
         wdg = getImageWidget();
 
-    if(widgetIsNULL(wdg))
-        return;
-
-    successfullyImageLoad = wdg->loadImage(file);
+    //if(widgetIsNULL(wdg))
+        //return;
+    QImage img;
+    if(SaveConfirmation::imageIsExist(file))
+    {
+        img = SaveConfirmation::getChagedImage(file);
+    }
+    else
+        img.load(file);
+    successfullyImageLoad = wdg->loadImage(img, file);
     if(!successfullyImageLoad)
         deleteTab(currentIndex());
     else
+    {
         updateTabText(currentIndex(), wdg->getFileName());
-}
-
-void TabController::nextFile()
-{
-    /*if(it != filesList.cend())
-    {
-        qDebug() << "nextFile()" << "hasNext section";
-        fileForLoad(*it);
-        ++it;
+        addWorkDirectory(wdg, file);
     }
-    else
-    {
-        qDebug() << "nextFile()" << "else section";
-
-        it = filesList.cbegin();
-        fileForLoad(*it);
-        ++it;
-    }*/
 }
 
 void TabController::saveFileOpenedInTab()
@@ -86,9 +81,26 @@ void TabController::closeImage()
     }
 }
 
+QString TabController::workDirectory(const qint32 index) const
+{
+    QWidget *wdg = widget(index);
+    QHash<QWidget*, QString>::const_iterator it = directorys.find(wdg);
+
+    if(it != directorys.cend())
+        return it.value();
+    else
+        return QString();
+}
+
+QWidget *TabController::getCurrentWidget()
+{
+    return currentWidget();
+}
+
 void TabController::closeTab(const int index)
 {  
     //closeImage();
+    qDebug() << "Index tab for closing" << index;
     deleteTab(index);
 }
 
@@ -179,3 +191,20 @@ void TabController::deleteTab(const qint32 index)
     pWdg->deleteLater();
     updateTabNumber();
 }
+
+void TabController::addWorkDirectory(QWidget *wdg, const QString &file)
+{
+    QHash<QWidget*, QString>::const_iterator it = directorys.find(wdg);
+    //if unsaved directory
+    if(it == directorys.end())
+    {
+        directorys.insert(wdg, file);
+    }
+    //if saved directory was changed
+    else if(it.value() != FileSystem::absolutePath(file))
+    {
+        directorys.remove(wdg);
+        directorys.insert(wdg, file);
+    }
+}
+
