@@ -7,6 +7,7 @@ class QImage;
 class QLabel;
 class QScrollArea;
 class QString;
+class QPoint;
 
 class ScreenImage : public QWidget
 {
@@ -32,8 +33,11 @@ public:
     //View menu
     void fitImage();
 protected:
-    void resizeEvent(QResizeEvent *);
-    virtual void wheelEvent(QWheelEvent *pEvent);
+    virtual void resizeEvent(QResizeEvent *);
+    virtual void wheelEvent(QWheelEvent *);
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
+    virtual void mouseReleaseEvent(QMouseEvent *);
 private:
     void showImage();
     void imageWasChanged();
@@ -57,6 +61,7 @@ private:
     qreal zoomFactor;
 
     QString _fileName;
+    QPoint _mousePosition;
 };
 
 #endif // SCREENIMAGE

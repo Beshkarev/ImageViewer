@@ -5,6 +5,7 @@
 #include <QBoxLayout>
 #include <QLabel>
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QMessageBox>
 #include <QDebug>
 #include <QMouseEvent>
@@ -156,6 +157,38 @@ void ScreenImage::wheelEvent(QWheelEvent *pEvent)
         zoomInImage();
     if(pEvent->delta() < 0)
         zoomOutImage();
+}
+
+void ScreenImage::mousePressEvent(QMouseEvent *pEvent)
+{
+    if(pEvent->button() == Qt::LeftButton)
+    {
+        _mousePosition = pEvent->localPos().toPoint();
+        setCursor(Qt::ClosedHandCursor);
+    }
+}
+
+void ScreenImage::mouseMoveEvent(QMouseEvent *pEvent)
+{
+    if(pEvent->buttons() == Qt::LeftButton)
+    {
+        QScrollBar *pScrollBar;
+        _mousePosition -= pEvent->localPos().toPoint();
+
+        pScrollBar = _pScrollArea->horizontalScrollBar();
+        pScrollBar->setValue(_mousePosition.x() + pScrollBar->value());
+
+        pScrollBar = _pScrollArea->verticalScrollBar();
+        pScrollBar->setValue(_mousePosition.y() + pScrollBar->value());
+
+        _mousePosition = pEvent->localPos().toPoint();
+
+    }
+}
+
+void ScreenImage::mouseReleaseEvent(QMouseEvent *pEvent)
+{
+    setCursor(Qt::ArrowCursor);
 }
 
 void ScreenImage::showImage()
