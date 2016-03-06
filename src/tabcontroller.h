@@ -18,10 +18,13 @@ public:
     void saveAsFileOpenedInTab(const QString &file);
     void saveFileOpenedInTab();
     void closeImage();
-    QString workDirectory(const qint32 index)const;
+    //QString workDirectory()const;
     QWidget *getCurrentWidget();
 public slots:
     void closeTab(const int index);
+signals:
+    void tabClosed();
+    void tabCreated();
 public:
     void horizontalFlip();
     void verticalFlip();
@@ -36,9 +39,9 @@ private:
     bool widgetIsNULL(ScreenImage* wdg) const;
     void updateTabText(const int index, const QString &text);
     void deleteTab(const qint32 index);
-    void addWorkDirectory(QWidget *wdg, const QString &file);
+    //void addWorkDirectory(QWidget *wdg, const QString &file);
 
-    QHash<QWidget*, QString> directorys;
+    //QHash<QWidget*, QString> directorys;
 };
 
 #endif // TABCONTROLLER

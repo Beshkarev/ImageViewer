@@ -21,8 +21,10 @@ void TabController::createTab()
     ScreenImage *widget = new ScreenImage;
     addTab(widget, tr("Tab%1").arg(count()+1));
     setCurrentWidget(widget);
-    addWorkDirectory(widget, "");
-    qDebug() << "Index just creadted tab" << currentIndex();
+
+    emit tabCreated();
+    //addWorkDirectory(widget, "");
+    //qDebug() << "Index just creadted tab" << currentIndex();
 }
 
 void TabController::loadFiletoTab(const QString &file)
@@ -47,13 +49,14 @@ void TabController::loadFiletoTab(const QString &file)
     }
     else
         img.load(file);
+
     successfullyImageLoad = wdg->loadImage(img, file);
     if(!successfullyImageLoad)
         deleteTab(currentIndex());
     else
     {
         updateTabText(currentIndex(), wdg->getFileName());
-        addWorkDirectory(wdg, file);
+        //addWorkDirectory(wdg, file);
     }
 }
 
@@ -81,16 +84,16 @@ void TabController::closeImage()
     }
 }
 
-QString TabController::workDirectory(const qint32 index) const
+/*QString TabController::workDirectory() const
 {
-    QWidget *wdg = widget(index);
+    QWidget *wdg = widget(currentIndex());
     QHash<QWidget*, QString>::const_iterator it = directorys.find(wdg);
 
     if(it != directorys.cend())
         return it.value();
     else
         return QString();
-}
+}*/
 
 QWidget *TabController::getCurrentWidget()
 {
@@ -100,8 +103,9 @@ QWidget *TabController::getCurrentWidget()
 void TabController::closeTab(const int index)
 {  
     //closeImage();
-    qDebug() << "Index tab for closing" << index;
+    //qDebug() << "Index tab for closing" << index;
     deleteTab(index);
+    emit tabClosed();
 }
 
 void TabController::horizontalFlip()
@@ -168,7 +172,7 @@ void TabController::updateTabNumber()
            return;
         if(wdg->isEmpty())
         {
-            qDebug() << "in updateTab";
+            //qDebug() << "in updateTab";
             updateTabText(i, "Tab" + QString::number(i + 1));
         }
     }
@@ -192,7 +196,7 @@ void TabController::deleteTab(const qint32 index)
     updateTabNumber();
 }
 
-void TabController::addWorkDirectory(QWidget *wdg, const QString &file)
+/*void TabController::addWorkDirectory(QWidget *wdg, const QString &file)
 {
     QHash<QWidget*, QString>::const_iterator it = directorys.find(wdg);
     //if unsaved directory
@@ -206,5 +210,5 @@ void TabController::addWorkDirectory(QWidget *wdg, const QString &file)
         directorys.remove(wdg);
         directorys.insert(wdg, file);
     }
-}
+}*/
 

@@ -45,11 +45,14 @@ private slots:
     void fitImageRequest();
 
     void aboutApp();
+
+    void checkTabCount();
 protected:
     void closeEvent(QCloseEvent *);
 private:
 
     void loadFileRequest(const QString &file);
+    void setButtonsEnabled(bool state);
 
     TabController *_pTabController;
     QStringList recentFile;
@@ -78,7 +81,6 @@ private:
     QAction *_pClockwiseRotateAction;
     QAction *_pCounterClockwiseRotateAction;
     QAction *_pFitAction;
-    QAction *_pNormalSizeAction;
     QAction *_pZoomInAction;
     QAction *_pZoomOutAction;
 

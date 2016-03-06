@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
     updateListRecentFiles();
+
+    setButtonsEnabled(false);
 }
 
 void MainWindow::createActions()
@@ -195,6 +197,11 @@ void MainWindow::createConnectToSlots()
             this, SLOT(aboutApp()));
     connect(_pQtAbout, SIGNAL(triggered(bool)),
             qApp, SLOT(aboutQt()));
+
+    connect(_pTabController, SIGNAL(tabClosed()),
+            this, SLOT(checkTabCount()));
+    connect(_pTabController, SIGNAL(tabCreated()),
+            this, SLOT(checkTabCount()));
 }
 
 void MainWindow::showStatusBarMessage(const QString &message)
@@ -386,6 +393,17 @@ void MainWindow::aboutApp()
                           "The programm developed for education and personal satisfaction.\n"));
 }
 
+void MainWindow::checkTabCount()
+{
+    int count = _pTabController->count();
+    if(count == 0)
+    {
+        setButtonsEnabled(false);
+    }
+    else
+        setButtonsEnabled(true);
+}
+
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
 
@@ -408,5 +426,25 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
 void MainWindow::loadFileRequest(const QString &file)
 {
     _pTabController->loadFiletoTab(file);
+}
+
+void MainWindow::setButtonsEnabled(bool state)
+{
+    _pOpenAction->setEnabled(state);
+    _pSaveAction->setEnabled(state);
+    _pSaveAsAction->setEnabled(state);
+    _pNextFileAction->setEnabled(state);
+    _pPreviousFileAction->setEnabled(state);
+    _pCloseFileAction->setEnabled(state);
+    _pCloseTabAction->setEnabled(state);
+
+    _pVerticalFlipAction->setEnabled(state);
+    _pHorizontalFlipAction->setEnabled(state);
+    _pClockwiseRotateAction->setEnabled(state);
+    _pCounterClockwiseRotateAction->setEnabled(state);
+    _pFitAction->setEnabled(state);
+    _pZoomInAction->setEnabled(state);
+    _pZoomOutAction->setEnabled(state);
+
 }
 
