@@ -3,6 +3,7 @@
 
 #include <QTabWidget>
 #include <QHash>
+#include <QFileInfoList>
 
 class ScreenImage;
 class QString;
@@ -13,13 +14,15 @@ class TabController : public QTabWidget
 
 public:
     TabController(QWidget *parent = 0);
+
     void createTab();
     void loadFiletoTab(const QString &file);
     void saveAsFileOpenedInTab(const QString &file);
     void saveFileOpenedInTab();
     void closeImage();
-    //QString workDirectory()const;
-    QWidget *getCurrentWidget();
+    void next();
+    void previous();
+    void open();
 public slots:
     void closeTab(const int index);
 signals:
@@ -34,14 +37,23 @@ public:
     void zoomOutImage();
     void fitImage();
 private:
+
     ScreenImage *getImageWidget();
     void updateTabNumber();
     bool widgetIsNULL(ScreenImage* wdg) const;
     void updateTabText(const int index, const QString &text);
     void deleteTab(const qint32 index);
-    //void addWorkDirectory(QWidget *wdg, const QString &file);
 
-    //QHash<QWidget*, QString> directorys;
+    void addWorkDirectory(const QString &dir);
+    bool workDirIsChanged(const QString &dir);
+    void entryList(const QString &dir);
+    bool entryIsExist(const QString &dir);
+    void createIterator();
+    QString workDirectory() const;
+
+    QHash<QWidget*, QString> directorys;
+    QHash<QString, QFileInfoList> _entries;
+    QHash<QWidget*, QList<QFileInfo>::const_iterator> _iteratots;
 };
 
 #endif // TABCONTROLLER

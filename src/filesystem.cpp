@@ -1,23 +1,20 @@
 #include "filesystem.h"
-#include "tabcontroller.h"
-#include <QStringList>
-#include <QDir>
 
-FileSystem *FileSystem::_instance = nullptr;
+#include <QDebug>
+#include <QFileInfo>
 
-FileSystem::FileSystem()
-{}
-
-FileSystem *FileSystem::instance()
+QString FileSystem::absolutePath(const QString &dir)
 {
-    if(_instance == nullptr)
-        _instance = new FileSystem;
-    return _instance;
+    QFileInfo path(dir);
+
+    //qDebug() << "path:" << path.absolutePath();
+
+    return path.absolutePath();
 }
 
-QString FileSystem::absolutePath(const QString &file)
+void FileSystem::newDirectory()
 {
-    return QDir(file).absolutePath();
+
 }
 
 QString FileSystem::nextFile()

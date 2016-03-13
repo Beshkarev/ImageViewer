@@ -2,6 +2,7 @@
 #include "tabcontroller.h"
 #include "saveconfirmation.h"
 #include "filesystem.h"
+#include <memory>
 #include <QStringList>
 #include <QDir>
 #include <QDirIterator>
@@ -16,9 +17,13 @@
 #include <QToolBar>
 #include <QFileDialog>
 #include <QStatusBar>
+#include <QFileInfo>
+#include <QFileInfoList>
+#include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(new TabController),
+    _pFileSystem(new FileSystem),
     currentPath(QDir::homePath() + "/Pictures/")
 {
     createActions();
@@ -26,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     addToolBar(createToolBar());
     createConnectToSlots();
 
-    entryList();
+    //entryList();
 
     QCoreApplication::setApplicationVersion("0.6");
     setGeometry(QRect(200, 200, 800, 500));
@@ -243,48 +248,56 @@ void MainWindow::updateListRecentFiles()
 
 void MainWindow::entryList()
 {
+    QApplication::processEvents();
     QStringList supportedFormats;
     supportedFormats << "*.jpg" << "*.bmp" << "*.png";
     QDir dir(currentPath);
-    filesList = dir.entryList(supportedFormats, QDir::Files,
-                              QDir::LocaleAware);
+    filesList = dir.entryInfoList(supportedFormats, QDir::Files,
+                                    QDir::LocaleAware);
 
     it = filesList.begin();
+
+
 }
 
 QString MainWindow::getAbsolutePathToFile(const QString &file)
 {
     QDir dir(currentPath);
     return dir.absoluteFilePath(file);
+    //return FileSystem::absolutePath(file);
 }
 
 void MainWindow::fileForLoad(const QString &file)
 {
-    QString fileForLoad = getAbsolutePathToFile(file);
-    loadFileRequest(fileForLoad);
-
-    setRecentFile(fileForLoad);
+    //QString fileForLoad = getAbsolutePathToFile(file);
+    //loadFileRequest(fileForLoad);
+    loadFileRequest(file);
+    setRecentFile(file);
     updateListRecentFiles();
+    //setRecentFile(fileForLoad);
+    //updateListRecentFiles();
 }
 
 void MainWindow::newTab()
 {
     _pTabController->createTab();
+
 }
 
 void MainWindow::openFile()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
-                                                    currentPath,
-                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
-                                                       "*.ppm;;*.xbm;;*.xpm"));
-    if(!filename.isEmpty())
-    {
-        newTab();
-        loadFileRequest(filename);
-    }
-    setRecentFile(filename);
-    updateListRecentFiles();
+//    QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
+//                                                    currentPath,
+//                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
+//                                                       "*.ppm;;*.xbm;;*.xpm"));
+//    if(!filename.isEmpty())
+//    {
+//        //newTab();
+//        loadFileRequest(filename);
+//    }
+//    setRecentFile(filename);
+//    updateListRecentFiles();
+    _pTabController->open();
 
 }
 
@@ -304,34 +317,37 @@ void MainWindow::saveAs()
 
 void MainWindow::nextFile()
 {
-    if(it != filesList.cend())
-    {
-        qDebug() << "nextFile()" << "hasNext section";
-        fileForLoad(*it);
-        ++it;
-    }
-    else
-    {
-        qDebug() << "nextFile()" << "else section";
 
-        it = filesList.cbegin();
-        fileForLoad(*it);
-        ++it;
-    }
+//    if(it != filesList.end())
+//    {
+//        qDebug() << "nextFile()" << "hasNext section";
+//        fileForLoad((*it).absoluteFilePath());
+//        ++it;
+//    }
+//    else
+//    {
+//        qDebug() << "nextFile()" << "else section";
+
+//        it = filesList.begin();
+
+//        fileForLoad((*it).absoluteFilePath());
+//        ++it;
+//    }
+    _pTabController->next();
 }
 
 void MainWindow::previousFile()
 {
-    if(it != filesList.cbegin())
+    if(it != filesList.begin())
     {
         qDebug() << "previous file" << "hasPrevous section";
-        fileForLoad(*(--it));
+        fileForLoad((*(--it)).absoluteFilePath());
     }
     else
     {
         qDebug() << "previous file" << "else section";
-        it = filesList.cend();
-        fileForLoad(*(--it));
+        it = filesList.end();
+        fileForLoad((*(--it)).absoluteFilePath());
     }
 }
 
@@ -447,4 +463,3 @@ void MainWindow::setButtonsEnabled(bool state)
     _pZoomOutAction->setEnabled(state);
 
 }
-

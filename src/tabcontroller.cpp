@@ -4,6 +4,8 @@
 #include "saveconfirmation.h"
 #include <QTabWidget>
 #include <QDebug>
+#include <QFileDialog>
+#include <QApplication>
 
 TabController::TabController(QWidget *parent/*=0*/) :
     QTabWidget(parent)
@@ -21,28 +23,21 @@ void TabController::createTab()
     ScreenImage *widget = new ScreenImage;
     addTab(widget, tr("Tab%1").arg(count()+1));
     setCurrentWidget(widget);
+    addWorkDirectory("");
 
     emit tabCreated();
-    //addWorkDirectory(widget, "");
     //qDebug() << "Index just creadted tab" << currentIndex();
 }
 
 void TabController::loadFiletoTab(const QString &file)
 {
     ScreenImage *wdg;
-    bool successfullyImageLoad;
+    wdg = getImageWidget();
+    if(widgetIsNULL(wdg))
+        return;
 
-    if(count() == 0)
-    {
-        createTab();
-        wdg = getImageWidget();
-    }
-    else
-        wdg = getImageWidget();
-
-    //if(widgetIsNULL(wdg))
-        //return;
     QImage img;
+    bool successfullyImageLoad;
     if(SaveConfirmation::imageIsExist(file))
     {
         img = SaveConfirmation::getChagedImage(file);
@@ -56,7 +51,7 @@ void TabController::loadFiletoTab(const QString &file)
     else
     {
         updateTabText(currentIndex(), wdg->getFileName());
-        //addWorkDirectory(wdg, file);
+        addWorkDirectory(file);
     }
 }
 
@@ -84,26 +79,43 @@ void TabController::closeImage()
     }
 }
 
-/*QString TabController::workDirectory() const
+void TabController::next()
 {
-    QWidget *wdg = widget(currentIndex());
-    QHash<QWidget*, QString>::const_iterator it = directorys.find(wdg);
+    QList<QFileInfo>::const_iterator it;
+    it = _iteratots.find(currentWidget()).value();
+    QFileInfoList list = _entries.find(workDirectory()).value();
 
-    if(it != directorys.cend())
-        return it.value();
+    if(it != list.cend())
+    {
+        loadFiletoTab((*it).absoluteFilePath());
+        ++it;
+    }
     else
-        return QString();
-}*/
+    {
+        it = list.cbegin();
+        loadFiletoTab((*it).absoluteFilePath());
+        ++it;
+    }
 
-QWidget *TabController::getCurrentWidget()
+    _iteratots.insert(currentWidget(), it);
+}
+
+void TabController::open()
 {
-    return currentWidget();
+    QString dir = workDirectory();
+    if(dir.isEmpty())
+        dir = QDir::homePath() + "/Pictures";
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
+                                                    dir,
+                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
+                                                       "*.ppm;;*.xbm;;*.xpm"));
+    addWorkDirectory(filename);
+    entryList(filename);
+    createIterator();
 }
 
 void TabController::closeTab(const int index)
 {  
-    //closeImage();
-    //qDebug() << "Index tab for closing" << index;
     deleteTab(index);
     emit tabClosed();
 }
@@ -196,19 +208,84 @@ void TabController::deleteTab(const qint32 index)
     updateTabNumber();
 }
 
-/*void TabController::addWorkDirectory(QWidget *wdg, const QString &file)
+void TabController::addWorkDirectory(const QString &dir)
 {
-    QHash<QWidget*, QString>::const_iterator it = directorys.find(wdg);
+    QHash<QWidget*, QString>::const_iterator it;
+    it = directorys.find(currentWidget());
     //if unsaved directory
-    if(it == directorys.end())
+    if(it == directorys.cend())
     {
-        directorys.insert(wdg, file);
+        qDebug() << "new dir";
+        directorys.insert(currentWidget(),
+                          FileSystem::absolutePath(dir));
     }
     //if saved directory was changed
-    else if(it.value() != FileSystem::absolutePath(file))
+    else if(workDirIsChanged(dir))
     {
-        directorys.remove(wdg);
-        directorys.insert(wdg, file);
+        qDebug() << "work dir is changed";
+        directorys.remove(currentWidget());
+        directorys.insert(currentWidget(),
+                          FileSystem::absolutePath(dir));
     }
-}*/
+    else
+        qDebug() << "nothing changed";
+}
 
+bool TabController::workDirIsChanged(const QString &dir)
+{
+    QHash<QWidget*, QString>::const_iterator it;
+    it = directorys.find(currentWidget());
+
+    if(it.value() != FileSystem::absolutePath(dir))
+        return true;
+    else
+        return false;
+}
+
+void TabController::entryList(const QString &dir)
+{
+    QDir directory(FileSystem::absolutePath(dir));
+
+    if(!entryIsExist(dir))
+    {
+        QApplication::processEvents();
+
+        QStringList supportedFormats;
+        supportedFormats << "*.jpg" << "*.bmp" << "*.png";
+        QFileInfoList list = directory.entryInfoList(supportedFormats, QDir::Files,
+                                             QDir::LocaleAware);
+        _entries.insert(directory.absolutePath(), list);
+    }
+}
+
+bool TabController::entryIsExist(const QString &dir)
+{
+    QHash<QString, QFileInfoList>::const_iterator it;
+    it = _entries.find(FileSystem::absolutePath(dir));
+
+    if(it == _entries.cend())
+        return false;
+    else
+        return true;
+}
+
+void TabController::createIterator()
+{
+    QString dir = workDirectory();
+
+    QList<QFileInfo>::const_iterator it;
+    it = _entries.find(dir).value().cbegin();
+
+    _iteratots.insert(currentWidget(), it);
+}
+
+QString TabController::workDirectory() const
+{
+    QHash<QWidget*, QString>::const_iterator it;
+    it = directorys.find(currentWidget());
+
+    if(it != directorys.cend())
+        return it.value();
+    else
+        return QString();
+}
