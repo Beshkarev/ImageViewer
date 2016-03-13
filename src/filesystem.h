@@ -1,33 +1,41 @@
 #ifndef FILESYSTEM
 #define FILESYSTEM
 
-//#include <QObject>
 #include <QHash>
-#include <QLinkedList>
+#include <QFileInfoList>
 
-class QWidget;
 class QString;
+class TabController;
 
 class FileSystem
 {
 public:
+    FileSystem();
+
     static QString absolutePath(const QString &dir);
 
     void newDirectory();
     void deleteDirectory();
 
+    QString openFile();
     QString nextFile();
     QString previousFile();
 
 private:
+    TabController *_pTabs;
+
+    void addWorkDirectory(const QString &dir);
+    bool workDirIsChanged(const QString &dir);
     void entryList(const QString &dir);
-    bool entryIsExist();
+    bool entryIsExist(const QString &dir);
+    void createIterator();
+    QString workDirectory() const;
+
 
 
     QHash<QWidget*, QString> directorys;
-
-    QLinkedList<QStringList> _filesInDirectory;
-    QHash<QWidget*, QStringList::const_iterator> _itToEntryList;
+    QHash<QString, QFileInfoList> _entries;
+    QHash<QWidget*, QList<QFileInfo>::const_iterator> _iteratots;
 
 
 

@@ -4,8 +4,6 @@
 #include "filesystem.h"
 #include <memory>
 #include <QStringList>
-#include <QDir>
-#include <QDirIterator>
 #include <QBoxLayout>
 #include <QMessageBox>
 #include <QCloseEvent>
@@ -15,23 +13,16 @@
 #include <QMenuBar>
 #include <QCoreApplication>
 #include <QToolBar>
-#include <QFileDialog>
 #include <QStatusBar>
-#include <QFileInfo>
-#include <QFileInfoList>
-#include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), _pTabController(new TabController),
-    _pFileSystem(new FileSystem),
-    currentPath(QDir::homePath() + "/Pictures/")
+    QMainWindow(parent), _pTabController(TabController::instance()),
+    _pFileSystem(new FileSystem)
 {
     createActions();
     createMenu();
     addToolBar(createToolBar());
     createConnectToSlots();
-
-    //entryList();
 
     QCoreApplication::setApplicationVersion("0.6");
     setGeometry(QRect(200, 200, 800, 500));
@@ -154,9 +145,6 @@ QToolBar *MainWindow::createToolBar()
 
 void MainWindow::createConnectToSlots()
 {
-    //File menu section
-    //FileSystem *pFileSystem = FileSystem::instance();
-
     connect(_pNewTabAction, SIGNAL(triggered(bool)),
             this, SLOT(newTab()));
     connect(_pOpenAction, SIGNAL(triggered(bool)),
@@ -246,38 +234,6 @@ void MainWindow::updateListRecentFiles()
 
 }
 
-void MainWindow::entryList()
-{
-    QApplication::processEvents();
-    QStringList supportedFormats;
-    supportedFormats << "*.jpg" << "*.bmp" << "*.png";
-    QDir dir(currentPath);
-    filesList = dir.entryInfoList(supportedFormats, QDir::Files,
-                                    QDir::LocaleAware);
-
-    it = filesList.begin();
-
-
-}
-
-QString MainWindow::getAbsolutePathToFile(const QString &file)
-{
-    QDir dir(currentPath);
-    return dir.absoluteFilePath(file);
-    //return FileSystem::absolutePath(file);
-}
-
-void MainWindow::fileForLoad(const QString &file)
-{
-    //QString fileForLoad = getAbsolutePathToFile(file);
-    //loadFileRequest(fileForLoad);
-    loadFileRequest(file);
-    setRecentFile(file);
-    updateListRecentFiles();
-    //setRecentFile(fileForLoad);
-    //updateListRecentFiles();
-}
-
 void MainWindow::newTab()
 {
     _pTabController->createTab();
@@ -286,19 +242,8 @@ void MainWindow::newTab()
 
 void MainWindow::openFile()
 {
-//    QString filename = QFileDialog::getOpenFileName(this, tr("Open file"),
-//                                                    currentPath,
-//                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
-//                                                       "*.ppm;;*.xbm;;*.xpm"));
-//    if(!filename.isEmpty())
-//    {
-//        //newTab();
-//        loadFileRequest(filename);
-//    }
-//    setRecentFile(filename);
-//    updateListRecentFiles();
-    _pTabController->open();
-
+    QString file = _pFileSystem->openFile();
+    loadFileRequest(file);
 }
 
 void MainWindow::saveFile()
@@ -308,47 +253,23 @@ void MainWindow::saveFile()
 
 void MainWindow::saveAs()
 {
-    const QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
-                                                    currentPath,
-                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
-                                                       "*.ppm;;*.xbm;;*.xpm"));
-    _pTabController->saveAsFileOpenedInTab(filename);
+//    const QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
+//                                                    currentPath,
+//                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
+//                                                       "*.ppm;;*.xbm;;*.xpm"));
+//    _pTabController->saveAsFileOpenedInTab(filename);
 }
 
 void MainWindow::nextFile()
 {
-
-//    if(it != filesList.end())
-//    {
-//        qDebug() << "nextFile()" << "hasNext section";
-//        fileForLoad((*it).absoluteFilePath());
-//        ++it;
-//    }
-//    else
-//    {
-//        qDebug() << "nextFile()" << "else section";
-
-//        it = filesList.begin();
-
-//        fileForLoad((*it).absoluteFilePath());
-//        ++it;
-//    }
-    _pTabController->next();
+    QString file = _pFileSystem->nextFile();
+    loadFileRequest(file);
 }
 
 void MainWindow::previousFile()
 {
-    if(it != filesList.begin())
-    {
-        qDebug() << "previous file" << "hasPrevous section";
-        fileForLoad((*(--it)).absoluteFilePath());
-    }
-    else
-    {
-        qDebug() << "previous file" << "else section";
-        it = filesList.end();
-        fileForLoad((*(--it)).absoluteFilePath());
-    }
+    QString file = _pFileSystem->previousFile();
+    loadFileRequest(file);
 }
 
 void MainWindow::closeFileRequest()
@@ -422,7 +343,6 @@ void MainWindow::checkTabCount()
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
-
     std::shared_ptr<SaveConfirmation> pChanges(new SaveConfirmation);
     if(!pChanges->isEmpty())
     {
@@ -442,6 +362,8 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
 void MainWindow::loadFileRequest(const QString &file)
 {
     _pTabController->loadFiletoTab(file);
+    setRecentFile(file);
+    updateListRecentFiles();
 }
 
 void MainWindow::setButtonsEnabled(bool state)

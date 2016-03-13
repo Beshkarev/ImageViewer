@@ -27,9 +27,6 @@ private:
     void showStatusBarMessage(const QString &message);
     void setRecentFile(const QString &filename);
     void updateListRecentFiles();
-    void entryList();
-    QString getAbsolutePathToFile(const QString &file);
-    void fileForLoad(const QString &file);
 private slots:
     void newTab();
     void openFile();
@@ -61,9 +58,7 @@ private:
     TabController *_pTabController;
     FileSystem *_pFileSystem;
     QStringList recentFile;
-    //QStringList filesList;
-    QFileInfoList filesList;
-    //QStringList::const_iterator it;
+
     QList<QFileInfo>::iterator it;
     enum{maxRecentFile = 5};
 
@@ -93,8 +88,6 @@ private:
 
     QAction *_pAboutAction;
     QAction *_pQtAbout;
-
-    QString currentPath;
 };
 
 #endif // MAINWINDOW_H
