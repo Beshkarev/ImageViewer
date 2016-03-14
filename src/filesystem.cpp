@@ -32,6 +32,9 @@ QString FileSystem::openFile()
                                                     dir,
                                                     QObject::tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
                                                        "*.ppm;;*.xbm;;*.xpm"));
+    if(filename.isEmpty())
+        return QString();
+
     addWorkDirectory(filename);
     entryList(filename);
     createIterator();

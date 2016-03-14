@@ -142,6 +142,8 @@ QToolBar *MainWindow::createToolBar()
     pToolBar->addAction(_pVerticalFlipAction);
     pToolBar->addAction(_pZoomInAction);
     pToolBar->addAction(_pZoomOutAction);
+    pToolBar->addAction(_pClockwiseRotateAction);
+    pToolBar->addAction(_pCounterClockwiseRotateAction);
     pToolBar->addAction(_pFitAction);
 
     return pToolBar;
@@ -252,6 +254,8 @@ void MainWindow::newTab()
 void MainWindow::openFile()
 {
     QString file = _pFileSystem->openFile();
+    if(file.isEmpty())
+        return;
     loadFileRequest(file);
 }
 
