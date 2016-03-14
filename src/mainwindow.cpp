@@ -248,12 +248,20 @@ void MainWindow::openFile()
 
 void MainWindow::saveFile()
 {
-    _pTabController->saveFileOpenedInTab();
+    bool success = _pFileSystem->saveFile();
+    if(success)
+        showStatusBarMessage(tr("File was saved"));
+    else if(!success)
+        showStatusBarMessage(tr("File not saved"));
 }
 
 void MainWindow::saveAs()
 {
-    _pTabController->saveAsFileOpenedInTab(_pFileSystem->saveAs());
+    bool success = _pFileSystem->saveAs();
+    if(success)
+        showStatusBarMessage(tr("File was saved"));
+    else if(!success)
+        showStatusBarMessage(tr("File not saved"));
 }
 
 void MainWindow::nextFile()

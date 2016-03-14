@@ -15,13 +15,10 @@ class ScreenImage : public QWidget
 
 public:
     explicit ScreenImage(QWidget *pWd = 0);
-    bool isChanged() const;
     bool isEmpty() const;
-    QString getFileName() const;
 public:
     //File menu
     bool loadImage(const QImage &img, const QString &name);
-    void saveImage(const QString &filename) const;
     void closeImage();
     //Edit menu
     void horizontalFlip();

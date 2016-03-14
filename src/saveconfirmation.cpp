@@ -70,7 +70,7 @@ bool SaveConfirmation::isEmpty()
     return images.empty();
 }
 
-bool SaveConfirmation::imageIsExist(const QString &name)
+bool SaveConfirmation::imageWasChanged(const QString &name)
 {
     return images.find(name) != images.end() ? true : false;
 }
@@ -83,6 +83,11 @@ QImage SaveConfirmation::getChagedImage(const QString &name)
         return it.value();
     else
         return QImage();
+}
+
+void SaveConfirmation::deleteImage(const QString &name)
+{
+    images.remove(name);
 }
 
 void SaveConfirmation::saveImages()

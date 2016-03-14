@@ -7,7 +7,6 @@
 class QString;
 class QImage;
 class QListWidget;
-//class QListWidgetItem;
 
 class SaveConfirmation : public QDialog
 {
@@ -18,8 +17,9 @@ public:
     static void addImage(const QString name,
                          const QImage image);
     bool isEmpty();
-    static bool imageIsExist(const QString &name);
+    static bool imageWasChanged(const QString &name);
     static QImage getChagedImage(const QString &name);
+    static void deleteImage(const QString &name);
 private slots:
     void saveImages();
 private:

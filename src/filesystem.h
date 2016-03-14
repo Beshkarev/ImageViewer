@@ -13,6 +13,7 @@ public:
     FileSystem();
 
     static QString absolutePath(const QString &dir);
+    static QString fileName(const QString &file);
 
     void newDirectory();
     void deleteDirectory();
@@ -20,7 +21,8 @@ public:
     QString openFile();
     QString nextFile();
     QString previousFile();
-    QString saveAs();
+    bool saveFile();
+    bool saveAs();
 
 private:
     TabController *_pTabs;
@@ -33,6 +35,7 @@ private:
     QString workDirectory() const;
 
     QString getCurrentFileName();
+    bool saveToDisk(const QString &locationForSaving);
 
     QHash<QWidget*, QString> directorys;
     QHash<QString, QFileInfoList> _entries;

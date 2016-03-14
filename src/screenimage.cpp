@@ -32,19 +32,9 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     setLayout(pHLayout);
 }
 
-bool ScreenImage::isChanged() const
-{
-    return imageChanged;
-}
-
 bool ScreenImage::isEmpty() const
 {
     return m_Image.isNull();
-}
-
-QString ScreenImage::getFileName() const
-{
-    return QFileInfo(_fileName).fileName();
 }
 
 bool ScreenImage::loadImage(const QImage &img,
@@ -65,12 +55,6 @@ bool ScreenImage::loadImage(const QImage &img,
     _fileName = name;
     imageChanged = false;
     return true;
-}
-
-void ScreenImage::saveImage(const QString &filename) const
-{
-   bool save = m_Image.save(filename);
-   //qDebug() << save;
 }
 
 void ScreenImage::closeImage()

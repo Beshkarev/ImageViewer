@@ -1,6 +1,7 @@
 #include "tabcontroller.h"
 #include "screenimage.h"
 #include "saveconfirmation.h"
+#include "filesystem.h"
 #include <QTabWidget>
 #include <QDebug>
 
@@ -42,7 +43,7 @@ void TabController::loadFiletoTab(const QString &file)
 
     QImage img;
     bool successfullyImageLoad;
-    if(SaveConfirmation::imageIsExist(file))
+    if(SaveConfirmation::imageWasChanged(file))
     {
         img = SaveConfirmation::getChagedImage(file);
     }
@@ -54,22 +55,9 @@ void TabController::loadFiletoTab(const QString &file)
         deleteTab(currentIndex());
     else
     {
-        updateTabText(currentIndex(), wdg->getFileName());
+        updateTabText(currentIndex(),
+                      FileSystem::fileName(file));
     }
-}
-
-void TabController::saveFileOpenedInTab()
-{
-    ScreenImage *widg = getImageWidget();
-    if(!widgetIsNULL(widg))
-        widg->saveImage(widg->getFileName());
-}
-
-void TabController::saveAsFileOpenedInTab(const QString &file)
-{
-    ScreenImage *widget = getImageWidget();
-    if(!widgetIsNULL(widget))
-        widget->saveImage(file);
 }
 
 void TabController::closeImage()

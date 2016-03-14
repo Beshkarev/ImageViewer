@@ -2,10 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-//#include <memory>
-#include <QList>
-#include <QFileInfoList>
-//#include <iterator>
 
 class QAction;
 class TabController;
@@ -59,7 +55,6 @@ private:
     FileSystem *_pFileSystem;
     QStringList recentFile;
 
-    QList<QFileInfo>::iterator it;
     enum{maxRecentFile = 5};
 
     QMenu *_pFileMenu;

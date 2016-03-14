@@ -1,11 +1,13 @@
 #include "filesystem.h"
 #include "tabcontroller.h"
+#include "saveconfirmation.h"
 #include <QDebug>
 #include <QFileInfo>
 #include <QDir>
 #include <QApplication>
 #include <QFileDialog>
 #include <QObject>
+#include <QImage>
 
 FileSystem::FileSystem(): _pTabs(TabController::instance())
 {}
@@ -14,6 +16,11 @@ QString FileSystem::absolutePath(const QString &dir)
 {
     QFileInfo path(dir);
     return path.absolutePath();
+}
+
+QString FileSystem::fileName(const QString &file)
+{
+    return QFileInfo(file).fileName();
 }
 
 QString FileSystem::openFile()
@@ -39,16 +46,15 @@ QString FileSystem::nextFile()
     QFileInfoList list = _entries.find(workDirectory()).value();
 
     QString nameFile;
-    if(it != list.cend())
+    ++it;
+    if(it == list.cend())
     {
-        nameFile = (*it).absoluteFilePath();
-        ++it;
+        it = list.cbegin();
+        nameFile = (*(it)).absoluteFilePath();
     }
     else
     {
-        it = list.cbegin();
-        nameFile = (*it).absoluteFilePath();
-        ++it;
+        nameFile = (*(it)).absoluteFilePath();
     }
 
     _iteratots.insert(_pTabs->currentWidget(), it);
@@ -62,13 +68,13 @@ QString FileSystem::previousFile()
     QFileInfoList list = _entries.find(workDirectory()).value();
 
     QString nameFile;
-    if(it != list.cbegin())
+    if(it == list.cbegin())
     {
+       it = list.cend();
        nameFile = (*(--it)).absoluteFilePath();
     }
     else
     {
-        it = list.cend();
         nameFile = (*(--it)).absoluteFilePath();
     }
 
@@ -76,13 +82,18 @@ QString FileSystem::previousFile()
     return nameFile;
 }
 
-QString FileSystem::saveAs()
+bool FileSystem::saveFile()
+{
+    return saveToDisk(getCurrentFileName());
+}
+
+bool FileSystem::saveAs()
 {
     const QString filename = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save file"),
                                                     getCurrentFileName(),
                                                     QObject::tr("*.jpg;;*.bmp;;*.png;;*.jpeg;;"
                                                        "*.ppm;;*.xbm;;*.xpm)"));
-    return filename;
+    return saveToDisk(filename);
 }
 
 void FileSystem::addWorkDirectory(const QString &dir)
@@ -156,4 +167,24 @@ QString FileSystem::getCurrentFileName()
     it = _iteratots.find(_pTabs->currentWidget()).value();
 
     return (*it).absoluteFilePath();
+}
+
+bool FileSystem::saveToDisk(const QString &locationForSaving)
+{
+    QImage img(getCurrentFileName());
+    bool success;
+    if(SaveConfirmation::imageWasChanged(getCurrentFileName()))
+    {
+        img = SaveConfirmation::getChagedImage(getCurrentFileName());
+        success = img.save(locationForSaving);
+        if(success)
+            SaveConfirmation::deleteImage(getCurrentFileName());
+    }
+    else
+    {
+        success = img.save(locationForSaving);
+    }
+
+    return success;
+    //return img.save(file);
 }

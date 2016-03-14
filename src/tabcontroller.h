@@ -20,8 +20,6 @@ public:
 
     void createTab();
     void loadFiletoTab(const QString &file);
-    void saveAsFileOpenedInTab(const QString &file);
-    void saveFileOpenedInTab();
     void closeImage();
 public slots:
     void closeTab(const int index);
