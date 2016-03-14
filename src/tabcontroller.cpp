@@ -57,6 +57,7 @@ void TabController::loadFiletoTab(const QString &file)
     {
         updateTabText(currentIndex(),
                       FileSystem::fileName(file));
+        emit tabStateChanged();
     }
 }
 
@@ -67,7 +68,13 @@ void TabController::closeImage()
     {
         wdg->closeImage();
         updateTabNumber();
+        emit tabStateChanged();
     }
+}
+
+bool TabController::currentTabIsEmpty()
+{
+    return getImageWidget()->isEmpty() ? true : false;
 }
 
 void TabController::closeTab(const int index)
@@ -161,4 +168,6 @@ void TabController::deleteTab(const qint32 index)
     removeTab(index);
     pWdg->deleteLater();
     updateTabNumber();
+
+    emit tabClosed();
 }

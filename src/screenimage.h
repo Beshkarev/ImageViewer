@@ -15,6 +15,7 @@ class ScreenImage : public QWidget
 
 public:
     explicit ScreenImage(QWidget *pWd = 0);
+    //true if image don't loaded
     bool isEmpty() const;
 public:
     //File menu

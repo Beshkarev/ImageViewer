@@ -29,7 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(_pTabController);
     updateListRecentFiles();
 
-    setButtonsEnabled(false);
+    //init button state
+    setButtonsEnabled(false, false);
 }
 
 void MainWindow::createActions()
@@ -191,10 +192,15 @@ void MainWindow::createConnectToSlots()
     connect(_pQtAbout, SIGNAL(triggered(bool)),
             qApp, SLOT(aboutQt()));
 
+    //For buttons enable/disable
     connect(_pTabController, SIGNAL(tabClosed()),
-            this, SLOT(checkTabCount()));
+            this, SLOT(checkTabState()));
     connect(_pTabController, SIGNAL(tabCreated()),
-            this, SLOT(checkTabCount()));
+            this, SLOT(checkTabState()));
+    connect(_pTabController, SIGNAL(currentChanged(int)),
+            this, SLOT(checkTabState()));
+    connect(_pTabController, SIGNAL(tabStateChanged()),
+            this, SLOT(checkTabState()));
 }
 
 void MainWindow::showStatusBarMessage(const QString &message)
@@ -334,15 +340,23 @@ void MainWindow::aboutApp()
                           "The programm developed for education and personal satisfaction.\n"));
 }
 
-void MainWindow::checkTabCount()
+void MainWindow::checkTabState()
 {
     int count = _pTabController->count();
+    //if tabs not exist
     if(count == 0)
     {
-        setButtonsEnabled(false);
+        setButtonsEnabled(false, false);
+        return;//else program has unexpectedly finished
     }
-    else
-        setButtonsEnabled(true);
+
+    bool tabEmpty = _pTabController->currentTabIsEmpty();
+    //if exist each one tab but the tab is empty
+    if(count != 0 && tabEmpty)
+        setButtonsEnabled(true, false);
+    //if tabs is exist and the tab not expty
+    else if(count != 0 && !tabEmpty)
+        setButtonsEnabled(true, true);
 }
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
@@ -370,22 +384,24 @@ void MainWindow::loadFileRequest(const QString &file)
     updateListRecentFiles();
 }
 
-void MainWindow::setButtonsEnabled(bool state)
+void MainWindow::setButtonsEnabled(bool openButt, bool other)
 {
-    _pOpenAction->setEnabled(state);
-    _pSaveAction->setEnabled(state);
-    _pSaveAsAction->setEnabled(state);
-    _pNextFileAction->setEnabled(state);
-    _pPreviousFileAction->setEnabled(state);
-    _pCloseFileAction->setEnabled(state);
-    _pCloseTabAction->setEnabled(state);
+    //if each one tab is exist
+    _pOpenAction->setEnabled(openButt);
 
-    _pVerticalFlipAction->setEnabled(state);
-    _pHorizontalFlipAction->setEnabled(state);
-    _pClockwiseRotateAction->setEnabled(state);
-    _pCounterClockwiseRotateAction->setEnabled(state);
-    _pFitAction->setEnabled(state);
-    _pZoomInAction->setEnabled(state);
-    _pZoomOutAction->setEnabled(state);
+    //if tab not empty(has visible image)
+    _pSaveAction->setEnabled(other);
+    _pSaveAsAction->setEnabled(other);
+    _pNextFileAction->setEnabled(other);
+    _pPreviousFileAction->setEnabled(other);
+    _pCloseFileAction->setEnabled(other);
+    _pCloseTabAction->setEnabled(other);
 
+    _pVerticalFlipAction->setEnabled(other);
+    _pHorizontalFlipAction->setEnabled(other);
+    _pClockwiseRotateAction->setEnabled(other);
+    _pCounterClockwiseRotateAction->setEnabled(other);
+    _pFitAction->setEnabled(other);
+    _pZoomInAction->setEnabled(other);
+    _pZoomOutAction->setEnabled(other);
 }

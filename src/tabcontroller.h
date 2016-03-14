@@ -21,11 +21,13 @@ public:
     void createTab();
     void loadFiletoTab(const QString &file);
     void closeImage();
+    bool currentTabIsEmpty();
 public slots:
     void closeTab(const int index);
 signals:
     void tabClosed();
     void tabCreated();
+    void tabStateChanged();
 public:
     void horizontalFlip();
     void verticalFlip();

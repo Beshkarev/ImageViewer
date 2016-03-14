@@ -43,13 +43,13 @@ private slots:
 
     void aboutApp();
 
-    void checkTabCount();
+    void checkTabState();
 protected:
     void closeEvent(QCloseEvent *);
 private:
 
     void loadFileRequest(const QString &file);
-    void setButtonsEnabled(bool state);
+    void setButtonsEnabled(bool openButt, bool other);
 
     TabController *_pTabController;
     FileSystem *_pFileSystem;
