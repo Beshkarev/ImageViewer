@@ -20,6 +20,7 @@ public:
     QString openFile();
     QString nextFile();
     QString previousFile();
+    QString saveAs();
 
 private:
     TabController *_pTabs;
@@ -31,7 +32,7 @@ private:
     void createIterator();
     QString workDirectory() const;
 
-
+    QString getCurrentFileName();
 
     QHash<QWidget*, QString> directorys;
     QHash<QString, QFileInfoList> _entries;

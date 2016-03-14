@@ -76,6 +76,15 @@ QString FileSystem::previousFile()
     return nameFile;
 }
 
+QString FileSystem::saveAs()
+{
+    const QString filename = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save file"),
+                                                    getCurrentFileName(),
+                                                    QObject::tr("*.jpg;;*.bmp;;*.png;;*.jpeg;;"
+                                                       "*.ppm;;*.xbm;;*.xpm)"));
+    return filename;
+}
+
 void FileSystem::addWorkDirectory(const QString &dir)
 {
     directorys.insert(_pTabs->currentWidget(),
@@ -139,4 +148,12 @@ QString FileSystem::workDirectory() const
         return it.value();
     else
         return QString();
+}
+
+QString FileSystem::getCurrentFileName()
+{
+    QList<QFileInfo>::const_iterator it;
+    it = _iteratots.find(_pTabs->currentWidget()).value();
+
+    return (*it).absoluteFilePath();
 }

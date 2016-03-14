@@ -253,11 +253,7 @@ void MainWindow::saveFile()
 
 void MainWindow::saveAs()
 {
-//    const QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
-//                                                    currentPath,
-//                                                    tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
-//                                                       "*.ppm;;*.xbm;;*.xpm"));
-//    _pTabController->saveAsFileOpenedInTab(filename);
+    _pTabController->saveAsFileOpenedInTab(_pFileSystem->saveAs());
 }
 
 void MainWindow::nextFile()
