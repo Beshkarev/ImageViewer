@@ -21,12 +21,14 @@ SOURCES += src/main.cpp\
     src/screenimage.cpp \
     src/tabcontroller.cpp \
     src/saveconfirmation.cpp \
-    src/filesystem.cpp
+    src/filesystem.cpp \
+    src/app_properties.cpp
 
 HEADERS  += src/mainwindow.h \
     src/screenimage.h \
     src/tabcontroller.h \
     src/saveconfirmation.h \
-    src/filesystem.h
+    src/filesystem.h \
+    src/app_properties.h
 
 FORMS    +=

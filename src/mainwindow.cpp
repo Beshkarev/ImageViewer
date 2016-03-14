@@ -2,6 +2,8 @@
 #include "tabcontroller.h"
 #include "saveconfirmation.h"
 #include "filesystem.h"
+#include "app_properties.h"
+
 #include <memory>
 #include <QStringList>
 #include <QBoxLayout>
@@ -24,7 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     addToolBar(createToolBar());
     createConnectToSlots();
 
-    QCoreApplication::setApplicationVersion("0.6");
+    AppProrepties app;
+    QCoreApplication::setApplicationVersion(app.version());
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
     updateListRecentFiles();
@@ -351,7 +354,7 @@ void MainWindow::checkTabState()
     }
 
     bool tabEmpty = _pTabController->currentTabIsEmpty();
-    //if exist each one tab but the tab is empty
+    //if exist at least one tab but the tab is empty
     if(count != 0 && tabEmpty)
         setButtonsEnabled(true, false);
     //if tabs is exist and the tab not expty
