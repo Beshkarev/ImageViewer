@@ -16,11 +16,13 @@
 #include <QCoreApplication>
 #include <QToolBar>
 #include <QStatusBar>
+#include <QFileInfo>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(TabController::instance()),
     _pFileSystem(new FileSystem)
 {
+    _pRecentAction.reserve(maxRecentFile);
     createActions();
     createMenu();
     addToolBar(createToolBar());
@@ -65,9 +67,10 @@ void MainWindow::createActions()
     _pCloseTabAction->setShortcut(QKeySequence::Close);
 
 
-    for(int i = 0; i < maxRecentFile; ++i)
+    for(size_t i = 0; i < maxRecentFile; ++i)
     {
-        _pRecentAction[i] = new QAction(this);
+        //_pRecentAction[i] = new QAction(this);
+        _pRecentAction.push_back(new QAction(this));
         _pRecentAction[i]->setVisible(false);
     }
 
@@ -102,7 +105,7 @@ void MainWindow::createMenu()
     _pFileMenu->addAction(_pCloseFileAction);
     _pFileMenu->addAction(_pCloseTabAction);
     _pSeparatorAction = _pFileMenu->addSeparator();
-    for(int i = 0; i < maxRecentFile; ++i)
+    for(size_t i = 0; i < maxRecentFile; ++i)
         _pFileMenu->addAction(_pRecentAction[i]);
     _pFileMenu->addSeparator();
     _pFileMenu->addAction(_pExitAction);
@@ -167,7 +170,7 @@ void MainWindow::createConnectToSlots()
             this, SLOT(closeTabRequest()));
     connect(_pCloseFileAction, SIGNAL(triggered(bool)),
             this, SLOT(closeFileRequest()));
-    for(int i = 0; i < maxRecentFile; ++i)
+    for(size_t i = 0; i < maxRecentFile; ++i)
         connect(_pRecentAction[i], SIGNAL(triggered(bool)),
                 this, SLOT(openRecentFile()));
     connect(_pExitAction, SIGNAL(triggered(bool)),
@@ -230,7 +233,7 @@ void MainWindow::updateListRecentFiles()
         if(!QFile::exists(iter.next()))
             iter.remove();
     }
-    for(int i = 0; i < maxRecentFile; ++i)
+    for(size_t i = 0; i < maxRecentFile; ++i)
     {
         if(i < recentFile.count())
         {
@@ -254,8 +257,6 @@ void MainWindow::newTab()
 void MainWindow::openFile()
 {
     QString file = _pFileSystem->openFile();
-    if(file.isEmpty())
-        return;
     loadFileRequest(file);
 }
 
@@ -386,6 +387,8 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
 
 void MainWindow::loadFileRequest(const QString &file)
 {
+    if(file.isEmpty())
+        return;
     _pTabController->loadFiletoTab(file);
     setRecentFile(file);
     updateListRecentFiles();
@@ -401,6 +404,8 @@ void MainWindow::setButtonsEnabled(bool openButt, bool other)
     _pSaveAsAction->setEnabled(other);
     _pNextFileAction->setEnabled(other);
     _pPreviousFileAction->setEnabled(other);
+    for(size_t i = 0; i < _pRecentAction.size(); ++i)
+        _pRecentAction[i]->setEnabled(other);
     _pCloseFileAction->setEnabled(other);
     _pCloseTabAction->setEnabled(other);
 

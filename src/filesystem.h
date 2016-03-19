@@ -2,10 +2,13 @@
 #define FILESYSTEM
 
 #include <QHash>
-#include <QFileInfoList>
+//#include <QFileInfoList>
 
 class QString;
 class TabController;
+class QFileInfo;
+class QWidget;
+//class QFileInfoList;
 
 class FileSystem
 {
@@ -31,18 +34,15 @@ private:
     bool workDirIsChanged(const QString &dir);
     void entryList(const QString &dir);
     bool entryIsExist(const QString &dir);
-    void createIterator();
+    void createIterator(const QString &file);
     QString workDirectory() const;
 
     QString getCurrentFileName();
     bool saveToDisk(const QString &locationForSaving);
 
     QHash<QWidget*, QString> directorys;
-    QHash<QString, QFileInfoList> _entries;
+    QHash<QString, QList<QFileInfo>> _entries;
     QHash<QWidget*, QList<QFileInfo>::const_iterator> _iteratots;
-
-
-
 };
 
 #endif

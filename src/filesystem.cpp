@@ -30,14 +30,13 @@ QString FileSystem::openFile()
         dir = QDir::homePath() + "/Pictures";
     QString filename = QFileDialog::getOpenFileName(nullptr, QObject::tr("Open file"),
                                                     dir,
-                                                    QObject::tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"
-                                                       "*.ppm;;*.xbm;;*.xpm"));
+                                                    QObject::tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"));
     if(filename.isEmpty())
         return QString();
 
     addWorkDirectory(filename);
     entryList(filename);
-    createIterator();
+    createIterator(filename);
 
     return filename;
 }
@@ -46,6 +45,7 @@ QString FileSystem::nextFile()
 {
     QList<QFileInfo>::const_iterator it;
     it = _iteratots.find(_pTabs->currentWidget()).value();
+
     QFileInfoList list = _entries.find(workDirectory()).value();
 
     QString nameFile;
@@ -94,8 +94,7 @@ bool FileSystem::saveAs()
 {
     const QString filename = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save file"),
                                                     getCurrentFileName(),
-                                                    QObject::tr("*.jpg;;*.bmp;;*.png;;*.jpeg;;"
-                                                       "*.ppm;;*.xbm;;*.xpm)"));
+                                                    QObject::tr("*.jpg;;*.bmp;;*.png;;*.jpeg;;"));
     return saveToDisk(filename);
 }
 
@@ -125,7 +124,7 @@ void FileSystem::entryList(const QString &dir)
         QApplication::processEvents();
 
         QStringList supportedFormats;
-        supportedFormats << "*.jpg" << "*.bmp" << "*.png";
+        supportedFormats << "*.jpg" << "*.bmp" << "*.png" << "*jpeg";
         QFileInfoList list = directory.entryInfoList(supportedFormats, QDir::Files,
                                              QDir::LocaleAware);
         _entries.insert(directory.absolutePath(), list);
@@ -143,12 +142,14 @@ bool FileSystem::entryIsExist(const QString &dir)
         return true;
 }
 
-void FileSystem::createIterator()
+void FileSystem::createIterator(const QString &file)
 {
     QString dir = workDirectory();
 
     QList<QFileInfo>::const_iterator it;
-    it = _entries.find(dir).value().cbegin();
+    QFileInfoList list = _entries.find(dir).value();
+
+    it = std::find(list.cbegin(), list.cend(), file);
 
     _iteratots.insert(_pTabs->currentWidget(), it);
 }
@@ -189,5 +190,4 @@ bool FileSystem::saveToDisk(const QString &locationForSaving)
     }
 
     return success;
-    //return img.save(file);
 }

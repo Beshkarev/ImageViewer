@@ -41,7 +41,6 @@ private:
 
     ScreenImage *getImageWidget();
     void updateTabNumber();
-    bool widgetIsNULL(ScreenImage* wdg) const;
     void updateTabText(const int index, const QString &text);
     void deleteTab(const qint32 index);
 };

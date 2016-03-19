@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QVector>
 
 class QAction;
 class TabController;
@@ -55,7 +56,7 @@ private:
     FileSystem *_pFileSystem;
     QStringList recentFile;
 
-    enum{maxRecentFile = 5};
+    const size_t maxRecentFile = 5;
 
     QMenu *_pFileMenu;
     QMenu *_pEditMenu;
@@ -69,7 +70,7 @@ private:
     QAction *_pPreviousFileAction;
     QAction *_pCloseFileAction;
     QAction *_pCloseTabAction;
-    QAction *_pRecentAction[maxRecentFile];
+    QVector<QAction*> _pRecentAction;
     QAction *_pSeparatorAction;
     QAction *_pExitAction;
 
