@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //init button state
     setButtonsEnabled(false, false);
-    setWindowIcon(QIcon(":/icons/res/png-48px/image-outline.png"));
+    setWindowIcon(QIcon(":/icons/png-48px/image-outline.png"));
 }
 
 void MainWindow::createActions()
@@ -45,37 +45,37 @@ void MainWindow::createActions()
     _pNewTabAction = new QAction(tr("New Tab"), this);
     _pNewTabAction->setShortcut(Qt::CTRL + Qt::Key_T);
     _pNewTabAction->setStatusTip(tr("Create new empty tab"));
-    _pNewTabAction->setIcon(QIcon(":/icons/res/png-48px/plus.png"));
+    _pNewTabAction->setIcon(QIcon(":/icons/png-48px/plus.png"));
 
     _pOpenAction = new QAction(tr("Open file"), this);
     _pOpenAction->setShortcut(QKeySequence::Open);
     _pOpenAction->setStatusTip(tr("Open new file"));
-    _pOpenAction->setIcon(QIcon(":/icons/res/png-48px/image-outline.png"));
+    _pOpenAction->setIcon(QIcon(":/icons/png-48px/image-outline.png"));
 
     _pSaveAction = new QAction(tr("Save file"), this);
     _pSaveAction->setShortcut(QKeySequence::Save);
     _pSaveAction->setStatusTip(tr("Save the file"));
-    _pSaveAction->setIcon(QIcon(":/icons/res/png-48px/download-outline.png"));
+    _pSaveAction->setIcon(QIcon(":/icons/png-48px/download-outline.png"));
 
     _pSaveAsAction = new QAction(tr("Save file as"), this);
-    _pSaveAsAction->setIcon(QIcon(":/icons/res/png-48px/th-list.png"));
+    _pSaveAsAction->setIcon(QIcon(":/icons/png-48px/th-list.png"));
 
     _pNextFileAction = new QAction(tr("Next file"), this);
     _pNextFileAction->setShortcut(Qt::Key_Right);
-    _pNextFileAction->setIcon(QIcon(":/icons/res/png-48px/arrow-right-thick.png"));
+    _pNextFileAction->setIcon(QIcon(":/icons/png-48px/arrow-right-thick.png"));
 
     _pPreviousFileAction = new QAction(tr("Previous file"), this);
     _pPreviousFileAction->setShortcut(Qt::Key_Left);
-    _pPreviousFileAction->setIcon(QIcon(":/icons/res/png-48px/arrow-left-thick.png"));
+    _pPreviousFileAction->setIcon(QIcon(":/icons/png-48px/arrow-left-thick.png"));
 
     _pCloseFileAction = new QAction(tr("Close image"), this);
     _pCloseFileAction->setStatusTip(tr("Closing image"));
-    _pCloseFileAction->setIcon(QIcon(":/icons/res/png-48px/delete-outline.png"));
+    _pCloseFileAction->setIcon(QIcon(":/icons/png-48px/delete-outline.png"));
 
     _pCloseTabAction = new QAction(tr("Close tab"), this);
     _pCloseTabAction->setShortcut(QKeySequence::Close);
     _pCloseTabAction->setStatusTip(tr("Close current tab"));
-    _pCloseTabAction->setIcon(QIcon(":/icons/res/png-48px/minus.png"));
+    _pCloseTabAction->setIcon(QIcon(":/icons/png-48px/minus.png"));
 
     for(size_t i = 0; i < maxRecentFile; ++i)
     {
@@ -86,33 +86,33 @@ void MainWindow::createActions()
     _pExitAction = new QAction(tr("Exit"), this);
     _pExitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     _pExitAction->setStatusTip(tr("Close the application"));
-    _pExitAction->setIcon(QIcon(":/icons/res/png-48px/power.png"));
+    _pExitAction->setIcon(QIcon(":/icons/png-48px/power.png"));
 
     _pVerticalFlipAction = new QAction("Vertical flip", this);
-    _pVerticalFlipAction->setIcon(QIcon(":/icons/res/png-48px/arrow-vertical-flip.png"));
+    _pVerticalFlipAction->setIcon(QIcon(":/icons/png-48px/arrow-vertical-flip.png"));
 
     _pHorizontalFlipAction = new QAction(tr("Horizontal flip"), this);
-    _pHorizontalFlipAction->setIcon(QIcon(":/icons/res/png-48px/arrow-horizontal-flip.png"));
+    _pHorizontalFlipAction->setIcon(QIcon(":/icons/png-48px/arrow-horizontal-flip.png"));
 
     _pClockwiseRotateAction = new QAction(tr("Rotate Clockwise"), this);
-    _pClockwiseRotateAction->setIcon(QIcon(":/icons/res/png-48px/Clockwise.png"));
+    _pClockwiseRotateAction->setIcon(QIcon(":/icons/png-48px/Clockwise.png"));
 
     _pCounterClockwiseRotateAction = new QAction(tr("Rotate Counter clockwise"), this);
-    _pCounterClockwiseRotateAction->setIcon(QIcon(":/icons/res/png-48px/CounterClockwise.png"));
+    _pCounterClockwiseRotateAction->setIcon(QIcon(":/icons/png-48px/CounterClockwise.png"));
 
     _pFitAction = new QAction(tr("Fit to window"), this);
-    _pFitAction->setIcon(QIcon(":/icons/res/png-48px/zoom.png"));
+    _pFitAction->setIcon(QIcon(":/icons/png-48px/zoom.png"));
 
     _pZoomInAction = new QAction(tr("Zoom in"), this);
     _pZoomInAction->setShortcut(QKeySequence::ZoomIn);
-    _pZoomInAction->setIcon(QIcon(":/icons/res/png-48px/zoom-in.png"));
+    _pZoomInAction->setIcon(QIcon(":/icons/png-48px/zoom-in.png"));
 
     _pZoomOutAction = new QAction(tr("Zoom out"), this);
     _pZoomOutAction->setShortcut(QKeySequence::ZoomOut);
-    _pZoomOutAction->setIcon(QIcon(":/icons/res/png-48px/zoom-out.png"));
+    _pZoomOutAction->setIcon(QIcon(":/icons/png-48px/zoom-out.png"));
 
     _pAboutAction = new QAction(tr("About"), this);
-    _pAboutAction->setIcon(QIcon(":/icons/res/png-48px/business-card.png"));
+    _pAboutAction->setIcon(QIcon(":/icons/png-48px/business-card.png"));
 
     _pQtAbout = new QAction(tr("About Qt"), this);
 }
