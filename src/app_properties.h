@@ -1,7 +1,9 @@
 #ifndef APPPROPERTIES
 #define APPPROPERTIES
 
-#include <QString>
+#include <QStringList>
+
+class QString;
 
 class AppProrepties
 {
@@ -10,7 +12,12 @@ public:
     QString version();
 
 private:
-    QString appVersion;
+    QString _appVersion;
+    QStringList _supportedFormats;
+
+    void addRecentFile(const QString &filename);
+    void updateListRecentFiles();
+    void openRecentFile();
 };
 
 #endif // APPPROPERTIES

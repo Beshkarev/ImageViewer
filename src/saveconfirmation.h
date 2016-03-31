@@ -3,6 +3,7 @@
 
 #include <QHash>
 #include <QDialog>
+#include <memory>
 
 class QString;
 class QImage;
@@ -14,8 +15,8 @@ class SaveConfirmation : public QDialog
 
 public:
     SaveConfirmation(QWidget *pWdg = 0);
-    static void addImage(const QString name,
-                         const QImage image);
+    static void addImage(const QString &name,
+                         const QImage &image);
     bool isEmpty();
     static bool imageWasChanged(const QString &name);
     static QImage getChagedImage(const QString &name);
@@ -27,7 +28,7 @@ private:
                  const QImage &image);
     static QHash<QString, QImage> images;
 
-    QListWidget *_pListWidget;
+    std::shared_ptr<QListWidget> _pListWidget;
 };
 
 #endif

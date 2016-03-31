@@ -3,6 +3,7 @@
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QListWidget>
+#include <QBuffer>
 
 QHash<QString, QImage> SaveConfirmation::images;
 
@@ -16,7 +17,7 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     it = images.cbegin();
     while(it != images.cend())
     {
-        createItem(it.key(), it.value());
+        createItem(it.key(), getChagedImage(it.key()));
         ++it;
     }
 
@@ -41,7 +42,7 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     pHLayout->addWidget(pButtonSaveAll);
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
-    pMainLayout->addWidget(_pListWidget);
+    pMainLayout->addWidget(_pListWidget.get());
     pMainLayout->addLayout(pHLayout);
 
     setLayout(pMainLayout);
@@ -49,20 +50,16 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     setWindowTitle(tr("Unsaved changes"));
 }
 
-void SaveConfirmation::addImage(const QString name,
-                        const QImage image)
+void SaveConfirmation::addImage(const QString &name,
+                        const QImage &image)
 {
-    QHash<QString, QImage>::iterator it;
-    it = images.find(name);
-    //if image already exist
-    if(it != images.end())
-    {
-        images.remove(name);
-        images.insert(name, image);
-    }
-    //if the new image
-    else
-        images.insert(name, image);
+    //QByteArray byteArr;
+    //QBuffer buffer(&byteArr);
+    //buffer.open(QIODevice::WriteOnly);
+    //image.save(&buffer);
+    //byteArr = qCompress(byteArr, 5);
+
+    images.insert(name, image);
 }
 
 bool SaveConfirmation::isEmpty()
@@ -80,7 +77,12 @@ QImage SaveConfirmation::getChagedImage(const QString &name)
     QHash<QString, QImage>::const_iterator it;
     it = images.find(name);
     if(it != images.cend())
+    {
+        //QImage img;
+        //QByteArray byteArr = qUncompress(it.value());
+        //img.loadFromData(byteArr, "JPG");
         return it.value();
+    }
     else
         return QImage();
 }
@@ -104,6 +106,7 @@ void SaveConfirmation::saveImages()
     {
         itFinded = images.find((*itItems)->text());
         img = itFinded.value().copy();
+        //img = getChagedImage(itFinded.key());
         successSaved = img.save(itFinded.key());
 
         if(successSaved)

@@ -140,7 +140,7 @@ void TabController::updateTabNumber()
 
 void TabController::updateTabText(const int index, const QString &text)
 {
-    setTabText(index, text);
+    setTabText(index, text);   
 }
 
 void TabController::deleteTab(const qint32 index)

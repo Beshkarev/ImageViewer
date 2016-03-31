@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     createMenu();
     addToolBar(createToolBar());
     createConnectToSlots();
+    showStatusBarMessage("");
 
     AppProrepties app;
     QCoreApplication::setApplicationVersion(app.version());
@@ -42,7 +43,7 @@ void MainWindow::createActions()
 {
     _pNewTabAction = new QAction(tr("New Tab"), this);
     _pNewTabAction->setShortcut(Qt::CTRL + Qt::Key_T);
-    _pNewTabAction->setStatusTip(tr("Creating new tab"));
+    _pNewTabAction->setStatusTip(tr("Create new empty tab"));
 
     _pOpenAction = new QAction(tr("Open file"), this);
     _pOpenAction->setShortcut(QKeySequence::Open);
@@ -65,17 +66,17 @@ void MainWindow::createActions()
 
     _pCloseTabAction = new QAction(tr("Close tab"), this);
     _pCloseTabAction->setShortcut(QKeySequence::Close);
-
+    _pCloseTabAction->setStatusTip(tr("Close current tab"));
 
     for(size_t i = 0; i < maxRecentFile; ++i)
     {
-        //_pRecentAction[i] = new QAction(this);
         _pRecentAction.push_back(new QAction(this));
         _pRecentAction[i]->setVisible(false);
     }
 
     _pExitAction = new QAction(tr("Exit"), this);
     _pExitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+    _pExitAction->setStatusTip(tr("Close the application"));
 
     _pVerticalFlipAction = new QAction("Vertical flip", this);
     _pHorizontalFlipAction = new QAction(tr("Horizontal flip"), this);
@@ -396,18 +397,19 @@ void MainWindow::loadFileRequest(const QString &file)
 
 void MainWindow::setButtonsEnabled(bool openButt, bool other)
 {
-    //if each one tab is exist
+    //if at leat one tab is exist
     _pOpenAction->setEnabled(openButt);
+    _pCloseTabAction->setEnabled(openButt);
 
-    //if tab not empty(has visible image)
     _pSaveAction->setEnabled(other);
     _pSaveAsAction->setEnabled(other);
     _pNextFileAction->setEnabled(other);
     _pPreviousFileAction->setEnabled(other);
+
     for(size_t i = 0; i < _pRecentAction.size(); ++i)
         _pRecentAction[i]->setEnabled(other);
+
     _pCloseFileAction->setEnabled(other);
-    _pCloseTabAction->setEnabled(other);
 
     _pVerticalFlipAction->setEnabled(other);
     _pHorizontalFlipAction->setEnabled(other);

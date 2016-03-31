@@ -19,7 +19,7 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     zoomFactor(1.0)
 
 {
-    _pScrollArea->setWidget(_pLabel);
+    _pScrollArea->setWidget(_pLabel.get());
     _pScrollArea->setWidgetResizable(true);
     _pScrollArea->setAttribute(Qt::WA_TransparentForMouseEvents);
     _pScrollArea->hide();
@@ -27,7 +27,7 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pLabel->setAlignment(Qt::AlignCenter);
 
     QHBoxLayout *pHLayout = new QHBoxLayout(this);
-    pHLayout->addWidget(_pScrollArea);
+    pHLayout->addWidget(_pScrollArea.get());
 
     setLayout(pHLayout);
 }

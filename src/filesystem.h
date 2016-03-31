@@ -2,13 +2,11 @@
 #define FILESYSTEM
 
 #include <QHash>
-//#include <QFileInfoList>
 
 class QString;
 class TabController;
 class QFileInfo;
 class QWidget;
-//class QFileInfoList;
 
 class FileSystem
 {
@@ -18,9 +16,6 @@ public:
     static QString absolutePath(const QString &dir);
     static QString fileName(const QString &file);
 
-    void newDirectory();
-    void deleteDirectory();
-
     QString openFile();
     QString nextFile();
     QString previousFile();
@@ -29,6 +24,7 @@ public:
 
 private:
     TabController *_pTabs;
+    QString lastDir;
 
     void addWorkDirectory(const QString &dir);
     bool workDirIsChanged(const QString &dir);

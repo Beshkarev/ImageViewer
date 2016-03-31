@@ -2,6 +2,7 @@
 #define SCREENIMAGE
 
 #include <QWidget>
+#include <memory>
 
 class QImage;
 class QLabel;
@@ -44,8 +45,8 @@ private:
     void zoomImage(const qreal zoomFactor);
     void flipImge(const bool horizontal, const bool vertical);
 
-    QScrollArea *_pScrollArea;
-    QLabel *_pLabel;
+    std::shared_ptr<QScrollArea> _pScrollArea;
+    std::shared_ptr<QLabel> _pLabel;
     QImage m_Image;
 
     const qint32 clockwiseValue;

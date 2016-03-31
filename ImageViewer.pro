@@ -32,3 +32,6 @@ HEADERS  += src/mainwindow.h \
     src/app_properties.h
 
 FORMS    +=
+
+RESOURCES += \
+    res_icons.qrc
