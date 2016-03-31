@@ -44,4 +44,8 @@
         <file>png-48px/minus-outline.png</file>
         <file>png-48px/business-card.png</file>
     </qresource>
+    <qresource prefix="/about">
+        <file>credits</file>
+        <file>license</file>
+    </qresource>
 </RCC>

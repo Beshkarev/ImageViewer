@@ -22,16 +22,18 @@ SOURCES += src/main.cpp\
     src/tabcontroller.cpp \
     src/saveconfirmation.cpp \
     src/filesystem.cpp \
-    src/app_properties.cpp
+    src/app_properties.cpp \
+    src/about_app.cpp
 
 HEADERS  += src/mainwindow.h \
     src/screenimage.h \
     src/tabcontroller.h \
     src/saveconfirmation.h \
     src/filesystem.h \
-    src/app_properties.h
+    src/app_properties.h \
+    src/about_app.h
 
 FORMS    +=
 
 RESOURCES += \
-    res/res_icons.qrc
+    res/res.qrc

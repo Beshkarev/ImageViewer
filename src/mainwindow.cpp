@@ -3,11 +3,11 @@
 #include "saveconfirmation.h"
 #include "filesystem.h"
 #include "app_properties.h"
+#include "about_app.h"
 
 #include <memory>
 #include <QStringList>
 #include <QBoxLayout>
-#include <QMessageBox>
 #include <QCloseEvent>
 #include <QDebug>
 #include <QAction>
@@ -370,9 +370,9 @@ void MainWindow::fitImageRequest()
 
 void MainWindow::aboutApp()
 {
-    QMessageBox::about(this, tr("About the application"),
-                       tr("A small application for view image.\n"
-                          "The programm developed for education and personal satisfaction.\n"));
+
+    About about;
+    about.exec();
 }
 
 void MainWindow::checkTabState()
