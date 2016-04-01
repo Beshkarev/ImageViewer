@@ -24,7 +24,7 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     QPushButton *pButtonSaveAll = new QPushButton(this);
     QPushButton *pButtonNo = new QPushButton(this);
     QPushButton *pButtonCancel = new QPushButton(this);
-    pButtonSaveAll->setText(tr("Save all"));
+    pButtonSaveAll->setText(tr("Save selected"));
     pButtonSaveAll->setDefault(true);
     pButtonNo->setText(tr("Close without saving"));
     pButtonCancel->setText(tr("Cancel"));

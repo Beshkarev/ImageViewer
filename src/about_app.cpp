@@ -2,7 +2,7 @@
 #include <QTabWidget>
 #include <QLabel>
 #include <QTextEdit>
-#include <QBoxLayout>
+#include <QVBoxLayout>
 #include <QFile>
 #include <QTextStream>
 
@@ -21,29 +21,38 @@ About::About(QWidget *parent) : QDialog(parent),
 
     setLayout(pVMainLayout);
     setMinimumSize(QSize(400, 200));
+    setWindowIcon(QIcon(":/icons/png-48px/business-card.png"));
+    setWindowTitle(tr("About"));
+    //QDesktopServices::openUrl(QUrl("https://github.com/Beshkarev/ImageViewer"));
 }
 
 void About::createAboutSpace()
 {
     QLabel *pLabel = new QLabel(this);
     pLabel->setPixmap(QPixmap(":/icons/png-48px/image-outline.png"));
+    pLabel->setAlignment(Qt::AlignCenter);
 
-    QTextEdit *pTextEdit = new QTextEdit(this);
-    pTextEdit->setReadOnly(true);
-    pTextEdit->setText(QObject::tr("A small application for view image.\n"
-                        "The programm developed for education and personal satisfaction.\n"));
+    QLabel *pTextEdit = new QLabel(this);
+    pTextEdit->setAlignment(Qt::AlignCenter);
+    pTextEdit->setText(tr("A small application for view image."
+                       "<br>The programm developed for education and personal satisfaction."
+                          "<br>Source code is available on "
+                          "<a href=\"https://github.com/Beshkarev/ImageViewer\">GitHub<\a>."));
+    pTextEdit->setTextFormat(Qt::RichText);
+    pTextEdit->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    pTextEdit->setOpenExternalLinks(true);
 
-    QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
-    pHBoxLayout->addWidget(pLabel);
-    pHBoxLayout->addWidget(pTextEdit);
+    QVBoxLayout *pVBoxLayout = new QVBoxLayout(this);
+    pVBoxLayout->addWidget(pLabel);
+    pVBoxLayout->addWidget(pTextEdit);
 
-    _pAboutWidg->setLayout(pHBoxLayout);
-    _pTabs->addTab(_pAboutWidg.get(), QObject::tr("About"));
+    _pAboutWidg->setLayout(pVBoxLayout);
+    _pTabs->addTab(_pAboutWidg.get(), tr("About"));
 }
 
 void About::createCreditsSpace()
 {
-    QFile file(":/about/credits");
+    QFile file(":/about/CREDITS");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream textStream(&file);
 
@@ -51,26 +60,26 @@ void About::createCreditsSpace()
     pTextEdit->setReadOnly(true);
     pTextEdit->setText(textStream.readAll());
 
-    QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
-    pHBoxLayout->addWidget(pTextEdit);
+    QVBoxLayout *pVBoxLayout = new QVBoxLayout(this);
+    pVBoxLayout->addWidget(pTextEdit);
 
-    _pCreditsWidg->setLayout(pHBoxLayout);
-    _pTabs->addTab(_pCreditsWidg.get(), QObject::tr("Credits"));
+    _pCreditsWidg->setLayout(pVBoxLayout);
+    _pTabs->addTab(_pCreditsWidg.get(), tr("Credits"));
 }
 
 void About::createLicenseSpace()
 {
-    QFile file(":/about/license");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QTextStream licenseFile(&file);
-
-    QTextEdit *pTextEdit = new QTextEdit(this);
-    pTextEdit->setReadOnly(true);
-    pTextEdit->setText(licenseFile.readAll());
+    QLabel *pTextLabel = new QLabel(this);
+    pTextLabel->setAlignment(Qt::AlignTop);
+    pTextLabel->setTextFormat(Qt::RichText);
+    pTextLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    pTextLabel->setOpenExternalLinks(true);
+    pTextLabel->setText(tr("<center>This software is licensed under "
+                           "<a href=\"https://github.com/Beshkarev/ImageViewer/blob/dev/res/license\">GNU GPL</a> version 3."));
 
     QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
-    pHBoxLayout->addWidget(pTextEdit);
+    pHBoxLayout->addWidget(pTextLabel);
 
     _pLicenseWidg->setLayout(pHBoxLayout);
-    _pTabs->addTab(_pLicenseWidg.get(), QObject::tr("License"));
+    _pTabs->addTab(_pLicenseWidg.get(), tr("License"));
 }
