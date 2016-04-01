@@ -75,7 +75,7 @@ void About::createLicenseSpace()
     pTextLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     pTextLabel->setOpenExternalLinks(true);
     pTextLabel->setText(tr("<center>This software is licensed under "
-                           "<a href=\"https://github.com/Beshkarev/ImageViewer/blob/dev/res/license\">GNU GPL</a> version 3."));
+                           "<a href=\"https://github.com/Beshkarev/ImageViewer/blob/master/LICENSE\">GNU GPL</a> version 3."));
 
     QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
     pHBoxLayout->addWidget(pTextLabel);
