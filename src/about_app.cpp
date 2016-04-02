@@ -9,12 +9,10 @@
 About::About(QWidget *parent) : QDialog(parent),
     _pTabs(new QTabWidget),
     _pAboutWidg(new QWidget),
-    _pCreditsWidg(new QWidget),
-    _pLicenseWidg(new QWidget)
+    _pCreditsWidg(new QWidget)
 {
     createAboutSpace();
     createCreditsSpace();
-    createLicenseSpace();
 
     QVBoxLayout *pVMainLayout = new QVBoxLayout(this);
     pVMainLayout->addWidget(_pTabs.get());
@@ -35,9 +33,11 @@ void About::createAboutSpace()
     QLabel *pTextEdit = new QLabel(this);
     pTextEdit->setAlignment(Qt::AlignCenter);
     pTextEdit->setText(tr("A small application for view image."
-                       "<br>The programm developed for education and personal satisfaction."
+                          "<br>The programm developed for education and personal satisfaction."
+                          "<br><br>This software is licensed under "
+                          "<a href=\"https://github.com/Beshkarev/ImageViewer/blob/master/LICENSE\">GNU GPL</a> version 3."
                           "<br>Source code is available on "
-                          "<a href=\"https://github.com/Beshkarev/ImageViewer\">GitHub<\a>."));
+                          "<a href=\"https://github.com/Beshkarev/ImageViewer\">GitHub</a>."));
     pTextEdit->setTextFormat(Qt::RichText);
     pTextEdit->setTextInteractionFlags(Qt::TextBrowserInteraction);
     pTextEdit->setOpenExternalLinks(true);
@@ -65,21 +65,4 @@ void About::createCreditsSpace()
 
     _pCreditsWidg->setLayout(pVBoxLayout);
     _pTabs->addTab(_pCreditsWidg.get(), tr("Credits"));
-}
-
-void About::createLicenseSpace()
-{
-    QLabel *pTextLabel = new QLabel(this);
-    pTextLabel->setAlignment(Qt::AlignTop);
-    pTextLabel->setTextFormat(Qt::RichText);
-    pTextLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    pTextLabel->setOpenExternalLinks(true);
-    pTextLabel->setText(tr("<center>This software is licensed under "
-                           "<a href=\"https://github.com/Beshkarev/ImageViewer/blob/master/LICENSE\">GNU GPL</a> version 3."));
-
-    QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);
-    pHBoxLayout->addWidget(pTextLabel);
-
-    _pLicenseWidg->setLayout(pHBoxLayout);
-    _pTabs->addTab(_pLicenseWidg.get(), tr("License"));
 }

@@ -14,12 +14,10 @@ public:
 private:
     void createAboutSpace();
     void createCreditsSpace();
-    void createLicenseSpace();
 
     std::shared_ptr<QTabWidget> _pTabs;
     std::shared_ptr<QWidget> _pAboutWidg;
     std::shared_ptr<QWidget> _pCreditsWidg;
-    std::shared_ptr<QWidget> _pLicenseWidg;
 };
 
 #endif // ABOUT_APP_H
