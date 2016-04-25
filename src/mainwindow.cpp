@@ -20,7 +20,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(TabController::instance()),
-    _pFileSystem(new FileSystem)
+    _pFileSystem(FileSystem::instance())
 {
     _pRecentAction.reserve(maxRecentFile);
     createActions();
@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //init button state
     setButtonsEnabled(false, false);
     setWindowIcon(QIcon(":/icons/png-48px/image-outline.png"));
+    setWindowTitle("Image viewer");
 }
 
 void MainWindow::createActions()
@@ -88,7 +89,7 @@ void MainWindow::createActions()
     _pExitAction->setStatusTip(tr("Close the application"));
     _pExitAction->setIcon(QIcon(":/icons/png-48px/power.png"));
 
-    _pVerticalFlipAction = new QAction("Vertical flip", this);
+    _pVerticalFlipAction = new QAction(tr("Vertical flip"), this);
     _pVerticalFlipAction->setIcon(QIcon(":/icons/png-48px/arrow-vertical-flip.png"));
 
     _pHorizontalFlipAction = new QAction(tr("Horizontal flip"), this);
@@ -119,7 +120,7 @@ void MainWindow::createActions()
 
 void MainWindow::createMenu()
 {
-    _pFileMenu = menuBar()->addMenu("&File");
+    _pFileMenu = menuBar()->addMenu(tr("&File"));
     _pFileMenu->addAction(_pNewTabAction);
     _pFileMenu->addSeparator();
 
@@ -136,7 +137,7 @@ void MainWindow::createMenu()
     _pFileMenu->addSeparator();
     _pFileMenu->addAction(_pExitAction);
 
-    _pEditMenu = menuBar()->addMenu("&Edit");
+    _pEditMenu = menuBar()->addMenu(tr("&Edit"));
     _pEditMenu->addAction(_pVerticalFlipAction);
     _pEditMenu->addAction(_pHorizontalFlipAction);
     _pEditMenu->addSeparator();
@@ -149,34 +150,34 @@ void MainWindow::createMenu()
     _pEditMenu->addAction(_pZoomOutAction);
     _pEditMenu->addSeparator();
 
-    _pViewMenu = menuBar()->addMenu("&View");
+    _pViewMenu = menuBar()->addMenu(tr("&View"));
     _pViewMenu->addAction(_pFitAction);
 
-    _pHelpMenu = menuBar()->addMenu("&Help");
+    _pHelpMenu = menuBar()->addMenu(tr("&Help"));
     _pHelpMenu->addAction(_pAboutAction);
     _pHelpMenu->addAction(_pQtAbout);
 }
 
 QToolBar *MainWindow::createToolBar()
 {
-    QToolBar *pToolBar = new QToolBar(this);
-    pToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    pToolBar->setAllowedAreas(Qt::TopToolBarArea
+    _pToolBar = new QToolBar(this);
+    _pToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    _pToolBar->setAllowedAreas(Qt::TopToolBarArea
                               | Qt::BottomToolBarArea);
 
-    pToolBar->addAction(_pPreviousFileAction);
-    pToolBar->addAction(_pNextFileAction);
-    pToolBar->insertSeparator(_pVerticalFlipAction);
+    _pToolBar->addAction(_pPreviousFileAction);
+    _pToolBar->addAction(_pNextFileAction);
+    _pToolBar->insertSeparator(_pVerticalFlipAction);
 
-    pToolBar->addAction(_pVerticalFlipAction);
-    pToolBar->addAction(_pHorizontalFlipAction);
-    pToolBar->addAction(_pClockwiseRotateAction);
-    pToolBar->addAction(_pCounterClockwiseRotateAction);
-    pToolBar->addAction(_pZoomInAction);
-    pToolBar->addAction(_pZoomOutAction);
-    pToolBar->addAction(_pFitAction);
+    _pToolBar->addAction(_pVerticalFlipAction);
+    _pToolBar->addAction(_pHorizontalFlipAction);
+    _pToolBar->addAction(_pClockwiseRotateAction);
+    _pToolBar->addAction(_pCounterClockwiseRotateAction);
+    _pToolBar->addAction(_pZoomInAction);
+    _pToolBar->addAction(_pZoomOutAction);
+    _pToolBar->addAction(_pFitAction);
 
-    return pToolBar;
+    return _pToolBar;
 }
 
 void MainWindow::createConnectToSlots()
@@ -370,7 +371,6 @@ void MainWindow::fitImageRequest()
 
 void MainWindow::aboutApp()
 {
-
     About about;
     about.exec();
 }
@@ -397,6 +397,7 @@ void MainWindow::checkTabState()
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
     std::shared_ptr<SaveConfirmation> pChanges(new SaveConfirmation);
+
     if(!pChanges->isEmpty())
     {
         qint32 ret;

@@ -10,9 +10,14 @@ class QWidget;
 
 class FileSystem
 {
-public:
     FileSystem();
+    ~FileSystem();
 
+public:
+    FileSystem(FileSystem const &) = delete;
+    FileSystem& operator = (FileSystem const &) = delete;
+
+    static FileSystem *instance();
     static QString absolutePath(const QString &dir);
     static QString fileName(const QString &file);
 
@@ -23,6 +28,7 @@ public:
     bool saveAs();
 
 private:
+    static FileSystem *_pInstance;
     TabController *_pTabs;
     QString lastDir;
 
