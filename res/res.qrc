@@ -47,4 +47,5 @@
     <qresource prefix="/about">
         <file>CREDITS</file>
     </qresource>
+    <qresource prefix="/translate"/>
 </RCC>

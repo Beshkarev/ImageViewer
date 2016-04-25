@@ -8,6 +8,7 @@ class QAction;
 class TabController;
 class FileSystem;
 class QStringList;
+class QToolBar;
 
 class MainWindow : public QMainWindow
 {
@@ -84,6 +85,8 @@ private:
 
     QAction *_pAboutAction;
     QAction *_pQtAbout;
+
+    QToolBar *_pToolBar;
 };
 
 #endif // MAINWINDOW_H

@@ -9,8 +9,11 @@ class QWidget;
 
 class About: public QDialog
 {
+    Q_OBJECT
+
 public:
     About(QWidget *parent = 0);
+
 private:
     void createAboutSpace();
     void createCreditsSpace();

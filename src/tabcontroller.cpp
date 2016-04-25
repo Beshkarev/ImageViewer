@@ -5,7 +5,7 @@
 #include <QTabWidget>
 #include <QDebug>
 
-TabController *TabController::_instance = nullptr;
+TabController *TabController::_instance;
 
 TabController::TabController(QWidget *parent/*=0*/) :
     QTabWidget(parent)
@@ -16,6 +16,11 @@ TabController::TabController(QWidget *parent/*=0*/) :
 
     connect(this, SIGNAL(tabCloseRequested(int)),
             this, SLOT(closeTab(int)));
+}
+
+TabController::~TabController()
+{
+    delete _instance;
 }
 
 TabController *TabController::instance()

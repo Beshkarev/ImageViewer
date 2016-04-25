@@ -9,8 +9,23 @@
 #include <QObject>
 #include <QImage>
 
+FileSystem *FileSystem::_pInstance;
+
 FileSystem::FileSystem(): _pTabs(TabController::instance())
 {}
+
+FileSystem::~FileSystem()
+{
+    delete _pInstance;
+}
+
+FileSystem *FileSystem::instance()
+{
+    if(!_pInstance)
+        _pInstance = new FileSystem;
+
+    return _pInstance;
+}
 
 QString FileSystem::absolutePath(const QString &dir)
 {
@@ -129,7 +144,7 @@ void FileSystem::entryList(const QString &dir)
         QApplication::processEvents();
 
         QStringList supportedFormats;
-        supportedFormats << "*.jpg" << "*.bmp" << "*.png" << "*jpeg";
+        supportedFormats << "*.jpg" << "*.bmp" << "*.png" << "*jpeg" << "*.gif";
         QFileInfoList list = directory.entryInfoList(supportedFormats, QDir::Files,
                                              QDir::LocaleAware);
         _entries.insert(directory.absolutePath(), list);

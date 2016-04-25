@@ -18,10 +18,9 @@ About::About(QWidget *parent) : QDialog(parent),
     pVMainLayout->addWidget(_pTabs.get());
 
     setLayout(pVMainLayout);
-    setMinimumSize(QSize(400, 200));
     setWindowIcon(QIcon(":/icons/png-48px/business-card.png"));
     setWindowTitle(tr("About"));
-    //QDesktopServices::openUrl(QUrl("https://github.com/Beshkarev/ImageViewer"));
+    setFixedSize(437, 247);
 }
 
 void About::createAboutSpace()
@@ -37,7 +36,8 @@ void About::createAboutSpace()
                           "<br><br>This software is licensed under "
                           "<a href=\"https://github.com/Beshkarev/ImageViewer/blob/master/LICENSE\">GNU GPL</a> version 3."
                           "<br>Source code is available on "
-                          "<a href=\"https://github.com/Beshkarev/ImageViewer\">GitHub</a>."));
+                          "<a href=\"https://github.com/Beshkarev/ImageViewer\">GitHub</a>."
+                          "<br><br>Evgeniy Beshkarev©"));
     pTextEdit->setTextFormat(Qt::RichText);
     pTextEdit->setTextInteractionFlags(Qt::TextBrowserInteraction);
     pTextEdit->setOpenExternalLinks(true);
