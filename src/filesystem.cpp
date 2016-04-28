@@ -13,16 +13,26 @@ FileSystem *FileSystem::_pInstance;
 
 FileSystem::FileSystem(): _pTabs(TabController::instance())
 {}
-
 FileSystem::~FileSystem()
+{}
+void FileSystem::destroyInstance()
 {
-    delete _pInstance;
+    qDebug() << "file system destroy";
+
+    if(_pInstance)
+    {
+        delete _pInstance;
+        _pInstance = nullptr;
+    }
 }
 
 FileSystem *FileSystem::instance()
 {
     if(!_pInstance)
+    {
         _pInstance = new FileSystem;
+        atexit(& FileSystem::destroyInstance);
+    }
 
     return _pInstance;
 }

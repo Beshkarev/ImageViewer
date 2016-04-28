@@ -12,11 +12,11 @@ class FileSystem
 {
     FileSystem();
     ~FileSystem();
+    FileSystem(const FileSystem &) = delete;
+    void operator = (const FileSystem &) = delete;
 
+    static void destroyInstance();
 public:
-    FileSystem(FileSystem const &) = delete;
-    FileSystem& operator = (FileSystem const &) = delete;
-
     static FileSystem *instance();
     static QString absolutePath(const QString &dir);
     static QString fileName(const QString &file);
