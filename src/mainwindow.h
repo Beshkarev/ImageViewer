@@ -16,8 +16,10 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-
 private:
+    MainWindow(const MainWindow &) = delete;
+    void operator =(const MainWindow &) = delete;
+
     void createActions();
     void createMenu();
     QToolBar *createToolBar();
