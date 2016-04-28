@@ -19,14 +19,34 @@ TabController::TabController(QWidget *parent/*=0*/) :
 }
 
 TabController::~TabController()
+{}
+/*
+TabController::~TabController()
 {
+    if(_instance)
+    {
     delete _instance;
+        _instance = nullptr;
+    }
 }
-
+void TabController::destroyInstance()
+{
+    qDebug() << "destroy TabController";
+    if(_instance)
+    {
+        delete _instance;
+        _instance = nullptr;
+    }
+}
+*/
 TabController *TabController::instance()
 {
-    if(_instance == nullptr)
-        _instance = new TabController;
+    if(!_instance)
+    {
+        _instance = new TabController();
+        //atexit(& TabController::destroyInstance);
+    }
+
     return _instance;
 }
 

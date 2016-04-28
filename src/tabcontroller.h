@@ -13,10 +13,11 @@ class TabController : public QTabWidget
 private:
     TabController(QWidget *parent = 0);
     ~TabController();
+    static void destroyInstance();
 
+    TabController(const TabController &) = delete;
+    void operator=(const TabController &) = delete;
 public:
-    TabController(TabController const &) = delete;
-    TabController& operator=(TabController const &) = delete;
     static TabController *instance();
 
     void createTab();
