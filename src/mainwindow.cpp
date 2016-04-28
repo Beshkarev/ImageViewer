@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //init button state
     setButtonsEnabled(false, false);
     setWindowIcon(QIcon(":/icons/png-48px/image-outline.png"));
-    setWindowTitle("Image viewer");
+    setWindowTitle(app.name());
 }
 
 void MainWindow::createActions()
