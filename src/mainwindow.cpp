@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "tabcontroller.h"
 #include "saveconfirmation.h"
-#include "filesystem.h"
 #include "app_properties.h"
 #include "about_app.h"
 
@@ -273,7 +272,6 @@ void MainWindow::updateListRecentFiles()
         else _pRecentAction[i]->setVisible(false);
     }
     _pSeparatorAction->setVisible(!recentFile.isEmpty());
-
 }
 
 void MainWindow::newTab()

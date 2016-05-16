@@ -3,10 +3,12 @@
 
 #include <QMainWindow>
 #include <QVector>
+#include <memory>
+
+#include "filesystem.h"
 
 class QAction;
 class TabController;
-class FileSystem;
 class QStringList;
 class QToolBar;
 
@@ -56,7 +58,7 @@ private:
     void setButtonsEnabled(bool openButt, bool other);
 
     TabController *_pTabController;
-    FileSystem *_pFileSystem;
+    std::unique_ptr<FileSystem> _pFileSystem;
     QStringList recentFile;
 
     const size_t maxRecentFile = 5;

@@ -4,6 +4,7 @@
 #include <QHash>
 #include <QDialog>
 #include <memory>
+#include <QListWidget>
 
 class QString;
 class QImage;
@@ -28,7 +29,7 @@ private:
                  const QImage &image);
     static QHash<QString, QImage> images;
 
-    std::shared_ptr<QListWidget> _pListWidget;
+    std::unique_ptr<QListWidget> _pListWidget;
 };
 
 #endif
