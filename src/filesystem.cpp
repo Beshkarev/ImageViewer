@@ -1,6 +1,7 @@
 #include "filesystem.h"
 #include "tabcontroller.h"
 #include "saveconfirmation.h"
+#include "entry.h"
 #include <QDebug>
 #include <QFileInfo>
 #include <QDir>
@@ -37,7 +38,7 @@ FileSystem *FileSystem::instance()
     return _pInstance;
 }
 
-QString FileSystem::absolutePath(const QString &dir)
+QString FileSystem::absoluteFilePath(const QString &dir)
 {
     QFileInfo path(dir);
     return path.absolutePath();
@@ -58,60 +59,26 @@ QString FileSystem::openFile()
     if(filename.isEmpty())
         return QString();
 
-    addWorkDirectory(filename);
-    entryList(filename);
-    createIterator(filename);
+    setWorkDirectory(filename);
+    createEntry(filename);
 
-    if(workDirIsChanged(lastDir))
-        lastDir = workDirectory();
+    lastDir = FileSystem::absoluteFilePath(filename);
 
     return filename;
 }
 
-QString FileSystem::nextFile()
+QString FileSystem::nextFile() const
 {
-    QApplication::processEvents();
-    QList<QFileInfo>::const_iterator it;
-    it = _iteratots.find(_pTabs->currentWidget()).value();
+    Entry *en = _entries.find(workDirectory()).value().get();
 
-    QFileInfoList list = _entries.find(workDirectory()).value();
-
-    QString nameFile;
-    ++it;
-    if(it == list.cend())
-    {
-        it = list.cbegin();
-        nameFile = (*(it)).absoluteFilePath();
-    }
-    else
-    {
-        nameFile = (*(it)).absoluteFilePath();
-    }
-
-    _iteratots.insert(_pTabs->currentWidget(), it);
-    return nameFile;
+    return en->next();
 }
 
-QString FileSystem::previousFile()
+QString FileSystem::previousFile() const
 {
-    QApplication::processEvents();
-    QList<QFileInfo>::const_iterator it;
-    it = _iteratots.find(_pTabs->currentWidget()).value();
-    QFileInfoList list = _entries.find(workDirectory()).value();
+      Entry *en = _entries.find(workDirectory()).value().get();
 
-    QString nameFile;
-    if(it == list.cbegin())
-    {
-       it = list.cend();
-       nameFile = (*(--it)).absoluteFilePath();
-    }
-    else
-    {
-        nameFile = (*(--it)).absoluteFilePath();
-    }
-
-    _iteratots.insert(_pTabs->currentWidget(), it);
-    return nameFile;
+      return en->previous();
 }
 
 bool FileSystem::saveFile()
@@ -127,80 +94,47 @@ bool FileSystem::saveAs()
     return saveToDisk(filename);
 }
 
-void FileSystem::addWorkDirectory(const QString &dir)
+void FileSystem::setWorkDirectory(const QString &directory)
 {
-    directorys.insert(_pTabs->currentWidget(),
-                      FileSystem::absolutePath(dir));
+    _directorys.insert(_pTabs->currentWidget(),
+                       FileSystem::absoluteFilePath(directory));
 }
 
-bool FileSystem::workDirIsChanged(const QString &dir)
+void FileSystem::createEntry(const QString &dir)
 {
-    QHash<QWidget*, QString>::const_iterator it;
-    it = directorys.find(_pTabs->currentWidget());
-
-    if(it.value() != FileSystem::absolutePath(dir))
-        return true;
-    else
-        return false;
-}
-
-void FileSystem::entryList(const QString &dir)
-{
-    QDir directory(FileSystem::absolutePath(dir));
-
     if(!entryIsExist(dir))
     {
         qDebug() <<"entry don't exist";
-        QApplication::processEvents();
-
-        QStringList supportedFormats;
-        supportedFormats << "*.jpg" << "*.bmp" << "*.png" << "*jpeg" << "*.gif";
-        QFileInfoList list = directory.entryInfoList(supportedFormats, QDir::Files,
-                                             QDir::LocaleAware);
-        _entries.insert(directory.absolutePath(), list);
+        _entries.insert(workDirectory(),
+                        std::make_shared<Entry>(dir));
+    }
+    else
+    {
+        _entries.insert(workDirectory(),
+                        _entries.find(workDirectory()).value());
+//        qDebug() << _entries.find(workDirectory()).value().use_count();
     }
 }
 
-bool FileSystem::entryIsExist(const QString &dir)
+bool FileSystem::entryIsExist(const QString &dir) const
 {
-    QHash<QString, QFileInfoList>::const_iterator it;
-    it = _entries.find(FileSystem::absolutePath(dir));
-
-    if(it == _entries.cend())
+    auto it = _entries.find(FileSystem::absoluteFilePath(dir));
+    if (it == _entries.end())
         return false;
     else
         return true;
 }
 
-void FileSystem::createIterator(const QString &file)
+const QString &FileSystem::workDirectory() const
 {
-    QString dir = workDirectory();
-
-    QList<QFileInfo>::const_iterator it;
-    QFileInfoList list = _entries.find(dir).value();
-
-    it = std::find(list.cbegin(), list.cend(), file);
-
-    _iteratots.insert(_pTabs->currentWidget(), it);
+    return _directorys.find(_pTabs->currentWidget()).value();
 }
 
-QString FileSystem::workDirectory() const
+QString FileSystem::getCurrentFileName() const
 {
-    QHash<QWidget*, QString>::const_iterator it;
-    it = directorys.find(_pTabs->currentWidget());
+    Entry *en = _entries.find(workDirectory()).value().get();
 
-    if(it != directorys.cend())
-        return it.value();
-    else
-        return QString();
-}
-
-QString FileSystem::getCurrentFileName()
-{
-    QList<QFileInfo>::const_iterator it;
-    it = _iteratots.find(_pTabs->currentWidget()).value();
-
-    return (*it).absoluteFilePath();
+    return en->fileName();
 }
 
 bool FileSystem::saveToDisk(const QString &locationForSaving)
@@ -215,9 +149,7 @@ bool FileSystem::saveToDisk(const QString &locationForSaving)
             SaveConfirmation::deleteImage(getCurrentFileName());
     }
     else
-    {
         success = img.save(locationForSaving);
-    }
 
     return success;
 }

@@ -2,28 +2,30 @@
 #define FILESYSTEM
 
 #include <QHash>
+#include <memory>
 
 class QString;
 class TabController;
 class QFileInfo;
 class QWidget;
+class Entry;
 
 class FileSystem
 {
     FileSystem();
     ~FileSystem();
     FileSystem(const FileSystem &) = delete;
-    void operator = (const FileSystem &) = delete;
+    FileSystem &operator = (const FileSystem &) = delete;
 
     static void destroyInstance();
 public:
     static FileSystem *instance();
-    static QString absolutePath(const QString &dir);
+    static QString absoluteFilePath(const QString &dir);
     static QString fileName(const QString &file);
 
     QString openFile();
-    QString nextFile();
-    QString previousFile();
+    QString nextFile() const;
+    QString previousFile() const;
     bool saveFile();
     bool saveAs();
 
@@ -32,19 +34,16 @@ private:
     TabController *_pTabs;
     QString lastDir;
 
-    void addWorkDirectory(const QString &dir);
-    bool workDirIsChanged(const QString &dir);
-    void entryList(const QString &dir);
-    bool entryIsExist(const QString &dir);
-    void createIterator(const QString &file);
-    QString workDirectory() const;
+    void setWorkDirectory(const QString &directory);
+    void createEntry(const QString &dir);
+    bool entryIsExist(const QString &dir) const;
+    const QString &workDirectory() const;
 
-    QString getCurrentFileName();
+    QString getCurrentFileName() const;
     bool saveToDisk(const QString &locationForSaving);
 
-    QHash<QWidget*, QString> directorys;
-    QHash<QString, QList<QFileInfo>> _entries;
-    QHash<QWidget*, QList<QFileInfo>::const_iterator> _iteratots;
+    QHash<QWidget*, QString> _directorys;
+    QHash<QString, std::shared_ptr<Entry> > _entries;
 };
 
 #endif
