@@ -3,22 +3,21 @@
 #include <QFileDialog>
 #include <QImage>
 #include <QBoxLayout>
-#include <QLabel>
-#include <QScrollArea>
 #include <QScrollBar>
 #include <QMessageBox>
 #include <QDebug>
 #include <QMouseEvent>
 
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
-    _pScrollArea(new QScrollArea(this)),
-    _pLabel(new QLabel(this)),
+    _pScrollArea(new QScrollArea),
+    _pLabel(new QLabel),
     clockwiseValue(90), counterClockwiseValue(-90),
-    angle(clockwiseValue), imageChanged(false),
+    imageChanged(false),
     zoomInValue(0.8), zoomOutValue(1.25),
     zoomFactor(1.0)
 
 {
+    angle = clockwiseValue;
     _pScrollArea->setWidget(_pLabel.get());
     _pScrollArea->setWidgetResizable(true);
     _pScrollArea->setAttribute(Qt::WA_TransparentForMouseEvents);

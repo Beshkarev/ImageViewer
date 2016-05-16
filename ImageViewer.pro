@@ -23,7 +23,8 @@ SOURCES += src/main.cpp\
     src/saveconfirmation.cpp \
     src/filesystem.cpp \
     src/app_properties.cpp \
-    src/about_app.cpp
+    src/about_app.cpp \
+    src/entry.cpp
 
 HEADERS  += src/mainwindow.h \
     src/screenimage.h \
@@ -31,7 +32,8 @@ HEADERS  += src/mainwindow.h \
     src/saveconfirmation.h \
     src/filesystem.h \
     src/app_properties.h \
-    src/about_app.h
+    src/about_app.h \
+    src/entry.h
 
 FORMS    +=
 

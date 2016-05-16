@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <memory>
+#include <QTabWidget>
 
 class QTabWidget;
 class QWidget;
@@ -18,9 +19,9 @@ private:
     void createAboutSpace();
     void createCreditsSpace();
 
-    std::shared_ptr<QTabWidget> _pTabs;
-    std::shared_ptr<QWidget> _pAboutWidg;
-    std::shared_ptr<QWidget> _pCreditsWidg;
+    std::unique_ptr<QTabWidget> _pTabs;
+    std::unique_ptr<QWidget> _pAboutWidg;
+    std::unique_ptr<QWidget> _pCreditsWidg;
 };
 
 #endif // ABOUT_APP_H

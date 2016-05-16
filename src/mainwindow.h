@@ -18,7 +18,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 private:
     MainWindow(const MainWindow &) = delete;
-    void operator =(const MainWindow &) = delete;
+    MainWindow &operator =(const MainWindow &) = delete;
 
     void createActions();
     void createMenu();
@@ -49,7 +49,7 @@ private slots:
 
     void checkTabState();
 protected:
-    void closeEvent(QCloseEvent *);
+    void closeEvent(QCloseEvent *) override;
 private:
 
     void loadFileRequest(const QString &file);

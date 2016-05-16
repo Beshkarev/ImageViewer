@@ -4,13 +4,14 @@
 #include "filesystem.h"
 #include <QTabWidget>
 #include <QDebug>
+//#include <memory>
 
 TabController *TabController::_instance;
 
 TabController::TabController(QWidget *parent/*=0*/) :
     QTabWidget(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
+    //setAttribute(Qt::WA_DeleteOnClose);
     setMovable(true);
     setTabsClosable(true);
 
@@ -18,8 +19,6 @@ TabController::TabController(QWidget *parent/*=0*/) :
             this, SLOT(closeTab(int)));
 }
 
-TabController::~TabController()
-{}
 /*
 TabController::~TabController()
 {
@@ -43,7 +42,7 @@ TabController *TabController::instance()
 {
     if(!_instance)
     {
-        _instance = new TabController();
+        _instance = new TabController;
         //atexit(& TabController::destroyInstance);
     }
 
@@ -172,7 +171,8 @@ void TabController::deleteTab(const qint32 index)
 {
     QWidget *pWdg = widget(index);
     removeTab(index);
-    pWdg->deleteLater();
+    delete pWdg;
+    //pWdg->deleteLater();
     updateTabNumber();
 
     emit tabClosed();

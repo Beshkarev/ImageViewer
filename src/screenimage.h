@@ -3,10 +3,12 @@
 
 #include <QWidget>
 #include <memory>
+#include <QLabel>
+#include <QScrollArea>
 
 class QImage;
-class QLabel;
-class QScrollArea;
+//class QLabel;
+//class QScrollArea;
 class QString;
 class QPoint;
 
@@ -18,6 +20,10 @@ public:
     explicit ScreenImage(QWidget *pWd = 0);
     //true if image don't loaded
     bool isEmpty() const;
+    ~ScreenImage()
+    {
+        qDebug("~Screen");
+    }
 public:
     //File menu
     bool loadImage(const QImage &img, const QString &name);
@@ -32,11 +38,11 @@ public:
     //View menu
     void fitImage();
 protected:
-    virtual void resizeEvent(QResizeEvent *);
-    virtual void wheelEvent(QWheelEvent *);
-    virtual void mousePressEvent(QMouseEvent *);
-    virtual void mouseMoveEvent(QMouseEvent *);
-    virtual void mouseReleaseEvent(QMouseEvent *);
+    void resizeEvent(QResizeEvent *) override;
+    void wheelEvent(QWheelEvent *) override;
+    void mousePressEvent(QMouseEvent *) override;
+    void mouseMoveEvent(QMouseEvent *) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
 private:
     void showImage();
     void imageWasChanged();
@@ -45,8 +51,8 @@ private:
     void zoomImage(const qreal zoomFactor);
     void flipImge(const bool horizontal, const bool vertical);
 
-    std::shared_ptr<QScrollArea> _pScrollArea;
-    std::shared_ptr<QLabel> _pLabel;
+    std::unique_ptr<QScrollArea> _pScrollArea;
+    std::unique_ptr<QLabel> _pLabel;
     QImage m_Image;
 
     const qint32 clockwiseValue;
