@@ -3,35 +3,39 @@
 
 #include <QStringList>
 
-class QString;
-
 class AppProrepties
 {
 public:
-    AppProrepties();
-    QString version() const;
-    void setVersion(const QString &ver);
-    void setAppName(const QString &name);
-    QString name() const;
+    AppProrepties(const AppProrepties&) = delete;
+    AppProrepties &operator =(const AppProrepties &) = delete;
+
+    static const QString &version();
+    static const QString &name();
+    static const QStringList &supportedFormats();
 
 private:
-    QString _appVersion;
-    QStringList _supportedFormats;
-    QString _name;
+    static const QString _appVersion;
+    static const QStringList _supportedFormats;
+    static const QString _name;
 
     void addRecentFile(const QString &filename);
     void updateListRecentFiles();
     void openRecentFile();
 };
 
-inline QString AppProrepties::version() const
+inline const QString &AppProrepties::version()
 {
     return _appVersion;
 }
 
-inline QString AppProrepties::name() const
+inline const QString &AppProrepties::name()
 {
     return _name;
+}
+
+inline const QStringList &AppProrepties::supportedFormats()
+{
+    return _supportedFormats;
 }
 
 #endif // APPPROPERTIES

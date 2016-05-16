@@ -29,8 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
     createConnectToSlots();
     showStatusBarMessage("");
 
-    AppProrepties app;
-    QCoreApplication::setApplicationVersion(app.version());
+    //AppProrepties app;
+    QCoreApplication::setApplicationVersion(AppProrepties::version());
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
     updateListRecentFiles();
@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //init button state
     setButtonsEnabled(false, false);
     setWindowIcon(QIcon(":/icons/png-48px/image-outline.png"));
-    setWindowTitle(app.name());
+    setWindowTitle(AppProrepties::name());
 }
 
 void MainWindow::createActions()
