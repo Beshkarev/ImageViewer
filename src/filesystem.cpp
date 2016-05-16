@@ -1,39 +1,22 @@
 #include "filesystem.h"
-#include "tabcontroller.h"
 #include "saveconfirmation.h"
 #include "entry.h"
+#include "app_properties.h"
+
 #include <QDebug>
-#include <QFileInfo>
 #include <QDir>
-#include <QApplication>
 #include <QFileDialog>
-#include <QObject>
 #include <QImage>
 
 FileSystem *FileSystem::_pInstance;
 
 FileSystem::FileSystem(): _pTabs(TabController::instance())
 {}
-FileSystem::~FileSystem()
-{}
-void FileSystem::destroyInstance()
-{
-    qDebug() << "file system destroy";
-
-    if(_pInstance)
-    {
-        delete _pInstance;
-        _pInstance = nullptr;
-    }
-}
 
 FileSystem *FileSystem::instance()
 {
     if(!_pInstance)
-    {
         _pInstance = new FileSystem;
-        atexit(& FileSystem::destroyInstance);
-    }
 
     return _pInstance;
 }
@@ -49,55 +32,68 @@ QString FileSystem::fileName(const QString &file)
     return QFileInfo(file).fileName();
 }
 
+void FileSystem::destroyEntry(QWidget *widg)
+{
+    auto it = _entries.find(widg);
+    if (it != _entries.end())
+    {
+        auto &ptr = it.value();
+//        qDebug() << "delete before" << ptr.use_count();
+        _directories.remove(ptr->workDirectory());
+        _entries.remove(widg);
+//        qDebug() << "delete after" << ptr.use_count();
+    }
+}
+
 QString FileSystem::openFile()
 {
-    if(lastDir.isEmpty())
-        lastDir = QDir::homePath() + "/Pictures";
     QString filename = QFileDialog::getOpenFileName(nullptr, QObject::tr("Open file"),
-                                                    lastDir,
-                                                    QObject::tr("All (*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"));
+                                                    AppProrepties::lastWorkDirectory(),
+                                                    "All (*.*);;" +
+                                                    AppProrepties::supportedFormats().join(";;"));
     if(filename.isEmpty())
         return QString();
 
-    setWorkDirectory(filename);
     createEntry(filename);
+    setWorkDirectory(filename);
 
-    lastDir = FileSystem::absoluteFilePath(filename);
+    AppProrepties::changeLastWorkDirectory(filename);
 
     return filename;
 }
 
 QString FileSystem::nextFile() const
 {
-    Entry *en = _entries.find(workDirectory()).value().get();
+    Entry *en = _entries.find(_pTabs->currentWidget()).value().get();
 
     return en->next();
 }
 
 QString FileSystem::previousFile() const
 {
-      Entry *en = _entries.find(workDirectory()).value().get();
+      Entry *en = _entries.find(_pTabs->currentWidget()).value().get();
 
       return en->previous();
 }
 
 bool FileSystem::saveFile()
 {
-    return saveToDisk(getCurrentFileName());
+    return saveToDisk(getCurrentAbsoluteFileName());
 }
 
 bool FileSystem::saveAs()
 {
     const QString filename = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save file"),
-                                                    getCurrentFileName(),
-                                                    QObject::tr("All(*.*);;*.jpg;;*.bmp;;*.png;;*.jpeg;;"));
+                                                    getCurrentAbsoluteFileName(),
+                                                    "All (*.*);;" +
+                                                    AppProrepties::supportedFormats().join(";;"));
     return saveToDisk(filename);
 }
 
 void FileSystem::setWorkDirectory(const QString &directory)
 {
-    _directorys.insert(_pTabs->currentWidget(),
-                       FileSystem::absoluteFilePath(directory));
+    _directories.insert(FileSystem::absoluteFilePath(directory),
+                       _pTabs->currentWidget());
 }
 
 void FileSystem::createEntry(const QString &dir)
@@ -105,48 +101,44 @@ void FileSystem::createEntry(const QString &dir)
     if(!entryIsExist(dir))
     {
         qDebug() <<"entry don't exist";
-        _entries.insert(workDirectory(),
+        _entries.insert(_pTabs->currentWidget(),
                         std::make_shared<Entry>(dir));
     }
     else
     {
-        _entries.insert(workDirectory(),
-                        _entries.find(workDirectory()).value());
-//        qDebug() << _entries.find(workDirectory()).value().use_count();
+        QWidget *wdg = _directories.find(FileSystem::absoluteFilePath(dir)).value();
+        auto &ptr = _entries.find(wdg).value();
+
+        _entries.insert(_pTabs->currentWidget(), ptr);
     }
 }
 
 bool FileSystem::entryIsExist(const QString &dir) const
 {
-    auto it = _entries.find(FileSystem::absoluteFilePath(dir));
-    if (it == _entries.end())
+    auto it = _directories.find(FileSystem::absoluteFilePath(dir));
+    if (it == _directories.end())
         return false;
     else
         return true;
 }
 
-const QString &FileSystem::workDirectory() const
+QString FileSystem::getCurrentAbsoluteFileName() const
 {
-    return _directorys.find(_pTabs->currentWidget()).value();
-}
+    Entry *en = _entries.find(_pTabs->currentWidget()).value().get();
 
-QString FileSystem::getCurrentFileName() const
-{
-    Entry *en = _entries.find(workDirectory()).value().get();
-
-    return en->fileName();
+    return en->absoluteFileName();
 }
 
 bool FileSystem::saveToDisk(const QString &locationForSaving)
 {
-    QImage img(getCurrentFileName());
+    QImage img(getCurrentAbsoluteFileName());
     bool success;
-    if(SaveConfirmation::imageWasChanged(getCurrentFileName()))
+    if(SaveConfirmation::imageWasChanged(getCurrentAbsoluteFileName()))
     {
-        img = SaveConfirmation::getChagedImage(getCurrentFileName());
+        img = SaveConfirmation::getChagedImage(getCurrentAbsoluteFileName());
         success = img.save(locationForSaving);
         if(success)
-            SaveConfirmation::deleteImage(getCurrentFileName());
+            SaveConfirmation::deleteImage(getCurrentAbsoluteFileName());
     }
     else
         success = img.save(locationForSaving);

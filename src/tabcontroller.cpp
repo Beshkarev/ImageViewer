@@ -170,10 +170,9 @@ void TabController::updateTabText(const int index, const QString &text)
 void TabController::deleteTab(const qint32 index)
 {
     QWidget *pWdg = widget(index);
+    FileSystem::instance()->destroyEntry(pWdg);
     removeTab(index);
     delete pWdg;
     //pWdg->deleteLater();
     updateTabNumber();
-
-    emit tabClosed();
 }

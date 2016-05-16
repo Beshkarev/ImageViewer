@@ -3,26 +3,24 @@
 
 #include <QHash>
 #include <memory>
+#include "tabcontroller.h"
 
 class QString;
-class TabController;
-class QFileInfo;
 class QWidget;
 class Entry;
 
 class FileSystem
 {
     FileSystem();
-    ~FileSystem();
     FileSystem(const FileSystem &) = delete;
     FileSystem &operator = (const FileSystem &) = delete;
 
-    static void destroyInstance();
 public:
     static FileSystem *instance();
     static QString absoluteFilePath(const QString &dir);
     static QString fileName(const QString &file);
 
+    void destroyEntry(QWidget *widg);
     QString openFile();
     QString nextFile() const;
     QString previousFile() const;
@@ -31,19 +29,17 @@ public:
 
 private:
     static FileSystem *_pInstance;
-    TabController *_pTabs;
-    QString lastDir;
+    std::unique_ptr<TabController> _pTabs;
 
     void setWorkDirectory(const QString &directory);
     void createEntry(const QString &dir);
     bool entryIsExist(const QString &dir) const;
-    const QString &workDirectory() const;
 
-    QString getCurrentFileName() const;
+    QString getCurrentAbsoluteFileName() const;
     bool saveToDisk(const QString &locationForSaving);
 
-    QHash<QWidget*, QString> _directorys;
-    QHash<QString, std::shared_ptr<Entry> > _entries;
+    QHash<QString, QWidget*> _directories;
+    QHash<QWidget*, std::shared_ptr<Entry> > _entries;
 };
 
 #endif
