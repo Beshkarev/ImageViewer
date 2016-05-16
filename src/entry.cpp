@@ -2,6 +2,7 @@
 #include "filesystem.h"
 #include <QDir>
 #include "app_properties.h"
+#include <QApplication>
 
 Entry::Entry(const QString &directoryWithFileName) :
     m_dir(FileSystem::absoluteFilePath(directoryWithFileName))
@@ -34,6 +35,8 @@ QString Entry::previous()
 
 void Entry::entryList(const QString &pathWithFileName)
 {
+    QApplication::processEvents();
+
     QDir dir(FileSystem::absoluteFilePath(pathWithFileName));
     m_etryList = dir.entryInfoList(AppProrepties::supportedFormats(),
                                    QDir::Files,

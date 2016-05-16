@@ -1,15 +1,16 @@
 #include "app_properties.h"
 #include <QString>
+#include "filesystem.h"
+#include <QDir>
 
 const QString AppProrepties::_appVersion = "0.7";
 const QStringList AppProrepties::_supportedFormats = QStringList() << "*.jpg" << "*.bmp"
                                                                << "*.png" << "*jpeg"
                                                                << "*.gif";
 const QString AppProrepties::_name = "Image viewer";
+QString AppProrepties::_lastWorkDirectory = QDir::homePath() + "/Pictures";
 
-//AppProrepties::AppProrepties() : _appVersion("0.7"),
-//    _name("Image viewer"),
-//    _supportedSaveFormats("*.jpg" << "*.bmp"
-//                                  << "*.png" << "*jpeg"
-//                                  << "*.gif")
-//{}
+void AppProrepties::changeLastWorkDirectory(const QString &directory)
+{
+    _lastWorkDirectory = FileSystem::absoluteFilePath(directory);
+}

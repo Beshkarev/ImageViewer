@@ -12,8 +12,8 @@ public:
 
     QString next();
     QString previous();
-    const QString& workDirectory() const;
-    QString fileName() const;
+    QString workDirectory() const;
+    QString absoluteFileName() const;
 private:
     void entryList(const QString &pathWithFileName);
 
@@ -22,14 +22,14 @@ private:
     QFileInfoList::const_iterator it;
 };
 
-inline const QString& Entry::workDirectory() const
+inline QString Entry::workDirectory() const
 {
     return m_dir;
 }
 
-inline QString Entry::fileName() const
+inline QString Entry::absoluteFileName() const
 {
-    return (*it).fileName();
+    return (*it).absoluteFilePath();
 }
 
 #endif // ENTRY_H
