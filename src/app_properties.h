@@ -14,12 +14,14 @@ public:
     static const QStringList &supportedFormats();
     static const QString& lastWorkDirectory();
     static void changeLastWorkDirectory(const QString &directory);
+    static const QString &tempLocation();
 
 private:
     static const QString _appVersion;
     static const QStringList _supportedFormats;
     static const QString _name;
     static QString _lastWorkDirectory;
+    static const QString _tempLocation;
 
     void addRecentFile(const QString &filename);
     void updateListRecentFiles();
@@ -44,6 +46,11 @@ inline const QStringList &AppProrepties::supportedFormats()
 inline const QString &AppProrepties::lastWorkDirectory()
 {
     return _lastWorkDirectory;
+}
+
+inline const QString &AppProrepties::tempLocation()
+{
+    return _tempLocation;
 }
 
 #endif // APPPROPERTIES
