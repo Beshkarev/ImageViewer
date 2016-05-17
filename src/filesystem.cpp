@@ -101,7 +101,7 @@ void FileSystem::createEntry(const QString &dir)
     else
     {
         auto *wdg = _directories.find(FileSystem::absoluteFilePath(dir)).value();
-        auto ptr = _entries.find(wdg).value();
+        auto ptr = _entries.find(wdg).value();//<- excess copying
         ptr.setIterToSelectedFile(dir);
 
         _entries.insert(_pTabs->currentWidget(), ptr);

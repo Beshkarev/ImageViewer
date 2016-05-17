@@ -36,6 +36,9 @@ bool ScreenImage::isEmpty() const
     return m_Image.isNull();
 }
 
+ScreenImage::~ScreenImage()
+{}
+
 bool ScreenImage::loadImage(const QImage &img,
                             const QString &name)
 {

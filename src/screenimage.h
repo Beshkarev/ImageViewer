@@ -20,10 +20,7 @@ public:
     explicit ScreenImage(QWidget *pWd = 0);
     //true if image don't loaded
     bool isEmpty() const;
-    ~ScreenImage()
-    {
-        qDebug("~Screen");
-    }
+    ~ScreenImage();
 public:
     //File menu
     bool loadImage(const QImage &img, const QString &name);

@@ -26,9 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     createMenu();
     addToolBar(createToolBar());
     createConnectToSlots();
-    showStatusBarMessage("");
+    showStatusBarMessage(QString());
 
-    //AppProrepties app;
     QCoreApplication::setApplicationVersion(AppProrepties::version());
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
@@ -166,12 +165,13 @@ QToolBar *MainWindow::createToolBar()
 
     _pToolBar->addAction(_pPreviousFileAction);
     _pToolBar->addAction(_pNextFileAction);
-    _pToolBar->insertSeparator(_pVerticalFlipAction);
+    _pToolBar->addSeparator();
 
     _pToolBar->addAction(_pVerticalFlipAction);
     _pToolBar->addAction(_pHorizontalFlipAction);
     _pToolBar->addAction(_pClockwiseRotateAction);
     _pToolBar->addAction(_pCounterClockwiseRotateAction);
+    _pToolBar->addSeparator();
     _pToolBar->addAction(_pZoomInAction);
     _pToolBar->addAction(_pZoomOutAction);
     _pToolBar->addAction(_pFitAction);
@@ -394,7 +394,7 @@ void MainWindow::checkTabState()
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
-    std::shared_ptr<SaveConfirmation> pChanges(new SaveConfirmation);
+    std::unique_ptr<SaveConfirmation> pChanges(new SaveConfirmation);
 
     if(!pChanges->isEmpty())
     {
