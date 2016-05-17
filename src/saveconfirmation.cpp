@@ -1,20 +1,28 @@
 #include "saveconfirmation.h"
 #include "screenimage.h"
+#include "app_properties.h"
+#include "filesystem.h"
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QListWidget>
 #include <QBuffer>
+#include <QDir>
 
-QHash<QString, QImage> SaveConfirmation::images;
+SaveConfirmation::changedImages SaveConfirmation::images;
 
 SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     QDialog(pWdg), _pListWidget(new QListWidget(this))
 {
-    _pListWidget->setIconSize(QSize(100, 80));
+    bool success =  dir.mkpath(AppProrepties::tempLocation());
+    if (!success)
+        throw std::runtime_error("Can't create temp directory");
+
+    dir.cd("image_viewer_tmp");
+
+    _pListWidget->setIconSize(QSize(100, 100));
     _pListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
-    QHash<QString, QImage>::const_iterator it;
-    it = images.cbegin();
+    auto it = images.cbegin();
     while(it != images.cend())
     {
         createItem(it.key(), getChagedImage(it.key()));
@@ -31,8 +39,10 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
 
     connect(pButtonSaveAll, SIGNAL(clicked(bool)),
             this, SLOT(saveImages()));
+//    connect(pButtonNo, SIGNAL(clicked(bool)),
+//            this, SLOT(reject()));
     connect(pButtonNo, SIGNAL(clicked(bool)),
-            this, SLOT(accept()));
+            this, SLOT(clearDiskSpace()));
     connect(pButtonCancel, SIGNAL(clicked(bool)),
             this, SLOT(reject()));
 
@@ -50,16 +60,33 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     setWindowTitle(tr("Unsaved changes"));
 }
 
-void SaveConfirmation::addImage(const QString &name,
-                        const QImage &image)
+SaveConfirmation::~SaveConfirmation()
+{
+
+}
+
+void SaveConfirmation::addImage(const QString &imageName,
+                                const QImage &image)
 {
     //QByteArray byteArr;
     //QBuffer buffer(&byteArr);
     //buffer.open(QIODevice::WriteOnly);
     //image.save(&buffer);
     //byteArr = qCompress(byteArr, 5);
+   // QDir dir(AppProrepties::tempLocation());
+    //dir.mkdir("image_viewer_tmp");
+    //dir.cd("image_viewer_tmp");
 
-    images.insert(name, image);
+//    bool success =  dir.mkdir(
+//               "image_viewer_tmp");
+//    if (!success)
+//        throw std::runtime_error("Can't create temp directory");
+//    dir.cd("image_viewer_tmp");
+    QString tempLocationSave;
+    tempLocationSave = AppProrepties::tempLocation() + "/" + FileSystem::fileName(imageName);
+    images.insert(imageName, tempLocationSave);
+    //images.insert(name, image);
+    image.save(tempLocationSave);
 }
 
 bool SaveConfirmation::isEmpty()
@@ -74,17 +101,21 @@ bool SaveConfirmation::imageWasChanged(const QString &name)
 
 QImage SaveConfirmation::getChagedImage(const QString &name)
 {
-    QHash<QString, QImage>::const_iterator it;
-    it = images.find(name);
+    //QHash<QString, QImage>::const_iterator it;
+    auto it = images.find(name);
     if(it != images.cend())
     {
         //QImage img;
         //QByteArray byteArr = qUncompress(it.value());
         //img.loadFromData(byteArr, "JPG");
-        return it.value();
+        QImage img(it.value());
+
+        //return it.value();
+        return img;
     }
     else
-        return QImage();
+        throw std::runtime_error("The image was not changed.");
+        //return QImage();
 }
 
 void SaveConfirmation::deleteImage(const QString &name)
@@ -92,29 +123,46 @@ void SaveConfirmation::deleteImage(const QString &name)
     images.remove(name);
 }
 
+void SaveConfirmation::clearDiskSpace()
+{
+    auto it = images.cbegin();
+    QDir dir(AppProrepties::tempLocation());
+
+    for (; it != SaveConfirmation::images.cend(); ++it)
+    {
+        dir.remove(it.value());
+    }
+
+    accept();
+}
+
 void SaveConfirmation::saveImages()
 {
     QList<QListWidgetItem *> selectedItems;
     selectedItems = _pListWidget->selectedItems();
-    QList<QListWidgetItem *>::const_iterator itItems;
-    itItems = selectedItems.cbegin();
+    //QList<QListWidgetItem *>::const_iterator itItems;
+    auto itSelectedItems = selectedItems.cbegin();
 
-    QImage img;
-    QHash<QString, QImage>::const_iterator itFinded;
+    //QImage &img;
+    //QHash<QString, QImage>::const_iterator itFinded;
+    auto itImageChanged = images.cbegin();
     bool successSaved;
-    while(itItems != selectedItems.cend())
+    while(itSelectedItems != selectedItems.cend())
     {
-        itFinded = images.find((*itItems)->text());
-        img = itFinded.value().copy();
+        itImageChanged = images.find((*itSelectedItems)->text());
+        QImage img(itImageChanged.value());
         //img = getChagedImage(itFinded.key());
-        successSaved = img.save(itFinded.key());
+        successSaved = img.save(itImageChanged.key());
 
         if(successSaved)
-            _pListWidget->removeItemWidget(*itItems);
-        ++itItems;
+        {
+            _pListWidget->removeItemWidget(*itSelectedItems);
+            dir.remove(*itImageChanged);
+        }
+        ++itSelectedItems;
     }
 
-    accept();
+    clearDiskSpace();
 }
 
 void SaveConfirmation::createItem(const QString &name,
@@ -122,7 +170,8 @@ void SaveConfirmation::createItem(const QString &name,
 {
     QListWidgetItem *pListItem = new QListWidgetItem;
 
-    pListItem->setIcon(QIcon(QPixmap::fromImage(image)));
+    pListItem->setIcon(QIcon(QPixmap::fromImage(image).scaled(100, 100)));
+    //pListItem->setIcon(QIcon(image));
     pListItem->setText(name);
     _pListWidget->insertItem(_pListWidget->count() + 1,
                              pListItem);
