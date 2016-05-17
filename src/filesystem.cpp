@@ -1,10 +1,7 @@
 #include "filesystem.h"
 #include "saveconfirmation.h"
-#include "entry.h"
 #include "app_properties.h"
 
-#include <QDebug>
-#include <QDir>
 #include <QFileDialog>
 #include <QImage>
 
@@ -38,10 +35,8 @@ void FileSystem::destroyEntry(QWidget *widg)
     if (it != _entries.end())
     {
         auto &ptr = it.value();
-//        qDebug() << "delete before" << ptr.use_count();
-        _directories.remove(ptr->workDirectory());
+        _directories.remove(ptr.workDirectory());
         _entries.remove(widg);
-//        qDebug() << "delete after" << ptr.use_count();
     }
 }
 
@@ -62,18 +57,18 @@ QString FileSystem::openFile()
     return filename;
 }
 
-QString FileSystem::nextFile() const
+QString FileSystem::nextFile()
 {
-    Entry *en = _entries.find(_pTabs->currentWidget()).value().get();
+    auto &en = _entries.find(_pTabs->currentWidget()).value();
 
-    return en->next();
+    return en.next();
 }
 
-QString FileSystem::previousFile() const
+QString FileSystem::previousFile()
 {
-      Entry *en = _entries.find(_pTabs->currentWidget()).value().get();
+    auto &en = _entries.find(_pTabs->currentWidget()).value();
 
-      return en->previous();
+    return en.previous();
 }
 
 bool FileSystem::saveFile()
@@ -100,14 +95,14 @@ void FileSystem::createEntry(const QString &dir)
 {
     if(!entryIsExist(dir))
     {
-        qDebug() <<"entry don't exist";
         _entries.insert(_pTabs->currentWidget(),
-                        std::make_shared<Entry>(dir));
+                        Entry(dir));
     }
     else
     {
-        QWidget *wdg = _directories.find(FileSystem::absoluteFilePath(dir)).value();
-        auto &ptr = _entries.find(wdg).value();
+        auto *wdg = _directories.find(FileSystem::absoluteFilePath(dir)).value();
+        auto ptr = _entries.find(wdg).value();
+        ptr.setIterToSelectedFile(dir);
 
         _entries.insert(_pTabs->currentWidget(), ptr);
     }
@@ -122,11 +117,11 @@ bool FileSystem::entryIsExist(const QString &dir) const
         return true;
 }
 
-QString FileSystem::getCurrentAbsoluteFileName() const
+QString FileSystem::getCurrentAbsoluteFileName()
 {
-    Entry *en = _entries.find(_pTabs->currentWidget()).value().get();
+    auto &en = _entries.find(_pTabs->currentWidget()).value();
 
-    return en->absoluteFileName();
+    return en.absoluteFileName();
 }
 
 bool FileSystem::saveToDisk(const QString &locationForSaving)

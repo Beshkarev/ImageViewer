@@ -4,10 +4,10 @@
 #include <QHash>
 #include <memory>
 #include "tabcontroller.h"
+#include "entry.h"
 
 class QString;
 class QWidget;
-class Entry;
 
 class FileSystem
 {
@@ -22,8 +22,8 @@ public:
 
     void destroyEntry(QWidget *widg);
     QString openFile();
-    QString nextFile() const;
-    QString previousFile() const;
+    QString nextFile();
+    QString previousFile();
     bool saveFile();
     bool saveAs();
 
@@ -35,11 +35,11 @@ private:
     void createEntry(const QString &dir);
     bool entryIsExist(const QString &dir) const;
 
-    QString getCurrentAbsoluteFileName() const;
+    QString getCurrentAbsoluteFileName();
     bool saveToDisk(const QString &locationForSaving);
 
     QHash<QString, QWidget*> _directories;
-    QHash<QWidget*, std::shared_ptr<Entry> > _entries;
+    QHash<QWidget*, Entry> _entries;
 };
 
 #endif

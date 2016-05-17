@@ -2,6 +2,7 @@
 #define ENTRY_H
 
 #include <QFileInfoList>
+#include <memory>
 
 class QString;
 
@@ -14,11 +15,12 @@ public:
     QString previous();
     QString workDirectory() const;
     QString absoluteFileName() const;
+    void setIterToSelectedFile(const QString &filename);
 private:
     void entryList(const QString &pathWithFileName);
 
     QString m_dir;
-    QFileInfoList m_etryList;
+    std::shared_ptr<QFileInfoList> m_etryList;
     QFileInfoList::const_iterator it;
 };
 
