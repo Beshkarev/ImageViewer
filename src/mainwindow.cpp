@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(TabController::instance()),
     _pFileSystem(FileSystem::instance())
 {
-    _pRecentAction.reserve(maxRecentFile);
+    _pRecentAction.resize(5);
     createActions();
     createMenu();
     addToolBar(createToolBar());
@@ -76,10 +76,11 @@ void MainWindow::createActions()
     _pCloseTabAction->setStatusTip(tr("Close current tab"));
     _pCloseTabAction->setIcon(QIcon(":/icons/png-48px/minus.png"));
 
-    for(size_t i = 0; i < maxRecentFile; ++i)
+    for(size_t i = 0; i < _pRecentAction.size(); ++i)
     {
-        _pRecentAction.push_back(new QAction(this));
-        _pRecentAction[i]->setVisible(false);
+        //_pRecentAction.push_back(new QAction(this));
+        _pRecentAction[i] = new QAction(this);
+        _pRecentAction.at(i)->setVisible(false);
     }
 
     _pExitAction = new QAction(tr("Exit"), this);
@@ -130,8 +131,8 @@ void MainWindow::createMenu()
     _pFileMenu->addAction(_pCloseFileAction);
     _pFileMenu->addAction(_pCloseTabAction);
     _pSeparatorAction = _pFileMenu->addSeparator();
-    for(size_t i = 0; i < maxRecentFile; ++i)
-        _pFileMenu->addAction(_pRecentAction[i]);
+    for(size_t i = 0; i < _pRecentAction.size(); ++i)
+        _pFileMenu->addAction(_pRecentAction.at(i));
     _pFileMenu->addSeparator();
     _pFileMenu->addAction(_pExitAction);
 
@@ -197,8 +198,8 @@ void MainWindow::createConnectToSlots()
             this, SLOT(closeTabRequest()));
     connect(_pCloseFileAction, SIGNAL(triggered(bool)),
             this, SLOT(closeFileRequest()));
-    for(size_t i = 0; i < maxRecentFile; ++i)
-        connect(_pRecentAction[i], SIGNAL(triggered(bool)),
+    for(size_t i = 0; i < _pRecentAction.size(); ++i)
+        connect(_pRecentAction.at(i), SIGNAL(triggered(bool)),
                 this, SLOT(openRecentFile()));
     connect(_pExitAction, SIGNAL(triggered(bool)),
             this, SLOT(close()));
@@ -243,33 +244,25 @@ void MainWindow::showStatusBarMessage(const QString &message)
     statusBar()->showMessage(message, 2000);
 }
 
-void MainWindow::setRecentFile(const QString &filename)
-{
-    if(!filename.isEmpty())
-    {
-        recentFile.removeAll(filename);
-        recentFile.prepend(filename);
-    }
-}
-
 void MainWindow::updateListRecentFiles()
 {
+    QStringList &recentFile = AppProrepties::recentFiles();
     QMutableStringListIterator iter = recentFile;
     while(iter.hasNext())
     {
         if(!QFile::exists(iter.next()))
             iter.remove();
     }
-    for(size_t i = 0; i < maxRecentFile; ++i)
+    for(size_t i = 0; i < _pRecentAction.size(); ++i)
     {
         if(i < recentFile.count())
         {
-            _pRecentAction[i]->setText(tr("&%1 %2").arg(i + 1)
-                                      .arg(QFileInfo(recentFile[i]).fileName()));
-            _pRecentAction[i]->setData(recentFile[i]);
-            _pRecentAction[i]->setVisible(true);
+            _pRecentAction.at(i)->setText(tr("&%1 %2").arg(i + 1)
+                                      .arg(QFileInfo(recentFile.at(i)).fileName()));
+            _pRecentAction.at(i)->setData(recentFile.at(i));
+            _pRecentAction.at(i)->setVisible(true);
         }
-        else _pRecentAction[i]->setVisible(false);
+        else _pRecentAction.at(i)->setVisible(false);
     }
     _pSeparatorAction->setVisible(!recentFile.isEmpty());
 }
@@ -277,7 +270,6 @@ void MainWindow::updateListRecentFiles()
 void MainWindow::newTab()
 {
     _pTabController->createTab();
-
 }
 
 void MainWindow::openFile()
@@ -416,7 +408,7 @@ void MainWindow::loadFileRequest(const QString &file)
     if(file.isEmpty())
         return;
     _pTabController->loadFiletoTab(file);
-    setRecentFile(file);
+    AppProrepties::addRecentFile(file);
     updateListRecentFiles();
 }
 

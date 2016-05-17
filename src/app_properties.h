@@ -15,6 +15,8 @@ public:
     static const QString& lastWorkDirectory();
     static void changeLastWorkDirectory(const QString &directory);
     static const QString &tempLocation();
+    static QStringList& recentFiles();
+    static void addRecentFile(const QString &filename);
 
 private:
     static const QString _appVersion;
@@ -22,10 +24,7 @@ private:
     static const QString _name;
     static QString _lastWorkDirectory;
     static const QString _tempLocation;
-
-    void addRecentFile(const QString &filename);
-    void updateListRecentFiles();
-    void openRecentFile();
+    static QStringList _recentFiles;
 };
 
 inline const QString &AppProrepties::version()
@@ -51,6 +50,11 @@ inline const QString &AppProrepties::lastWorkDirectory()
 inline const QString &AppProrepties::tempLocation()
 {
     return _tempLocation;
+}
+
+inline QStringList &AppProrepties::recentFiles()
+{
+    return _recentFiles;
 }
 
 #endif // APPPROPERTIES

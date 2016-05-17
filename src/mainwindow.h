@@ -27,7 +27,6 @@ private:
     QToolBar *createToolBar();
     void createConnectToSlots();
     void showStatusBarMessage(const QString &message);
-    void setRecentFile(const QString &filename);
     void updateListRecentFiles();
 private slots:
     void newTab();
@@ -59,9 +58,6 @@ private:
 
     TabController *_pTabController;
     std::unique_ptr<FileSystem> _pFileSystem;
-    QStringList recentFile;
-
-    const size_t maxRecentFile = 5;
 
     QMenu *_pFileMenu;
     QMenu *_pEditMenu;
