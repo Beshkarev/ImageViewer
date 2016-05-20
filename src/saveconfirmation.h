@@ -15,10 +15,14 @@ class SaveConfirmation : public QDialog
 {
     Q_OBJECT
 
-    typedef QString originalLocationWithName;
-    typedef QString tempLocationWithName;
-    typedef QHash<originalLocationWithName,
-                  tempLocationWithName> changedImages;
+    //typedef QString originalLocationWithName;
+    using originalLocationWithName = QString;
+    //typedef QString tempLocationWithName;
+    using tempLocationWithName = QString;
+    //typedef QHash<originalLocationWithName,
+    //              tempLocationWithName> changedImages;
+    using changedImages = QHash<originalLocationWithName,
+                  tempLocationWithName>;
 
 public:
     SaveConfirmation(QWidget *pWdg = 0);
