@@ -20,7 +20,7 @@ About::About(QWidget *parent) : QDialog(parent),
     setLayout(pVMainLayout);
     setWindowIcon(QIcon(":/icons/png-48px/business-card.png"));
     setWindowTitle(tr("About"));
-    setFixedSize(437, 247);
+    setFixedSize(440, 267);
 }
 
 void About::createAboutSpace()

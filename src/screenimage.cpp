@@ -172,7 +172,7 @@ void ScreenImage::mouseMoveEvent(QMouseEvent *pEvent)
     }
 }
 
-void ScreenImage::mouseReleaseEvent(QMouseEvent *pEvent)
+void ScreenImage::mouseReleaseEvent(QMouseEvent*)
 {
     setCursor(Qt::ArrowCursor);
 }

@@ -7,8 +7,6 @@
 #include <QScrollArea>
 
 class QImage;
-//class QLabel;
-//class QScrollArea;
 class QString;
 class QPoint;
 

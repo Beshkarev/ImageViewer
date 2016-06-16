@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(TabController::instance()),
     _pFileSystem(FileSystem::instance())
 {
-    _pRecentAction.resize(5);
     createActions();
     createMenu();
     addToolBar(createToolBar());
@@ -76,7 +75,7 @@ void MainWindow::createActions()
     _pCloseTabAction->setStatusTip(tr("Close current tab"));
     _pCloseTabAction->setIcon(QIcon(":/icons/png-48px/minus.png"));
 
-    for(size_t i = 0; i < _pRecentAction.size(); ++i)
+    for(auto i = 0; i < _pRecentAction.size(); ++i)
     {
         //_pRecentAction.push_back(new QAction(this));
         _pRecentAction[i] = new QAction(this);
@@ -131,7 +130,7 @@ void MainWindow::createMenu()
     _pFileMenu->addAction(_pCloseFileAction);
     _pFileMenu->addAction(_pCloseTabAction);
     _pSeparatorAction = _pFileMenu->addSeparator();
-    for(size_t i = 0; i < _pRecentAction.size(); ++i)
+    for(auto i = 0; i < _pRecentAction.size(); ++i)
         _pFileMenu->addAction(_pRecentAction.at(i));
     _pFileMenu->addSeparator();
     _pFileMenu->addAction(_pExitAction);
@@ -198,7 +197,7 @@ void MainWindow::createConnectToSlots()
             this, SLOT(closeTabRequest()));
     connect(_pCloseFileAction, SIGNAL(triggered(bool)),
             this, SLOT(closeFileRequest()));
-    for(size_t i = 0; i < _pRecentAction.size(); ++i)
+    for(auto i = 0; i < _pRecentAction.size(); ++i)
         connect(_pRecentAction.at(i), SIGNAL(triggered(bool)),
                 this, SLOT(openRecentFile()));
     connect(_pExitAction, SIGNAL(triggered(bool)),
@@ -253,7 +252,7 @@ void MainWindow::updateListRecentFiles()
         if(!QFile::exists(iter.next()))
             iter.remove();
     }
-    for(size_t i = 0; i < _pRecentAction.size(); ++i)
+    for(auto i = 0; i < _pRecentAction.size(); ++i)
     {
         if(i < recentFile.count())
         {
@@ -423,7 +422,7 @@ void MainWindow::setButtonsEnabled(bool openButt, bool other)
     _pNextFileAction->setEnabled(other);
     _pPreviousFileAction->setEnabled(other);
 
-    for(size_t i = 0; i < _pRecentAction.size(); ++i)
+    for(auto i = 0; i < _pRecentAction.size(); ++i)
         _pRecentAction[i]->setEnabled(other);
 
     _pCloseFileAction->setEnabled(other);

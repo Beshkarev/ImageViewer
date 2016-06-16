@@ -18,10 +18,11 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-private:
+
     MainWindow(const MainWindow &) = delete;
     MainWindow &operator =(const MainWindow &) = delete;
 
+private:
     void createActions();
     void createMenu();
     QToolBar *createToolBar();
@@ -57,7 +58,7 @@ private:
     void setButtonsEnabled(bool openButt, bool other);
 
     TabController *_pTabController;
-    std::unique_ptr<FileSystem> _pFileSystem;
+    std::unique_ptr<class FileSystem> _pFileSystem;
 
     QMenu *_pFileMenu;
     QMenu *_pEditMenu;
@@ -71,7 +72,8 @@ private:
     QAction *_pPreviousFileAction;
     QAction *_pCloseFileAction;
     QAction *_pCloseTabAction;
-    QVector<QAction*> _pRecentAction;
+    const qint32 maxRecentFiles{5};
+    QVector<QAction*> _pRecentAction{maxRecentFiles};
     QAction *_pSeparatorAction;
     QAction *_pExitAction;
 
