@@ -12,6 +12,8 @@ TARGET = ImageViewer
 TEMPLATE = app
 
 CONFIG += c++11
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
 
 #INCLUDEPATH += /usr/local/include/opencv-3.1.0/include/
 #LIBS += -L/usr/local/include/opencv-3.1.0/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui

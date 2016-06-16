@@ -13,6 +13,7 @@ SaveConfirmation::changedImages SaveConfirmation::images;
 SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     QDialog(pWdg), _pListWidget(new QListWidget(this))
 {
+    dir.setPath(AppProrepties::tempLocation());
     bool success =  dir.mkpath(AppProrepties::tempLocation());
     if (!success)
         throw std::runtime_error("Can't create temp directory");
@@ -22,11 +23,15 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     _pListWidget->setIconSize(QSize(100, 100));
     _pListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
-    auto it = images.cbegin();
-    while(it != images.cend())
+
+    auto it = images.keys();
+    #pragma omp parallel for
+    for(auto i = 0; i < it.size(); ++i)
     {
-        createItem(it.key(), getChagedImage(it.key()));
-        ++it;
+        //createItem(it.key(), getChagedImage(it.key()));
+        createItem(it.at(i), getChagedImage(it.at(i)));
+        //++it;
+        //images.keys()
     }
 
     QPushButton *pButtonSaveAll = new QPushButton(this);
@@ -82,6 +87,7 @@ void SaveConfirmation::addImage(const QString &imageName,
 //    if (!success)
 //        throw std::runtime_error("Can't create temp directory");
 //    dir.cd("image_viewer_tmp");
+
     QString tempLocationSave;
     tempLocationSave = AppProrepties::tempLocation() + "/" + FileSystem::fileName(imageName);
     images.insert(imageName, tempLocationSave);
@@ -141,25 +147,26 @@ void SaveConfirmation::saveImages()
     QList<QListWidgetItem *> selectedItems;
     selectedItems = _pListWidget->selectedItems();
     //QList<QListWidgetItem *>::const_iterator itItems;
-    auto itSelectedItems = selectedItems.cbegin();
+    //auto itSelectedItems = selectedItems.cbegin();
 
     //QImage &img;
     //QHash<QString, QImage>::const_iterator itFinded;
     auto itImageChanged = images.cbegin();
     bool successSaved;
-    while(itSelectedItems != selectedItems.cend())
+    //while(itSelectedItems != selectedItems.cend())
+    for(auto itSelectedItems : selectedItems)
     {
-        itImageChanged = images.find((*itSelectedItems)->text());
+        itImageChanged = images.find((itSelectedItems->text()));//.text());
         QImage img(itImageChanged.value());
         //img = getChagedImage(itFinded.key());
         successSaved = img.save(itImageChanged.key());
 
         if(successSaved)
         {
-            _pListWidget->removeItemWidget(*itSelectedItems);
+            _pListWidget->removeItemWidget(itSelectedItems);
             dir.remove(*itImageChanged);
         }
-        ++itSelectedItems;
+        //++itSelectedItems;
     }
 
     clearDiskSpace();
