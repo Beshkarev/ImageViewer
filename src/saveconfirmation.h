@@ -29,12 +29,11 @@ public:
     ~SaveConfirmation();
     static void addImage(const QString &imageName,
                          const QImage &image);
-    bool isEmpty();
+    static bool isEmpty();
     static bool imageWasChanged(const QString &name);
     static QImage getChagedImage(const QString &name);
     static void deleteImage(const QString &name);
 private slots:
-    void clearDiskSpace();
     void saveImages();
 private:
     void createItem(const QString &name,

@@ -1,8 +1,8 @@
 #include "app_properties.h"
-#include <QString>
 #include "filesystem.h"
 #include <QDir>
 #include <QSettings>
+#include "saveconfirmation.h"
 
 constexpr str_const AppProperties::_appVersion;
 
@@ -37,6 +37,8 @@ void AppProperties::saveSettings()
 
     settings.setValue("files/recentFiles", AppProperties::recentFiles());
     settings.setValue("dir/lastDirectory", AppProperties::lastWorkDirectory());
+
+    clearTempDir();
 }
 
 void AppProperties::readSettings()
@@ -53,4 +55,16 @@ void AppProperties::readSettings()
 
     _recentFiles = settings.value("files/recentFiles").toStringList();
     _lastWorkDirectory = settings.value("dir/lastDirectory").toString();
+}
+
+void AppProperties::clearTempDir()
+{
+    //auto it = SaveConfirmation::images.cbegin();
+    QDir dir(tempLocation());
+
+    auto allFiles = dir.entryList();
+
+    //for (; it != SaveConfirmation::images.cend(); ++it)
+    for (auto file : allFiles)
+        dir.remove(file);
 }

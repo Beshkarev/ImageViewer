@@ -21,6 +21,7 @@ public:
 
     static void saveSettings();
     static void readSettings();
+    static void clearTempDir();
 
 private:
     static constexpr str_const _appVersion = "0.9";
