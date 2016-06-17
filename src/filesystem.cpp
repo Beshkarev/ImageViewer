@@ -43,16 +43,15 @@ void FileSystem::destroyEntry(QWidget *widg)
 QString FileSystem::openFile()
 {
     QString filename = QFileDialog::getOpenFileName(nullptr, QObject::tr("Open file"),
-                                                    AppProrepties::lastWorkDirectory(),
-                                                    "All (*.*);;" +
-                                                    AppProrepties::supportedFormats().join(";;"));
+                                                    AppProperties::lastWorkDirectory(),
+                                                    AppProperties::supportedFormats().join(";;") + ";;All (*.*)");
     if(filename.isEmpty())
         return QString();
 
     createEntry(filename);
     setWorkDirectory(filename);
 
-    AppProrepties::changeLastWorkDirectory(filename);
+    AppProperties::changeLastWorkDirectory(filename);
 
     return filename;
 }
@@ -80,8 +79,7 @@ bool FileSystem::saveAs()
 {
     const QString filename = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save file"),
                                                     getCurrentAbsoluteFileName(),
-                                                    "All (*.*);;" +
-                                                    AppProrepties::supportedFormats().join(";;"));
+                                                    AppProperties::supportedFormats().join(";;"));
     return saveToDisk(filename);
 }
 
