@@ -4,12 +4,11 @@
 #include <QStringList>
 #include "basic_types.h"
 
-
-struct AppProrepties
+class AppProperties
 {
 public:
-    AppProrepties(const AppProrepties&) = delete;
-    AppProrepties &operator =(const AppProrepties &) = delete;
+    AppProperties(const AppProperties&) = delete;
+    AppProperties &operator =(const AppProperties &) = delete;
 
     static const QString version();
     static const QString name();
@@ -20,6 +19,9 @@ public:
     static QStringList& recentFiles();
     static void addRecentFile(const QString &filename);
 
+    static void saveSettings();
+    static void readSettings();
+
 private:
     static constexpr str_const _appVersion = "0.9";
     static const QStringList _supportedFormats;
@@ -29,32 +31,33 @@ private:
     static QStringList _recentFiles;
 };
 
-inline const QString AppProrepties::version()
+inline const QString AppProperties::version()
 {
     return str_const_toString(_appVersion);
 }
 
-inline const QString AppProrepties::name()
+inline const QString AppProperties::name()
 {
     return str_const_toString(_name);
 }
 
-inline const QStringList &AppProrepties::supportedFormats()
+inline const QStringList &AppProperties::supportedFormats()
 {
     return _supportedFormats;
 }
 
-inline const QString &AppProrepties::lastWorkDirectory()
+inline const QString &AppProperties::lastWorkDirectory()
 {
+    //_lastWorkDirectory = "/";
     return _lastWorkDirectory;
 }
 
-inline const QString &AppProrepties::tempLocation()
+inline const QString &AppProperties::tempLocation()
 {
     return _tempLocation;
 }
 
-inline QStringList &AppProrepties::recentFiles()
+inline QStringList &AppProperties::recentFiles()
 {
     return _recentFiles;
 }

@@ -21,13 +21,15 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(TabController::instance()),
     _pFileSystem(FileSystem::instance())
 {
+    AppProperties::readSettings();
+
     createActions();
     createMenu();
     addToolBar(createToolBar());
     createConnectToSlots();
     showStatusBarMessage(QString());
 
-    QCoreApplication::setApplicationVersion(AppProrepties::version());
+    QCoreApplication::setApplicationVersion(AppProperties::version());
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
     updateListRecentFiles();
@@ -35,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //init button state
     setButtonsEnabled(false, false);
     setWindowIcon(QIcon(":/icons/png-48px/image-outline.png"));
-    setWindowTitle(AppProrepties::name());
+    QCoreApplication::setApplicationName(AppProperties::name());
 }
 
 void MainWindow::createActions()
@@ -245,7 +247,7 @@ void MainWindow::showStatusBarMessage(const QString &message)
 
 void MainWindow::updateListRecentFiles()
 {
-    QStringList &recentFile = AppProrepties::recentFiles();
+    QStringList &recentFile = AppProperties::recentFiles();
     QMutableStringListIterator iter = recentFile;
     while(iter.hasNext())
     {
@@ -385,21 +387,25 @@ void MainWindow::checkTabState()
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
 {
-    std::unique_ptr<SaveConfirmation> pChanges(new SaveConfirmation);
-
-    if(!pChanges->isEmpty())
+    if(!SaveConfirmation::isEmpty())
     {
+        std::unique_ptr<SaveConfirmation> pChanges(new SaveConfirmation);
         qint32 ret;
         ret = pChanges->exec();
 
         if(ret == QDialog::Accepted)
+        {
+            AppProperties::saveSettings();
             pClose->accept();
-
+        }
         else if(ret == QDialog::Rejected)
             pClose->ignore();
     }
     else
+    {
+        AppProperties::saveSettings();
         pClose->accept();
+    }
 }
 
 void MainWindow::loadFileRequest(const QString &file)
@@ -407,7 +413,7 @@ void MainWindow::loadFileRequest(const QString &file)
     if(file.isEmpty())
         return;
     _pTabController->loadFiletoTab(file);
-    AppProrepties::addRecentFile(file);
+    AppProperties::addRecentFile(file);
     updateListRecentFiles();
 }
 
