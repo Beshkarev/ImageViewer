@@ -132,41 +132,25 @@ void SaveConfirmation::deleteImage(const QString &name)
 void SaveConfirmation::clearDiskSpace()
 {
     auto it = images.cbegin();
-    QDir dir(AppProrepties::tempLocation());
+    //QDir dir(AppProrepties::tempLocation());
 
     for (; it != SaveConfirmation::images.cend(); ++it)
-    {
         dir.remove(it.value());
-    }
 
     accept();
 }
 
 void SaveConfirmation::saveImages()
 {
-    QList<QListWidgetItem *> selectedItems;
-    selectedItems = _pListWidget->selectedItems();
-    //QList<QListWidgetItem *>::const_iterator itItems;
-    //auto itSelectedItems = selectedItems.cbegin();
-
-    //QImage &img;
-    //QHash<QString, QImage>::const_iterator itFinded;
     auto itImageChanged = images.cbegin();
-    bool successSaved;
-    //while(itSelectedItems != selectedItems.cend())
-    for(auto itSelectedItems : selectedItems)
-    {
-        itImageChanged = images.find((itSelectedItems->text()));//.text());
-        QImage img(itImageChanged.value());
-        //img = getChagedImage(itFinded.key());
-        successSaved = img.save(itImageChanged.key());
 
-        if(successSaved)
-        {
+    for(auto itSelectedItems : _pListWidget->selectedItems())
+    {
+        itImageChanged = images.find((itSelectedItems->text()));
+        QImage img(itImageChanged.value());
+
+        if(img.save(itImageChanged.key()))
             _pListWidget->removeItemWidget(itSelectedItems);
-            dir.remove(*itImageChanged);
-        }
-        //++itSelectedItems;
     }
 
     clearDiskSpace();
@@ -175,10 +159,9 @@ void SaveConfirmation::saveImages()
 void SaveConfirmation::createItem(const QString &name,
                                   const QImage &image)
 {
-    QListWidgetItem *pListItem = new QListWidgetItem;
+    QListWidgetItem *pListItem = new QListWidgetItem(_pListWidget.get());
 
     pListItem->setIcon(QIcon(QPixmap::fromImage(image).scaled(100, 100)));
-    //pListItem->setIcon(QIcon(image));
     pListItem->setText(name);
     _pListWidget->insertItem(_pListWidget->count() + 1,
                              pListItem);
