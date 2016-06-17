@@ -2,15 +2,17 @@
 #define APPPROPERTIES
 
 #include <QStringList>
+#include "basic_types.h"
 
-class AppProrepties
+
+struct AppProrepties
 {
 public:
     AppProrepties(const AppProrepties&) = delete;
     AppProrepties &operator =(const AppProrepties &) = delete;
 
-    static const QString &version();
-    static const QString &name();
+    static const QString version();
+    static const QString name();
     static const QStringList &supportedFormats();
     static const QString& lastWorkDirectory();
     static void changeLastWorkDirectory(const QString &directory);
@@ -19,22 +21,22 @@ public:
     static void addRecentFile(const QString &filename);
 
 private:
-    static const QString _appVersion;
+    static constexpr str_const _appVersion = "0.9";
     static const QStringList _supportedFormats;
-    static const QString _name;
+    static constexpr str_const _name = "Image viewer";
     static QString _lastWorkDirectory;
     static const QString _tempLocation;
     static QStringList _recentFiles;
 };
 
-inline const QString &AppProrepties::version()
+inline const QString AppProrepties::version()
 {
-    return _appVersion;
+    return str_const_toString(_appVersion);
 }
 
-inline const QString &AppProrepties::name()
+inline const QString AppProrepties::name()
 {
-    return _name;
+    return str_const_toString(_name);
 }
 
 inline const QStringList &AppProrepties::supportedFormats()

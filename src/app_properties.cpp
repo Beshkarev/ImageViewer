@@ -3,13 +3,12 @@
 #include "filesystem.h"
 #include <QDir>
 
-const QString AppProrepties::_appVersion = "0.7";
+constexpr str_const AppProrepties::_appVersion;
 
 const QStringList AppProrepties::_supportedFormats = QStringList() << "*.jpg" << "*.bmp"
-                                                               << "*.png" << "*jpeg"
-                                                               << "*.gif";
+                                                               << "*.png" << "*jpeg";
 
-const QString AppProrepties::_name = "Image viewer";
+constexpr str_const AppProrepties::_name;
 
 QString AppProrepties::_lastWorkDirectory = QDir::homePath() + "/Pictures";
 
