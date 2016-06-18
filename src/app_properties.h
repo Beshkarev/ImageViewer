@@ -49,7 +49,6 @@ inline const QStringList &AppProperties::supportedFormats()
 
 inline const QString &AppProperties::lastWorkDirectory()
 {
-    //_lastWorkDirectory = "/";
     return _lastWorkDirectory;
 }
 

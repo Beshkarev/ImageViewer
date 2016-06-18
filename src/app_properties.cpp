@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QSettings>
 #include "saveconfirmation.h"
+#include <thread>
 
 constexpr str_const AppProperties::_appVersion;
 
@@ -33,12 +34,13 @@ void AppProperties::addRecentFile(const QString &filename)
 
 void AppProperties::saveSettings()
 {
+    std::thread thread(clearTempDir);
+    thread.detach();
+
     QSettings settings("Education", AppProperties::name());
 
     settings.setValue("files/recentFiles", AppProperties::recentFiles());
     settings.setValue("dir/lastDirectory", AppProperties::lastWorkDirectory());
-
-    clearTempDir();
 }
 
 void AppProperties::readSettings()
@@ -49,8 +51,6 @@ void AppProperties::readSettings()
     if (!success)
         throw std::runtime_error("Can't create temp directory");
 
-    dir.cd("image_viewer_tmp");
-
     QSettings settings("Education", name());
 
     _recentFiles = settings.value("files/recentFiles").toStringList();
@@ -59,12 +59,9 @@ void AppProperties::readSettings()
 
 void AppProperties::clearTempDir()
 {
-    //auto it = SaveConfirmation::images.cbegin();
     QDir dir(tempLocation());
 
     auto allFiles = dir.entryList();
-
-    //for (; it != SaveConfirmation::images.cend(); ++it)
     for (auto file : allFiles)
         dir.remove(file);
 }
