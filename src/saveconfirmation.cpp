@@ -6,6 +6,8 @@
 #include <QPushButton>
 #include <QListWidget>
 #include <QDir>
+#include <QThread>
+#include <thread>
 
 SaveConfirmation::changedImages SaveConfirmation::images;
 
@@ -29,8 +31,16 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     pButtonNo->setText(tr("Close without saving"));
     pButtonCancel->setText(tr("Cancel"));
 
+    //SaveConfirmation *pSaveAllThread = new SaveConfirmation();
+//    pThread = new QThread();
+//    connect(pThread, SIGNAL(started()), this, SLOT(doWork()));
+//    connect(pThread, SIGNAL(finished()), pThread, SLOT(deleteLater()));
+
+    //pThread->start();
     connect(pButtonSaveAll, SIGNAL(clicked(bool)),
             this, SLOT(saveImages()));
+//    connect(pButtonSaveAll, SIGNAL(clicked(bool)),
+//            pThread, SLOT(start()));
     connect(pButtonNo, SIGNAL(clicked(bool)),
             this, SLOT(accept()));
     connect(pButtonCancel, SIGNAL(clicked(bool)),
@@ -74,7 +84,6 @@ bool SaveConfirmation::imageWasChanged(const QString &name)
 
 QImage SaveConfirmation::getChagedImage(const QString &name)
 {
-    //QHash<QString, QImage>::const_iterator it;
     auto it = images.find(name);
     if(it != images.cend())
     {
@@ -93,6 +102,9 @@ void SaveConfirmation::deleteImage(const QString &name)
 
 void SaveConfirmation::saveImages()
 {
+    //accept();
+    emit hide();
+    setVisible(false);
     auto itImageChanged = images.cbegin();
 
     for(auto itSelectedItems : _pListWidget->selectedItems())
@@ -102,12 +114,13 @@ void SaveConfirmation::saveImages()
     {
         //itImageChanged = images.find((itSelectedItems.at(i)->text()));
         itImageChanged = images.find(itSelectedItems->text());
+        //images.remove(itSelectedItems->text());
         QImage img(itImageChanged.value());
 
         img.save(itImageChanged.key());
     }
-
     accept();
+
 }
 
 void SaveConfirmation::createItem(const QString &name,

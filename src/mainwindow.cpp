@@ -79,7 +79,6 @@ void MainWindow::createActions()
 
     for(auto i = 0; i < _pRecentAction.size(); ++i)
     {
-        //_pRecentAction.push_back(new QAction(this));
         _pRecentAction[i] = new QAction(this);
         _pRecentAction.at(i)->setVisible(false);
     }
@@ -390,13 +389,15 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
     if(!SaveConfirmation::isEmpty())
     {
         std::unique_ptr<SaveConfirmation> pChanges(new SaveConfirmation);
-        qint32 ret;
-        ret = pChanges->exec();
+        connect(pChanges.get(), SIGNAL(hide()),
+                this, SLOT(hide()));
+        qint32 ret = pChanges->exec();
 
         if(ret == QDialog::Accepted)
         {
             AppProperties::saveSettings();
             pClose->accept();
+            qDebug("accept mainwin");
         }
         else if(ret == QDialog::Rejected)
             pClose->ignore();
@@ -405,6 +406,7 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
     {
         AppProperties::saveSettings();
         pClose->accept();
+        qDebug("else accept");
     }
 }
 
