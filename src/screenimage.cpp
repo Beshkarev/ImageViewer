@@ -40,24 +40,20 @@ bool ScreenImage::isEmpty() const
 ScreenImage::~ScreenImage()
 {}
 
-bool ScreenImage::loadImage(const QImage &img,
-                            const QString &name)
+void ScreenImage::loadImage(const QString &name)
 {
-    m_Image = img.copy();
-
-    if(m_Image.isNull() &&
-            m_Image.format() == QImage::Format_Invalid)
+    if(SaveConfirmation::imageWasChanged(name))
     {
-        showSomeError(tr("Oops"), tr("Something went wrong!\n"
-                                   "Maybe, not supported the file format."));
-        return false;
+        m_Image = SaveConfirmation::getChagedImage(name);
     }
+    else
+        m_Image.load(name);
+
     bestImageGeometry();
     showImage();
 
     _fileName = name;
     imageChanged = false;
-    return true;
 }
 
 void ScreenImage::closeImage()
@@ -191,12 +187,6 @@ void ScreenImage::imageWasChanged()
     std::thread thread(SaveConfirmation::addImage, _fileName, m_Image);
     thread.detach();
     //SaveConfirmation::addImage(_fileName, m_Image);
-}
-
-void ScreenImage::showSomeError(const QString &title, const QString &str)
-{
-    QMessageBox::warning(this, title, str,
-                         QMessageBox::Ok);
 }
 
 void ScreenImage::bestImageGeometry()

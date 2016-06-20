@@ -21,7 +21,7 @@ public:
     ~ScreenImage();
 public:
     //File menu
-    bool loadImage(const QImage &img, const QString &name);
+    void loadImage(const QString &name);
     void closeImage();
     //Edit menu
     void horizontalFlip();
@@ -41,7 +41,6 @@ protected:
 private:
     void showImage();
     void imageWasChanged();
-    void showSomeError(const QString &title, const QString &str);
     void bestImageGeometry();
     void zoomImage(const qreal zoomFactor);
     void flipImge(const bool horizontal, const bool vertical);
