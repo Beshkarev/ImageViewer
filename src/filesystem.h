@@ -9,9 +9,11 @@
 class QString;
 class QWidget;
 
-class FileSystem
+class FileSystem : public QObject
 {
-    FileSystem();
+    Q_OBJECT
+
+    FileSystem(QObject *parent = nullptr);
     FileSystem(const FileSystem &) = delete;
     FileSystem &operator = (const FileSystem &) = delete;
 

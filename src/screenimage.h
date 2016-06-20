@@ -15,7 +15,7 @@ class ScreenImage : public QWidget
     Q_OBJECT
 
 public:
-    explicit ScreenImage(QWidget *pWd = 0);
+    explicit ScreenImage(QWidget *pWd = nullptr);
     //true if image don't loaded
     bool isEmpty() const;
     ~ScreenImage();
@@ -38,6 +38,10 @@ protected:
     void mousePressEvent(QMouseEvent *) override;
     void mouseMoveEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
+
+signals:
+    void imageLoaded();
+
 private:
     void showImage();
     void imageWasChanged();

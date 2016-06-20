@@ -26,8 +26,12 @@ class SaveConfirmation : public QDialog
                   tempLocationWithName>;
 
 public:
-    SaveConfirmation(QWidget *pWdg = 0);
+    SaveConfirmation(QWidget *pWdg = nullptr);
     ~SaveConfirmation();
+    SaveConfirmation(const SaveConfirmation &) = delete;
+    SaveConfirmation &operator =(const SaveConfirmation &) = delete;
+    SaveConfirmation(SaveConfirmation &&) = delete;
+
     static void addImage(const QString &imageName,
                          const QImage &image);
     static bool isEmpty();
@@ -42,6 +46,7 @@ signals:
     void hide();
 
 private:
+    static void save(QList<QListWidgetItem *> list, changedImages image);
     void createItem(const QString &name,
                  const QImage &image);
 //    static QHash<QString, QImage> images;

@@ -11,7 +11,7 @@ class TabController : public QTabWidget
     Q_OBJECT
 
 private:
-    TabController(QWidget *parent = 0);
+    TabController(QWidget *parent = nullptr);
     //~TabController();
 //    static void destroyInstance();
 
