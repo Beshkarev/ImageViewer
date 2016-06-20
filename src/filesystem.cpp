@@ -46,8 +46,9 @@ QString FileSystem::openFile()
                                                     AppProperties::lastWorkDirectory(),
                                                     AppProperties::supportedFormats().join(";;") + ";;All (*.*)");
     if(filename.isEmpty())
-        return QString();
+        throw std::runtime_error(QObject::tr("The filename is empty.").toStdString());
 
+    checkSelectedFileIsSupported(filename);
     createEntry(filename);
     setWorkDirectory(filename);
 
@@ -80,6 +81,9 @@ bool FileSystem::saveAs()
     const QString filename = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save file"),
                                                     getCurrentAbsoluteFileName(),
                                                     AppProperties::supportedFormats().join(";;"));
+    if (filename.isEmpty())
+        throw std::runtime_error(QObject::tr("The filename for save is empty.").toStdString());
+
     return saveToDisk(filename);
 }
 
@@ -113,6 +117,18 @@ bool FileSystem::entryIsExist(const QString &dir) const
         return false;
     else
         return true;
+}
+
+void FileSystem::checkSelectedFileIsSupported(const QString &selectedFile) const
+{
+    QFileInfo fi(selectedFile);
+    QString str;
+    str = "*." + fi.suffix();
+
+    bool support = AppProperties::supportedFormats().contains(str);
+
+    if (!support)
+        throw std::runtime_error(QObject::tr("The file format is not supported.").toStdString());
 }
 
 QString FileSystem::getCurrentAbsoluteFileName()

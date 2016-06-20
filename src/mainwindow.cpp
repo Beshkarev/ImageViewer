@@ -16,6 +16,7 @@
 #include <QToolBar>
 #include <QStatusBar>
 #include <QFileInfo>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(TabController::instance()),
@@ -274,13 +275,31 @@ void MainWindow::newTab()
 
 void MainWindow::openFile()
 {
-    QString file = _pFileSystem->openFile();
+    QString file;
+    try
+    {
+        file = _pFileSystem->openFile();
+    }
+    catch (std::runtime_error &err)
+    {
+        showError(QString (err.what()));
+    }
+
     loadFileRequest(file);
 }
 
 void MainWindow::saveFile()
 {
-    bool success = _pFileSystem->saveFile();
+    bool success;
+    try
+    {
+        success = _pFileSystem->saveFile();
+    }
+    catch (std::runtime_error &err)
+    {
+        showError(QString (err.what()));
+    }
+
     if(success)
         showStatusBarMessage(tr("File was saved"));
     else if(!success)
@@ -367,6 +386,7 @@ void MainWindow::aboutApp()
 
 void MainWindow::checkTabState()
 {
+    qDebug("check tab");
     int count = _pTabController->count();
     //if tabs not exist
     if(count == 0)
@@ -408,6 +428,12 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
         pClose->accept();
         qDebug("else accept");
     }
+}
+
+void MainWindow::showError(const QString &str)
+{
+    QMessageBox::warning(this, tr("Opps"), str,
+                         QMessageBox::Ok);
 }
 
 void MainWindow::loadFileRequest(const QString &file)

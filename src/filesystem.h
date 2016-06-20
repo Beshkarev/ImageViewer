@@ -34,6 +34,7 @@ private:
     void setWorkDirectory(const QString &directory);
     void createEntry(const QString &dir);
     bool entryIsExist(const QString &dir) const;
+    void checkSelectedFileIsSupported(const QString &selectedFile) const;
 
     QString getCurrentAbsoluteFileName();
     bool saveToDisk(const QString &locationForSaving);
