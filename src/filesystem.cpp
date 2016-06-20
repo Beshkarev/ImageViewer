@@ -125,7 +125,8 @@ void FileSystem::checkSelectedFileIsSupported(const QString &selectedFile) const
     QString str;
     str = "*." + fi.suffix();
 
-    bool support = AppProperties::supportedFormats().contains(str);
+    bool support = AppProperties::supportedFormats().contains(str,
+                                                              Qt::CaseInsensitive);
 
     if (!support)
         throw std::runtime_error(QObject::tr("The file format is not supported.").toStdString());
