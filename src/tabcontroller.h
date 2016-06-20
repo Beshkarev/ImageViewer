@@ -27,7 +27,7 @@ public:
 public slots:
     void closeTab(const int index);
 signals:
-    void tabClosed();
+    void tabClosed(QWidget *widg = nullptr);
     void tabCreated();
     void tabStateChanged();
 public:

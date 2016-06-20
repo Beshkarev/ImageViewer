@@ -8,12 +8,15 @@
 
 class QString;
 class QWidget;
+class QObject;
 
 class FileSystem : public QObject
 {
     Q_OBJECT
 
     FileSystem(QObject *parent = nullptr);
+
+public:
     FileSystem(const FileSystem &) = delete;
     FileSystem &operator = (const FileSystem &) = delete;
 
@@ -22,12 +25,14 @@ public:
     static QString absoluteFilePath(const QString &dir);
     static QString fileName(const QString &file);
 
-    void destroyEntry(QWidget *widg);
     QString openFile();
     QString nextFile();
     QString previousFile();
     bool saveFile();
     bool saveAs();
+
+private slots:
+    void destroyEntry(QWidget *widg);
 
 private:
     static FileSystem *_pInstance;

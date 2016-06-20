@@ -4,11 +4,16 @@
 
 #include <QFileDialog>
 #include <QImage>
+#include <QObject>
 
 FileSystem *FileSystem::_pInstance;
 
-FileSystem::FileSystem(): _pTabs(TabController::instance())
-{}
+FileSystem::FileSystem(QObject *parent) : QObject(parent),
+    _pTabs(TabController::instance())
+{
+    connect(_pTabs.get(), SIGNAL(tabClosed(QWidget*)),
+            this, SLOT(destroyEntry(QWidget*)));
+}
 
 FileSystem *FileSystem::instance()
 {
@@ -27,17 +32,6 @@ QString FileSystem::absoluteFilePath(const QString &dir)
 QString FileSystem::fileName(const QString &file)
 {
     return QFileInfo(file).fileName();
-}
-
-void FileSystem::destroyEntry(QWidget *widg)
-{
-    auto it = _entries.find(widg);
-    if (it != _entries.end())
-    {
-        auto &ptr = it.value();
-        _directories.remove(ptr.workDirectory());
-        _entries.remove(widg);
-    }
 }
 
 QString FileSystem::openFile()
@@ -85,6 +79,17 @@ bool FileSystem::saveAs()
         throw QString ("The save file dialog was just closed\n");
 
     return saveToDisk(filename);
+}
+
+void FileSystem::destroyEntry(QWidget *widg)
+{
+    auto it = _entries.find(widg);
+    if (it != _entries.end())
+    {
+        auto &ptr = it.value();
+        _directories.remove(ptr.workDirectory());
+        _entries.remove(widg);
+    }
 }
 
 void FileSystem::setWorkDirectory(const QString &directory)
