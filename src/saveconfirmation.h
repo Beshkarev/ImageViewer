@@ -16,12 +16,8 @@ class SaveConfirmation : public QDialog
 {
     Q_OBJECT
 
-    //typedef QString originalLocationWithName;
     using originalLocationWithName = QString;
-    //typedef QString tempLocationWithName;
     using tempLocationWithName = QString;
-    //typedef QHash<originalLocationWithName,
-    //              tempLocationWithName> changedImages;
     using changedImages = QHash<originalLocationWithName,
                   tempLocationWithName>;
 
@@ -46,17 +42,13 @@ signals:
     void hide();
 
 private:
-    static void save(QList<QListWidgetItem *> list, changedImages image);
     void createItem(const QString &name,
                  const QImage &image);
-//    static QHash<QString, QImage> images;
 
     static changedImages images;
 
     QDir dir;
     std::unique_ptr<QListWidget> _pListWidget;
-//    QThread *pThread;
-
 };
 
 #endif

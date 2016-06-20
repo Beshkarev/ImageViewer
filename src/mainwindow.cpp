@@ -390,7 +390,6 @@ void MainWindow::aboutApp()
 
 void MainWindow::checkTabState()
 {
-    qDebug("check tab");
     int count = _pTabController->count();
     //if tabs not exist
     if(count == 0)

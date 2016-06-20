@@ -31,16 +31,8 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     pButtonNo->setText(tr("Close without saving"));
     pButtonCancel->setText(tr("Cancel"));
 
-    //SaveConfirmation *pSaveAllThread = new SaveConfirmation();
-//    pThread = new QThread();
-//    connect(pThread, SIGNAL(started()), this, SLOT(doWork()));
-//    connect(pThread, SIGNAL(finished()), pThread, SLOT(deleteLater()));
-
-    //pThread->start();
     connect(pButtonSaveAll, SIGNAL(clicked(bool)),
             this, SLOT(saveImages()));
-//    connect(pButtonSaveAll, SIGNAL(clicked(bool)),
-//            pThread, SLOT(start()));
     connect(pButtonNo, SIGNAL(clicked(bool)),
             this, SLOT(accept()));
     connect(pButtonCancel, SIGNAL(clicked(bool)),
@@ -92,7 +84,7 @@ QImage SaveConfirmation::getChagedImage(const QString &name)
         return img;
     }
     else
-        throw std::runtime_error("The image was not changed.");
+        throw std::runtime_error(tr("The image was not changed.").toStdString());
 }
 
 void SaveConfirmation::deleteImage(const QString &name)
@@ -102,25 +94,19 @@ void SaveConfirmation::deleteImage(const QString &name)
 
 void SaveConfirmation::saveImages()
 {
-    //accept();
     emit hide();
     setVisible(false);
     auto itImageChanged = images.cbegin();
 
+    QImage img;
     for(auto itSelectedItems : _pListWidget->selectedItems())
-   // auto itSelectedItems = _pListWidget->selectedItems();
-    //#pragma omp parallel for
-    //for (auto i = 0; i < itSelectedItems.size(); ++i)
     {
-        //itImageChanged = images.find((itSelectedItems.at(i)->text()));
         itImageChanged = images.find(itSelectedItems->text());
-        //images.remove(itSelectedItems->text());
-        QImage img(itImageChanged.value());
-
+        img.load(itImageChanged.value());
         img.save(itImageChanged.key());
     }
-    accept();
 
+    accept();
 }
 
 void SaveConfirmation::createItem(const QString &name,

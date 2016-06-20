@@ -34,8 +34,8 @@ void AppProperties::addRecentFile(const QString &filename)
 
 void AppProperties::saveSettings()
 {
-//    std::thread thread(clearTempDir);
-//    thread.detach();
+    std::thread thread(clearTempDir);
+    thread.detach();
 
     QSettings settings("Education", AppProperties::name());
 
