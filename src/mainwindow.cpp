@@ -146,12 +146,10 @@ void MainWindow::createMenu()
     _pEditMenu->addAction(_pCounterClockwiseRotateAction);
     _pEditMenu->addSeparator();
 
-    _pEditMenu->addAction(_pZoomInAction);
-    _pEditMenu->addAction(_pZoomOutAction);
-    _pEditMenu->addSeparator();
-
     _pViewMenu = menuBar()->addMenu(tr("&View"));
     _pViewMenu->addAction(_pFitAction);
+    _pViewMenu->addAction(_pZoomInAction);
+    _pViewMenu->addAction(_pZoomOutAction);
 
     _pHelpMenu = menuBar()->addMenu(tr("&Help"));
     _pHelpMenu->addAction(_pAboutAction);
