@@ -54,6 +54,8 @@ void ScreenImage::loadImage(const QString &name)
 
     _fileName = name;
     imageChanged = false;
+
+    emit imageLoaded();
 }
 
 void ScreenImage::closeImage()
@@ -165,7 +167,6 @@ void ScreenImage::mouseMoveEvent(QMouseEvent *pEvent)
         pScrollBar->setValue(_mousePosition.y() + pScrollBar->value());
 
         _mousePosition = pEvent->localPos().toPoint();
-
     }
 }
 
@@ -186,7 +187,6 @@ void ScreenImage::imageWasChanged()
     imageChanged = true;
     std::thread thread(SaveConfirmation::addImage, _fileName, m_Image);
     thread.detach();
-    //SaveConfirmation::addImage(_fileName, m_Image);
 }
 
 void ScreenImage::bestImageGeometry()

@@ -4,7 +4,8 @@
 #include "filesystem.h"
 #include <QTabWidget>
 #include <QDebug>
-//#include <memory>
+#include <thread>
+#include <functional>
 
 TabController *TabController::_instance;
 
@@ -55,6 +56,9 @@ void TabController::createTab()
     addTab(widget, tr("Tab%1").arg(count()+1));
     setCurrentWidget(widget);
 
+    connect(widget, SIGNAL(imageLoaded()),
+            this, SIGNAL(tabStateChanged()));
+
     emit tabCreated();
 }
 
@@ -62,24 +66,13 @@ void TabController::loadFiletoTab(const QString &file)
 {
     ScreenImage *wdg = getImageWidget();
 
-    QImage img;
-    bool successfullyImageLoad;
-    if(SaveConfirmation::imageWasChanged(file))
-    {
-        img = SaveConfirmation::getChagedImage(file);
-    }
-    else
-        img.load(file);
+    updateTabText(currentIndex(),
+                  FileSystem::fileName(file));
 
-    successfullyImageLoad = wdg->loadImage(img, file);
-    if(!successfullyImageLoad)
-        deleteTab(currentIndex());
-    else
-    {
-        updateTabText(currentIndex(),
-                      FileSystem::fileName(file));
-        emit tabStateChanged();
-    }
+    std::thread thr(&ScreenImage::loadImage, wdg,
+                    std::move(file));
+    thr.detach();
+    emit tabStateChanged();
 }
 
 void TabController::closeImage()
@@ -164,15 +157,15 @@ void TabController::updateTabNumber()
 
 void TabController::updateTabText(const int index, const QString &text)
 {
-    setTabText(index, text);   
+    setTabText(index, text);
 }
 
 void TabController::deleteTab(const qint32 index)
 {
     QWidget *pWdg = widget(index);
-    FileSystem::instance()->destroyEntry(pWdg);
+    emit tabClosed(pWdg);
     removeTab(index);
+    disconnect(pWdg, SIGNAL(imageLoaded()), this, SIGNAL(tabStateChanged()));
     delete pWdg;
-    //pWdg->deleteLater();
     updateTabNumber();
 }
