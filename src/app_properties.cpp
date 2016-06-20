@@ -34,8 +34,8 @@ void AppProperties::addRecentFile(const QString &filename)
 
 void AppProperties::saveSettings()
 {
-    std::thread thread(clearTempDir);
-    thread.detach();
+//    std::thread thread(clearTempDir);
+//    thread.detach();
 
     QSettings settings("Education", AppProperties::name());
 
@@ -49,7 +49,7 @@ void AppProperties::readSettings()
     dir.setPath(tempLocation());
     bool success =  dir.mkpath(tempLocation());
     if (!success)
-        throw std::runtime_error("Can't create temp directory");
+        throw std::runtime_error(QObject::tr("Can't create temp directory").toStdString());
 
     QSettings settings("Education", name());
 

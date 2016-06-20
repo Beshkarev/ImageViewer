@@ -54,7 +54,6 @@ protected:
     void closeEvent(QCloseEvent *) override;
 private:
 
-    void showError(const QString &str);
     void loadFileRequest(const QString &file);
     void setButtonsEnabled(bool openButt, bool other);
 

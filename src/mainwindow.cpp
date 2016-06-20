@@ -3,6 +3,7 @@
 #include "saveconfirmation.h"
 #include "app_properties.h"
 #include "about_app.h"
+#include "error.h"
 
 #include <memory>
 #include <QStringList>
@@ -16,7 +17,6 @@
 #include <QToolBar>
 #include <QStatusBar>
 #include <QFileInfo>
-#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(TabController::instance()),
@@ -279,26 +279,19 @@ void MainWindow::openFile()
     try
     {
         file = _pFileSystem->openFile();
+        loadFileRequest(file);
     }
     catch (std::runtime_error &err)
     {
-        showError(QString (err.what()));
+        Error::showError(QString (err.what()));
     }
-
-    loadFileRequest(file);
+    catch (const QString &)
+    {}
 }
 
 void MainWindow::saveFile()
 {
-    bool success;
-    try
-    {
-        success = _pFileSystem->saveFile();
-    }
-    catch (std::runtime_error &err)
-    {
-        showError(QString (err.what()));
-    }
+    bool success = _pFileSystem->saveFile();
 
     if(success)
         showStatusBarMessage(tr("File was saved"));
@@ -308,7 +301,18 @@ void MainWindow::saveFile()
 
 void MainWindow::saveAs()
 {
-    bool success = _pFileSystem->saveAs();
+    bool success;
+    try
+    {
+        success = _pFileSystem->saveAs();
+    }
+    catch (std::runtime_error &err)
+    {
+        Error::showError(QString (err.what()));
+    }
+    catch (const QString &)
+    {}
+
     if(success)
         showStatusBarMessage(tr("File was saved"));
     else if(!success)
@@ -430,16 +434,8 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
     }
 }
 
-void MainWindow::showError(const QString &str)
-{
-    QMessageBox::warning(this, tr("Opps"), str,
-                         QMessageBox::Ok);
-}
-
 void MainWindow::loadFileRequest(const QString &file)
 {
-    if(file.isEmpty())
-        return;
     _pTabController->loadFiletoTab(file);
     AppProperties::addRecentFile(file);
     updateListRecentFiles();

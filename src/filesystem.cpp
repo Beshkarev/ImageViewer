@@ -46,7 +46,7 @@ QString FileSystem::openFile()
                                                     AppProperties::lastWorkDirectory(),
                                                     AppProperties::supportedFormats().join(";;") + ";;All (*.*)");
     if(filename.isEmpty())
-        throw std::runtime_error(QObject::tr("The filename is empty.").toStdString());
+        throw QString ("The open file dialog was just closed\n");
 
     checkSelectedFileIsSupported(filename);
     createEntry(filename);
@@ -82,7 +82,7 @@ bool FileSystem::saveAs()
                                                     getCurrentAbsoluteFileName(),
                                                     AppProperties::supportedFormats().join(";;"));
     if (filename.isEmpty())
-        throw std::runtime_error(QObject::tr("The filename for save is empty.").toStdString());
+        throw QString ("The save file dialog was just closed\n");
 
     return saveToDisk(filename);
 }
