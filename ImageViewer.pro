@@ -26,7 +26,8 @@ SOURCES += src/main.cpp\
     src/filesystem.cpp \
     src/about_app.cpp \
     src/entry.cpp \
-    src/app_properties.cpp
+    src/app_properties.cpp \
+    src/error.cpp
 
 HEADERS  += src/mainwindow.h \
     src/screenimage.h \
@@ -36,7 +37,8 @@ HEADERS  += src/mainwindow.h \
     src/about_app.h \
     src/entry.h \
     src/basic_types.h \
-    src/app_properties.h
+    src/app_properties.h \
+    src/error.h
 
 FORMS    +=
 
