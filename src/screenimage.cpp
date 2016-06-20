@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QMouseEvent>
+#include <thread>
 
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pScrollArea(new QScrollArea),
@@ -187,7 +188,9 @@ void ScreenImage::showImage()
 void ScreenImage::imageWasChanged()
 {
     imageChanged = true;
-    SaveConfirmation::addImage(_fileName, m_Image);
+    std::thread thread(SaveConfirmation::addImage, _fileName, m_Image);
+    thread.detach();
+    //SaveConfirmation::addImage(_fileName, m_Image);
 }
 
 void ScreenImage::showSomeError(const QString &title, const QString &str)
