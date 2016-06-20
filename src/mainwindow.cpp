@@ -74,7 +74,7 @@ void MainWindow::createActions()
     _pCloseFileAction->setIcon(QIcon(":/icons/png-48px/delete-outline.png"));
 
     _pCloseTabAction = new QAction(tr("Close tab"), this);
-    _pCloseTabAction->setShortcut(QKeySequence::Close);
+    _pCloseTabAction->setShortcut(Qt::CTRL + Qt::Key_W);
     _pCloseTabAction->setStatusTip(tr("Close current tab"));
     _pCloseTabAction->setIcon(QIcon(":/icons/png-48px/minus.png"));
 
