@@ -3,12 +3,12 @@
 
 #include <QHash>
 #include <memory>
-#include "tabcontroller.h"
-#include "entry.h"
+#include <QObject>
 
 class QString;
 class QWidget;
-class QObject;
+class TabController;
+class Entry;
 
 class FileSystem : public QObject
 {
@@ -17,6 +17,7 @@ class FileSystem : public QObject
     FileSystem(QObject *parent = nullptr);
 
 public:
+    ~FileSystem();
     FileSystem(const FileSystem &) = delete;
     FileSystem &operator = (const FileSystem &) = delete;
 

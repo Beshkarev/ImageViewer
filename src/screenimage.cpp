@@ -1,5 +1,6 @@
 #include "screenimage.h"
 #include "saveconfirmation.h"
+
 #include <QFileDialog>
 #include <QImage>
 #include <QBoxLayout>
@@ -8,6 +9,8 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <thread>
+#include <QLabel>
+#include <QScrollArea>
 
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     _pScrollArea(new QScrollArea),
@@ -32,13 +35,12 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
     setLayout(pHLayout);
 }
 
+ScreenImage::~ScreenImage() = default;
+
 bool ScreenImage::isEmpty() const
 {
     return m_Image.isNull();
 }
-
-ScreenImage::~ScreenImage()
-{}
 
 void ScreenImage::loadImage(const QString &name)
 {

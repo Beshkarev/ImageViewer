@@ -1,6 +1,6 @@
 #include "entry.h"
 #include "filesystem.h"
-#include "app_properties.h"
+#include "config.h"
 #include <QDir>
 #include <QApplication>
 
@@ -44,7 +44,7 @@ void Entry::entryList(const QString &pathWithFileName)
     QApplication::processEvents();
 
     QDir dir(FileSystem::absoluteFilePath(pathWithFileName));
-    *m_etryList = dir.entryInfoList(AppProperties::supportedFormats(),
+    *m_etryList = dir.entryInfoList(Config::supportedFormats,
                                    QDir::Files,
                                    QDir::LocaleAware);
     if (m_etryList->isEmpty())

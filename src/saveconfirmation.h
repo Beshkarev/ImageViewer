@@ -4,13 +4,10 @@
 #include <QHash>
 #include <QDialog>
 #include <memory>
-#include <QListWidget>
-#include <QDir>
 
 class QString;
 class QImage;
 class QListWidget;
-class QThread;
 
 class SaveConfirmation : public QDialog
 {
@@ -47,7 +44,6 @@ private:
 
     static changedImages images;
 
-    QDir dir;
     std::unique_ptr<QListWidget> _pListWidget;
 };
 

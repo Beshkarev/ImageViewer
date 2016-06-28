@@ -3,10 +3,8 @@
 
 #include <QDialog>
 #include <memory>
-#include <QTabWidget>
 
 class QTabWidget;
-class QWidget;
 
 class About: public QDialog
 {
@@ -14,7 +12,7 @@ class About: public QDialog
 
 public:
     About(QWidget *parent = nullptr);
-
+    ~About();
 private:
     void createAboutSpace();
     void createCreditsSpace();

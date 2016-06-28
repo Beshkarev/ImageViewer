@@ -1,12 +1,13 @@
 #include "saveconfirmation.h"
 #include "screenimage.h"
-#include "app_properties.h"
+#include "config.h"
 #include "filesystem.h"
+
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QListWidget>
 #include <QDir>
-#include <QThread>
+#include <QListWidget>
 #include <thread>
 
 SaveConfirmation::changedImages SaveConfirmation::images;
@@ -14,7 +15,6 @@ SaveConfirmation::changedImages SaveConfirmation::images;
 SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     QDialog(pWdg), _pListWidget(new QListWidget(this))
 {
-
     _pListWidget->setIconSize(QSize(100, 100));
     _pListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
@@ -52,14 +52,13 @@ SaveConfirmation::SaveConfirmation(QWidget *pWdg):
     setWindowTitle(tr("Unsaved changes"));
 }
 
-SaveConfirmation::~SaveConfirmation()
-{}
+SaveConfirmation::~SaveConfirmation() = default;
 
 void SaveConfirmation::addImage(const QString &imageName,
                                 const QImage &image)
 {
     QString tempLocationSave;
-    tempLocationSave = AppProperties::tempLocation() + "/" + FileSystem::fileName(imageName);
+    tempLocationSave = Config::tempLocation + "/" + FileSystem::fileName(imageName);
     images.insert(imageName, tempLocationSave);
     image.save(tempLocationSave);
 }

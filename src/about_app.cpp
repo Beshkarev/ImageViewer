@@ -23,6 +23,8 @@ About::About(QWidget *parent) : QDialog(parent),
     setFixedSize(440, 267);
 }
 
+About::~About() = default;
+
 void About::createAboutSpace()
 {
     QLabel *pLabel = new QLabel(this);

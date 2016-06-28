@@ -1,9 +1,11 @@
 #include "mainwindow.h"
 #include "tabcontroller.h"
 #include "saveconfirmation.h"
-#include "app_properties.h"
+//#include "app_properties.h"
 #include "about_app.h"
 #include "error.h"
+#include "filesystem.h"
+#include "config.h"
 
 #include <memory>
 #include <QStringList>
@@ -17,12 +19,13 @@
 #include <QToolBar>
 #include <QStatusBar>
 #include <QFileInfo>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), _pTabController(TabController::instance()),
     _pFileSystem(FileSystem::instance())
 {
-    AppProperties::readSettings();
+    Config::readSettings();
 
     createActions();
     createMenu();
@@ -30,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     createConnectToSlots();
     showStatusBarMessage(QString());
 
-    QCoreApplication::setApplicationVersion(AppProperties::version());
+    QCoreApplication::setApplicationVersion(str_const_toString(Config::version));
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
     updateListRecentFiles();
@@ -38,8 +41,13 @@ MainWindow::MainWindow(QWidget *parent) :
     //init button state
     setButtonsEnabled(false, false);
     setWindowIcon(QIcon(":/icons/png-48px/image-outline.png"));
-    QCoreApplication::setApplicationName(AppProperties::name());
+    QCoreApplication::setApplicationName(str_const_toString(Config::appName));
+
+//    QSettings set("Education", AppProperties::name());
+    //    restoreState(set.value("mainWindow/state").toByteArray());
 }
+
+MainWindow::~MainWindow() = default;
 
 void MainWindow::createActions()
 {
@@ -163,6 +171,7 @@ QToolBar *MainWindow::createToolBar()
     _pToolBar->setAllowedAreas(Qt::TopToolBarArea
                               | Qt::BottomToolBarArea);
 
+    //_pToolBar->move(500, 500);
     _pToolBar->addAction(_pPreviousFileAction);
     _pToolBar->addAction(_pNextFileAction);
     _pToolBar->addSeparator();
@@ -245,7 +254,7 @@ void MainWindow::showStatusBarMessage(const QString &message)
 
 void MainWindow::updateListRecentFiles()
 {
-    QStringList &recentFile = AppProperties::recentFiles();
+    QStringList &recentFile = Config::recentFiles;
     QMutableStringListIterator iter = recentFile;
     while(iter.hasNext())
     {
@@ -416,7 +425,7 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
 
         if(ret == QDialog::Accepted)
         {
-            AppProperties::saveSettings();
+            Config::saveSettings();
             pClose->accept();
             qDebug("accept mainwin");
         }
@@ -425,16 +434,18 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
     }
     else
     {
-        AppProperties::saveSettings();
+        Config::saveSettings();
         pClose->accept();
         qDebug("else accept");
     }
+//    QSettings set("Education", AppProperties::name());
+//    set.setValue("mainWindow/state", saveState());
 }
 
 void MainWindow::loadFileRequest(const QString &file)
 {
     _pTabController->loadFiletoTab(file);
-    AppProperties::addRecentFile(file);
+    Config::addRecentFile(file);
     updateListRecentFiles();
 }
 

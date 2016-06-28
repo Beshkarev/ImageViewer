@@ -1,7 +1,6 @@
 #include "config.h"
 #include "filesystem.h"
 
-#include <QDir>
 #include <QSettings>
 #include <thread>
 

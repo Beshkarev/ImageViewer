@@ -3,12 +3,12 @@
 
 #include <QWidget>
 #include <memory>
-#include <QLabel>
-#include <QScrollArea>
 
 class QImage;
 class QString;
 class QPoint;
+class QLabel;
+class QScrollArea;
 
 class ScreenImage : public QWidget
 {
@@ -16,9 +16,10 @@ class ScreenImage : public QWidget
 
 public:
     explicit ScreenImage(QWidget *pWd = nullptr);
+    ~ScreenImage();
     //true if image don't loaded
     bool isEmpty() const;
-    ~ScreenImage();
+
 public:
     //File menu
     void loadImage(const QString &name);

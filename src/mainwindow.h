@@ -5,12 +5,13 @@
 #include <QVector>
 #include <memory>
 
-#include "filesystem.h"
+//#include "config.h"
 
 class QAction;
 class TabController;
 class QStringList;
 class QToolBar;
+class FileSystem;
 
 class MainWindow : public QMainWindow
 {
@@ -18,9 +19,11 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
     MainWindow(const MainWindow &) = delete;
     MainWindow &operator =(const MainWindow &) = delete;
+    MainWindow(MainWindow &&) = delete;
 
 private:
     void createActions();
@@ -58,7 +61,7 @@ private:
     void setButtonsEnabled(bool openButt, bool other);
 
     TabController *_pTabController;
-    std::unique_ptr<class FileSystem> _pFileSystem;
+    std::unique_ptr<FileSystem> _pFileSystem;
 
     QMenu *_pFileMenu;
     QMenu *_pEditMenu;

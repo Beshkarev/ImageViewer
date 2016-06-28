@@ -1,6 +1,8 @@
 #include "filesystem.h"
 #include "saveconfirmation.h"
-#include "app_properties.h"
+#include "config.h"
+#include "tabcontroller.h"
+#include "entry.h"
 
 #include <QFileDialog>
 #include <QImage>
@@ -14,6 +16,8 @@ FileSystem::FileSystem(QObject *parent) : QObject(parent),
     connect(_pTabs.get(), SIGNAL(tabClosed(QWidget*)),
             this, SLOT(destroyEntry(QWidget*)));
 }
+
+FileSystem::~FileSystem() = default;
 
 FileSystem *FileSystem::instance()
 {
@@ -37,8 +41,9 @@ QString FileSystem::fileName(const QString &file)
 QString FileSystem::openFile()
 {
     QString filename = QFileDialog::getOpenFileName(nullptr, QObject::tr("Open file"),
-                                                    AppProperties::lastWorkDirectory(),
-                                                    AppProperties::supportedFormats().join(";;") + ";;All (*.*)");
+                                                    Config::lastWorkDirectory,
+                                                    "All (*.*);;" +
+                                                    Config::supportedFormats.join(";;"));
     if(filename.isEmpty())
         throw QString ("The open file dialog was just closed\n");
 
@@ -46,7 +51,7 @@ QString FileSystem::openFile()
     createEntry(filename);
     setWorkDirectory(filename);
 
-    AppProperties::changeLastWorkDirectory(filename);
+    Config::changeLastWorkDirectory(filename);
 
     return filename;
 }
@@ -74,7 +79,7 @@ bool FileSystem::saveAs()
 {
     const QString filename = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save file"),
                                                     getCurrentAbsoluteFileName(),
-                                                    AppProperties::supportedFormats().join(";;"));
+                                                    Config::supportedFormats.join(";;"));
     if (filename.isEmpty())
         throw QString ("The save file dialog was just closed\n");
 
@@ -130,8 +135,7 @@ void FileSystem::checkSelectedFileIsSupported(const QString &selectedFile) const
     QString str;
     str = "*." + fi.suffix();
 
-    bool support = AppProperties::supportedFormats().contains(str,
-                                                              Qt::CaseInsensitive);
+    bool support = Config::supportedFormats.contains(str, Qt::CaseInsensitive);
 
     if (!support)
         throw std::runtime_error(QObject::tr("The file format is not supported.").toStdString());
