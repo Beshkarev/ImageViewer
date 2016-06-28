@@ -199,7 +199,7 @@ void ScreenImage::bestImageGeometry()
     qreal screenHeight = static_cast<qreal>(height());
 
     if(imgWidth < screenWidth && imgHeight < screenHeight)
-        return;
+        zoomFactor = 1.0;
 
     if(imgWidth > screenWidth)
         zoomFactor = imgWidth / screenWidth;
