@@ -38,7 +38,7 @@ QString FileSystem::fileName(const QString &file)
     return QFileInfo(file).fileName();
 }
 
-QString FileSystem::openFile()
+QString FileSystem::openFileDialog()
 {
     QString filename = QFileDialog::getOpenFileName(nullptr, QObject::tr("Open file"),
                                                     Config::lastWorkDirectory,
@@ -47,11 +47,7 @@ QString FileSystem::openFile()
     if(filename.isEmpty())
         throw QString ("The open file dialog was just closed\n");
 
-    checkSelectedFileIsSupported(filename);
-    createEntry(filename);
-    setWorkDirectory(filename);
-
-    Config::changeLastWorkDirectory(filename);
+    prepareBeforeLoadFile(filename);
 
     return filename;
 }
@@ -75,7 +71,7 @@ bool FileSystem::saveFile()
     return saveToDisk(getCurrentAbsoluteFileName());
 }
 
-bool FileSystem::saveAs()
+bool FileSystem::saveAsDialog()
 {
     const QString filename = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save file"),
                                                     getCurrentAbsoluteFileName(),
@@ -84,6 +80,11 @@ bool FileSystem::saveAs()
         throw QString ("The save file dialog was just closed\n");
 
     return saveToDisk(filename);
+}
+
+void FileSystem::openRecentFile(const QString &file)
+{
+    prepareBeforeLoadFile(file);
 }
 
 void FileSystem::destroyEntry(QWidget *widg)
@@ -95,6 +96,15 @@ void FileSystem::destroyEntry(QWidget *widg)
         _directories.remove(ptr.workDirectory());
         _entries.remove(widg);
     }
+}
+
+void FileSystem::prepareBeforeLoadFile(const QString &filename)
+{
+    checkSelectedFileIsSupported(filename);
+    createEntry(filename);
+    setWorkDirectory(filename);
+
+    Config::changeLastWorkDirectory(filename);
 }
 
 void FileSystem::setWorkDirectory(const QString &directory)

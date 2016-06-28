@@ -26,16 +26,18 @@ public:
     static QString absoluteFilePath(const QString &dir);
     static QString fileName(const QString &file);
 
-    QString openFile();
+    QString openFileDialog();
     QString nextFile();
     QString previousFile();
     bool saveFile();
-    bool saveAs();
+    bool saveAsDialog();
+    void openRecentFile(const QString &file);
 
 private slots:
     void destroyEntry(QWidget *widg);
 
 private:
+    void prepareBeforeLoadFile(const QString &filename);
     static FileSystem *_pInstance;
     std::unique_ptr<TabController> _pTabs;
 

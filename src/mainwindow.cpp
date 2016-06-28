@@ -285,7 +285,7 @@ void MainWindow::openFile()
     QString file;
     try
     {
-        file = _pFileSystem->openFile();
+        file = _pFileSystem->openFileDialog();
         loadFileRequest(file);
     }
     catch (std::runtime_error &err)
@@ -311,7 +311,7 @@ void MainWindow::saveAs()
     bool success;
     try
     {
-        success = _pFileSystem->saveAs();
+        success = _pFileSystem->saveAsDialog();
     }
     catch (std::runtime_error &err)
     {
@@ -351,6 +351,7 @@ void MainWindow::closeTabRequest()
 void MainWindow::openRecentFile()
 {
     QAction *pAction = qobject_cast<QAction *>(sender());
+    _pFileSystem->openRecentFile(pAction->data().toString());
     loadFileRequest(pAction->data().toString());
 }
 
@@ -461,7 +462,7 @@ void MainWindow::setButtonsEnabled(bool openButt, bool other)
     _pPreviousFileAction->setEnabled(other);
 
     for(auto i = 0; i < _pRecentAction.size(); ++i)
-        _pRecentAction[i]->setEnabled(other);
+        _pRecentAction[i]->setEnabled(openButt);
 
     _pCloseFileAction->setEnabled(other);
 
