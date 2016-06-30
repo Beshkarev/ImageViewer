@@ -98,43 +98,57 @@ void TabController::closeTab(const int index)
 void TabController::horizontalFlip()
 {
     ScreenImage *widget = getImageWidget();
-    widget->horizontalFlip();
+    std::thread thread(&ScreenImage::horizontalFlip, widget);
+    thread.detach();
+//    widget->horizontalFlip();
 }
 
 void TabController::verticalFlip()
 {
     ScreenImage *widget = getImageWidget();
-    widget->verticalFlip();
+    std::thread thread(&ScreenImage::verticalFlip, widget);
+    thread.detach();
+//    widget->verticalFlip();
 }
 
 void TabController::clockwiseRotate()
 {
     ScreenImage *widget = getImageWidget();
-    widget->clockwiseRotate();
+    std::thread trd(&ScreenImage::clockwiseRotate, widget);
+    trd.detach();
+//    widget->clockwiseRotate();
 }
 
 void TabController::counterClockwiseRotate()
 {
     ScreenImage *widget = getImageWidget();
-    widget->counterClockwiseRotate();
+    std::thread trd(&ScreenImage::counterClockwiseRotate, widget);
+    trd.detach();
+    //    widget->counterClockwiseRotate();
 }
 
 void TabController::zoomInImage()
 {
     ScreenImage *widget = getImageWidget();
-    widget->zoomInImage();
+    std::thread trd(&ScreenImage::zoomInImage, widget);
+    trd.detach();
+//    widget->zoomInImage();
 }
 
 void TabController::zoomOutImage()
 {
     ScreenImage *widget = getImageWidget();
-    widget->zoomOutImage();
+    std::thread trd(&ScreenImage::zoomOutImage, widget);
+    trd.detach();
+//    widget->zoomOutImage();
 }
 
 void TabController::fitImage()
 {
     ScreenImage *wdg = getImageWidget();
-    wdg->fitImage();
+    std::thread trd(&ScreenImage::fitImage, wdg);
+    trd.detach();
+//    wdg->fitImage();
 }
 
 ScreenImage *TabController::getImageWidget()
