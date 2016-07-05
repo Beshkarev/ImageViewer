@@ -1,38 +1,36 @@
 #include "screenimage.h"
 #include "saveconfirmation.h"
 
-#include <QFileDialog>
 #include <QImage>
-#include <QBoxLayout>
 #include <QScrollBar>
-#include <QMessageBox>
-#include <QDebug>
+//#include <QDebug>
 #include <QMouseEvent>
 #include <thread>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
 #include <QLabel>
-#include <QScrollArea>
+#include <QMovie>
+#include <QGraphicsProxyWidget>
 
-ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QWidget(pWd),
-    _pScrollArea(new QScrollArea),
-    _pLabel(new QLabel),
+ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QGraphicsView(pWd),
+    _pScene(new QGraphicsScene(this)),
     clockwiseValue(90), counterClockwiseValue(-90),
-    imageChanged(false),
-    zoomInValue(0.8), zoomOutValue(1.25),
+    angle(0), imageChanged(false),
+    zoomInValue(1.1), zoomOutValue(1.1),
     zoomFactor(1.0)
 
 {
-    angle = clockwiseValue;
-    _pScrollArea->setWidget(_pLabel.get());
-    _pScrollArea->setWidgetResizable(true);
-    _pScrollArea->setAttribute(Qt::WA_TransparentForMouseEvents);
-    _pScrollArea->hide();
+    connect(this, SIGNAL(showImageSignal()),
+            this, SLOT(showImage()));
 
-    _pLabel->setAlignment(Qt::AlignCenter);
+    _pImageItem = std::unique_ptr<QGraphicsPixmapItem>(_pScene->addPixmap(QPixmap::fromImage(m_Image)));
 
-    QHBoxLayout *pHLayout = new QHBoxLayout(this);
-    pHLayout->addWidget(_pScrollArea.get());
-
-    setLayout(pHLayout);
+    setMouseTracking(true);
+    _pImageItem->setTransformationMode(Qt::SmoothTransformation);
+    setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    setResizeAnchor(QGraphicsView::AnchorViewCenter);
+    setScene(_pScene.get());
 }
 
 ScreenImage::~ScreenImage() = default;
@@ -45,77 +43,60 @@ bool ScreenImage::isEmpty() const
 void ScreenImage::loadImage(const QString &name)
 {
     if(SaveConfirmation::imageWasChanged(name))
-    {
         m_Image = SaveConfirmation::getChagedImage(name);
-    }
     else
         m_Image.load(name);
-
-    bestImageGeometry();
-    showImage();
 
     _fileName = name;
     imageChanged = false;
 
     emit imageLoaded();
+    emit showImageSignal();
+}
+
+void ScreenImage::loadGIF(const QString &name)
+{
+
 }
 
 void ScreenImage::closeImage()
 {
     imageChanged = false;
-    _pLabel->clear();
-    _pScrollArea->hide();
+    _pImageItem->setPixmap(QPixmap());
     m_Image = QImage();
 }
 
 void ScreenImage::horizontalFlip()
 {
     flipImge(true, false);;
-    if(!isEmpty())
-    {
-        imageWasChanged();
-        showImage();
-    }
+
+    imageWasChanged();
 }
 
 void ScreenImage::verticalFlip()
 {
     flipImge(false, true);
-    if(!isEmpty())
-    {
-        imageWasChanged();
-        showImage();
-    }
+
+    imageWasChanged();
 }
 
 void ScreenImage::clockwiseRotate()
 {
-    QTransform transform;
-    transform.rotate(angle);
-
-    m_Image = m_Image.transformed(transform);
-    if(!isEmpty())
-    {
-        imageWasChanged();
-        showImage();
-        angle = clockwiseValue;
-        bestImageGeometry();
-    }
+    angle = clockwiseValue;
+    rotateImage(angle);
+    imageWasChanged();
 }
 
 void ScreenImage::counterClockwiseRotate()
 {
     angle = counterClockwiseValue;
-    clockwiseRotate();
-    if(!isEmpty())
-    {
-        imageWasChanged();
-        bestImageGeometry();
-    }
+    rotateImage(angle);
+    imageWasChanged();
 }
 
 void ScreenImage::zoomInImage()
 {
+    resetTransform();
     zoomFactor *= zoomInValue;
 
     zoomImage(zoomFactor);
@@ -123,7 +104,8 @@ void ScreenImage::zoomInImage()
 
 void ScreenImage::zoomOutImage()
 {
-    zoomFactor *= zoomOutValue;
+    resetTransform();
+    zoomFactor /= zoomOutValue;
 
     zoomImage(zoomFactor);
 }
@@ -133,9 +115,17 @@ void ScreenImage::fitImage()
     bestImageGeometry();
 }
 
-void ScreenImage::resizeEvent(QResizeEvent *)
+void ScreenImage::resizeEvent(QResizeEvent *event)
 {
-    bestImageGeometry();
+//    fitImage();
+    //bestImageGeometry();
+    //qDebug() << event->type();
+//    if(event->type() == QEvent::Resize)
+//        //event->ignore();
+//    //else
+//        bestImageGeometry();
+//    QGraphicsView::resizeEvent(event);
+
 }
 
 void ScreenImage::wheelEvent(QWheelEvent *pEvent)
@@ -144,6 +134,8 @@ void ScreenImage::wheelEvent(QWheelEvent *pEvent)
         zoomInImage();
     if(pEvent->delta() < 0)
         zoomOutImage();
+
+    pEvent->accept();
 }
 
 void ScreenImage::mousePressEvent(QMouseEvent *pEvent)
@@ -153,6 +145,8 @@ void ScreenImage::mousePressEvent(QMouseEvent *pEvent)
         _mousePosition = pEvent->localPos().toPoint();
         setCursor(Qt::ClosedHandCursor);
     }
+
+    QGraphicsView::mousePressEvent(pEvent);
 }
 
 void ScreenImage::mouseMoveEvent(QMouseEvent *pEvent)
@@ -162,26 +156,41 @@ void ScreenImage::mouseMoveEvent(QMouseEvent *pEvent)
         QScrollBar *pScrollBar;
         _mousePosition -= pEvent->localPos().toPoint();
 
-        pScrollBar = _pScrollArea->horizontalScrollBar();
+        pScrollBar = horizontalScrollBar();
         pScrollBar->setValue(_mousePosition.x() + pScrollBar->value());
 
-        pScrollBar = _pScrollArea->verticalScrollBar();
+        pScrollBar = verticalScrollBar();
         pScrollBar->setValue(_mousePosition.y() + pScrollBar->value());
 
         _mousePosition = pEvent->localPos().toPoint();
     }
+
+    QGraphicsView::mouseMoveEvent(pEvent);
 }
 
-void ScreenImage::mouseReleaseEvent(QMouseEvent*)
+void ScreenImage::mouseReleaseEvent(QMouseEvent *event)
 {
     setCursor(Qt::ArrowCursor);
+    QGraphicsView::mouseReleaseEvent(event);
 }
 
 void ScreenImage::showImage()
 {
-    _pLabel->setPixmap(QPixmap::fromImage(m_Image));
-    if(_pScrollArea->isHidden())
-        _pScrollArea->show();
+    _pScene->setSceneRect(0, 0, m_Image.width(), m_Image.height());
+    //QMovie *gif = new QMovie(_fileName);
+
+    //_pImageItem->setPixmap(QPixmap::fromImage(m_Image));
+    //QLabel *label = new QLabel;
+    //QGraphicsProxyWidget *Widget = new QGraphicsProxyWidget(_pImageItem.get());
+    //label->setMovie(gif);
+    //QGraphicsScene.add
+   // label->setAttribute(Qt::WA_NoSystemBackground);
+    //Widget->setWidget(label);
+    //_pScene->addWidget(label);
+   // gif->start();
+//    _pScene->addItem(_pImageItem.get());
+//    _pScene->setSceneRect(_pImageItem->boundingRect());
+    bestImageGeometry();
 }
 
 void ScreenImage::imageWasChanged()
@@ -198,26 +207,36 @@ void ScreenImage::bestImageGeometry()
     qreal screenWidth = static_cast<qreal>(width());
     qreal screenHeight = static_cast<qreal>(height());
 
-    if(imgWidth < screenWidth && imgHeight < screenHeight)
-        zoomFactor = 1.0;
-
-    if(imgWidth > screenWidth)
-        zoomFactor = imgWidth / screenWidth;
-
-    if(imgHeight > screenHeight)
-        zoomFactor = imgHeight / screenHeight;
-
-    zoomImage(zoomFactor);
+    if(imgHeight < screenHeight &&
+            imgWidth < screenWidth)
+    {
+        resetTransform();
+        zoomFactor = transform().m11();
+    }
+   else
+   {
+       fitInView(_pScene->sceneRect(), Qt::KeepAspectRatio);
+       zoomFactor = transform().m11();
+   }
 }
 
 void ScreenImage::zoomImage(const qreal zoomFactor)
 {
-    m_Image.setDevicePixelRatio(zoomFactor);
-
-    showImage();
+    scale(zoomFactor, zoomFactor);
 }
 
 void ScreenImage::flipImge(const bool horizontal, const bool vertical)
 {
     m_Image = m_Image.mirrored(horizontal, vertical);
+
+    emit showImageSignal();
+}
+
+void ScreenImage::rotateImage(qreal angle)
+{
+    QTransform transform;
+    transform.rotate(angle);
+    m_Image = m_Image.transformed(transform);
+
+    emit showImageSignal();
 }

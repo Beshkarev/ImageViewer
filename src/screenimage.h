@@ -1,16 +1,17 @@
 #ifndef SCREENIMAGE
 #define SCREENIMAGE
 
-#include <QWidget>
 #include <memory>
+#include <QGraphicsView>
 
 class QImage;
 class QString;
 class QPoint;
+class QMovie;
 class QLabel;
-class QScrollArea;
 
-class ScreenImage : public QWidget
+class ScreenImage : public QGraphicsView
+//class ScreenImage : public QWidget
 {
     Q_OBJECT
 
@@ -23,6 +24,7 @@ public:
 public:
     //File menu
     void loadImage(const QString &name);
+    void loadGIF(const QString &name);
     void closeImage();
     //Edit menu
     void horizontalFlip();
@@ -33,6 +35,7 @@ public:
     void zoomOutImage();
     //View menu
     void fitImage();
+
 protected:
     void resizeEvent(QResizeEvent *) override;
     void wheelEvent(QWheelEvent *) override;
@@ -41,17 +44,23 @@ protected:
     void mouseReleaseEvent(QMouseEvent *) override;
 
 signals:
+    void showImageSignal();
     void imageLoaded();
 
-private:
+private slots:
     void showImage();
+
+private:
     void imageWasChanged();
     void bestImageGeometry();
     void zoomImage(const qreal zoomFactor);
     void flipImge(const bool horizontal, const bool vertical);
+    void rotateImage(qreal angle);
 
-    std::unique_ptr<QScrollArea> _pScrollArea;
-    std::unique_ptr<QLabel> _pLabel;
+    std::unique_ptr<QGraphicsScene> _pScene;
+    std::unique_ptr<QGraphicsPixmapItem> _pImageItem;
+    std::unique_ptr<QMovie> _pGIFMovie;
+    std::unique_ptr<QLabel> _pLabelForGIF;
     QImage m_Image;
 
     const qint32 clockwiseValue;
