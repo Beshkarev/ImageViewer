@@ -5,14 +5,12 @@
 #include <QTabWidget>
 #include <QDebug>
 #include <thread>
-#include <functional>
 
 TabController *TabController::_instance;
 
 TabController::TabController(QWidget *parent/*=0*/) :
     QTabWidget(parent)
 {
-    //setAttribute(Qt::WA_DeleteOnClose);
     setMovable(true);
     setTabsClosable(true);
 
@@ -20,32 +18,10 @@ TabController::TabController(QWidget *parent/*=0*/) :
             this, SLOT(closeTab(int)));
 }
 
-/*
-TabController::~TabController()
-{
-    if(_instance)
-    {
-    delete _instance;
-        _instance = nullptr;
-    }
-}
-void TabController::destroyInstance()
-{
-    qDebug() << "destroy TabController";
-    if(_instance)
-    {
-        delete _instance;
-        _instance = nullptr;
-    }
-}
-*/
 TabController *TabController::instance()
 {
     if(!_instance)
-    {
         _instance = new TabController;
-        //atexit(& TabController::destroyInstance);
-    }
 
     return _instance;
 }
@@ -72,7 +48,6 @@ void TabController::loadFiletoTab(const QString &file)
     std::thread thr(&ScreenImage::loadImage, wdg,
                     std::move(file));
     thr.detach();
-    emit tabStateChanged();
 }
 
 void TabController::closeImage()
@@ -100,7 +75,6 @@ void TabController::horizontalFlip()
     ScreenImage *widget = getImageWidget();
     std::thread thread(&ScreenImage::horizontalFlip, widget);
     thread.detach();
-//    widget->horizontalFlip();
 }
 
 void TabController::verticalFlip()
@@ -108,7 +82,6 @@ void TabController::verticalFlip()
     ScreenImage *widget = getImageWidget();
     std::thread thread(&ScreenImage::verticalFlip, widget);
     thread.detach();
-//    widget->verticalFlip();
 }
 
 void TabController::clockwiseRotate()
@@ -116,7 +89,6 @@ void TabController::clockwiseRotate()
     ScreenImage *widget = getImageWidget();
     std::thread trd(&ScreenImage::clockwiseRotate, widget);
     trd.detach();
-//    widget->clockwiseRotate();
 }
 
 void TabController::counterClockwiseRotate()
@@ -124,7 +96,6 @@ void TabController::counterClockwiseRotate()
     ScreenImage *widget = getImageWidget();
     std::thread trd(&ScreenImage::counterClockwiseRotate, widget);
     trd.detach();
-    //    widget->counterClockwiseRotate();
 }
 
 void TabController::zoomInImage()
@@ -132,7 +103,6 @@ void TabController::zoomInImage()
     ScreenImage *widget = getImageWidget();
     std::thread trd(&ScreenImage::zoomInImage, widget);
     trd.detach();
-//    widget->zoomInImage();
 }
 
 void TabController::zoomOutImage()
@@ -140,15 +110,14 @@ void TabController::zoomOutImage()
     ScreenImage *widget = getImageWidget();
     std::thread trd(&ScreenImage::zoomOutImage, widget);
     trd.detach();
-//    widget->zoomOutImage();
 }
 
 void TabController::fitImage()
 {
     ScreenImage *wdg = getImageWidget();
+
     std::thread trd(&ScreenImage::fitImage, wdg);
     trd.detach();
-//    wdg->fitImage();
 }
 
 ScreenImage *TabController::getImageWidget()
