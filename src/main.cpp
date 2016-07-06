@@ -17,12 +17,12 @@ int main(int argc, char *argv[])
     try
     {
         W = std::unique_ptr<MainWindow> (new MainWindow);
+        W->show();
     }
     catch (std::runtime_error &err)
     {
         Error::showError(err.what());
     }
 
-    W->show();
     return a.exec();
 }
