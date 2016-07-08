@@ -14,7 +14,7 @@
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QGraphicsView(pWd),
     _pScene(new QGraphicsScene),
     _pGIFScene(nullptr), _pGIFMovie(nullptr), _pLabelForGIF(nullptr),
-    gifNeedShow(false), gifAlreadyShow(false),
+    gifNeedShow(false), gifAlreadyShow(false), imageIsLoaded(false),
     clockwiseValue(90), counterClockwiseValue(-90),
     angle(0), imageChanged(false),
     zoomInValue(1.1), zoomOutValue(1.1),
@@ -39,15 +39,23 @@ ScreenImage::~ScreenImage() = default;
 
 bool ScreenImage::isEmpty() const
 {
-    return m_Image.isNull();
+    return !imageIsLoaded;
+}
+
+bool ScreenImage::isChanged() const
+{
+    return imageChanged;
 }
 
 void ScreenImage::loadImage(const QString &name)
 {
     if(SaveConfirmation::imageWasChanged(name))
+    {
         m_Image = SaveConfirmation::getChagedImage(name);
+        imageIsLoaded = true;
+    }
     else
-        m_Image.load(name);
+        imageIsLoaded = m_Image.load(name);
 
     _fileName = name;
     imageChanged = false;
@@ -69,6 +77,7 @@ void ScreenImage::loadGIF(const QString &name)
     _pLabelForGIF->resize(m_Image.size());
 
     gifNeedShow = true;
+    imageIsLoaded = true;
 
     emit imageLoaded();
     emit showImageSignal();
@@ -77,6 +86,7 @@ void ScreenImage::loadGIF(const QString &name)
 void ScreenImage::closeImage()
 {
     imageChanged = false;
+    imageIsLoaded = false;
     _pImageItem->setPixmap(QPixmap());
     m_Image = QImage();
 
@@ -223,6 +233,8 @@ void ScreenImage::imageWasChanged()
     imageChanged = true;
     std::thread thread(SaveConfirmation::addImage, _fileName, m_Image);
     thread.detach();
+
+    emit imageLoaded();
 }
 
 void ScreenImage::bestImageGeometry()

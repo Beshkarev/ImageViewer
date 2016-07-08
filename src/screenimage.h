@@ -20,6 +20,7 @@ public:
     ~ScreenImage();
     //true if image don't loaded
     bool isEmpty() const;
+    bool isChanged() const;
 
 public:
     //File menu
@@ -71,6 +72,7 @@ private:
 
     bool gifNeedShow;
     bool gifAlreadyShow;
+    bool imageIsLoaded;
 
     const qint32 clockwiseValue;
     const qint32 counterClockwiseValue;
