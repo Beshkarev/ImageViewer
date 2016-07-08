@@ -38,18 +38,31 @@ QString FileSystem::fileName(const QString &file)
     return QFileInfo(file).fileName();
 }
 
+QString FileSystem::fileSuffix(const QString &file)
+{
+    return QFileInfo(file).suffix();
+}
+
+bool FileSystem::isGIF(const QString &file)
+{
+    return QString("gif").contains(FileSystem::fileSuffix(file),
+                                   Qt::CaseInsensitive);
+}
+
 QString FileSystem::openFileDialog()
 {
-    QString filename = QFileDialog::getOpenFileName(nullptr, QObject::tr("Open file"),
-                                                    Config::lastWorkDirectory,
-                                                    "All (*.*);;" +
-                                                    Config::supportedFormats.join(";;"));
-    if(filename.isEmpty())
+    QFileDialog dialog;
+    dialog.setMimeTypeFilters(Config::supportedReadMimeTypes());
+    dialog.setDirectory(Config::lastWorkDirectory);
+
+    if(!dialog.exec())
         throw QString ("The open file dialog was just closed\n");
 
-    prepareBeforeLoadFile(filename);
+    QStringList filename = dialog.selectedFiles();
 
-    return filename;
+    prepareBeforeLoadFile(filename.first());
+
+    return filename.first();
 }
 
 QString FileSystem::nextFile()
@@ -73,13 +86,17 @@ bool FileSystem::saveFile()
 
 bool FileSystem::saveAsDialog()
 {
-    const QString filename = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save file"),
-                                                    getCurrentAbsoluteFileName(),
-                                                    Config::supportedFormats.join(";;"));
-    if (filename.isEmpty())
-        throw QString ("The save file dialog was just closed\n");
+    QFileDialog dialog;
+    dialog.setMimeTypeFilters(Config::supportedSaveMimeTypes());
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.selectFile(getCurrentAbsoluteFileName());
+    dialog.setDirectory(getCurrentAbsoluteFileName());
+    dialog.selectMimeTypeFilter("image/jpeg");
 
-    return saveToDisk(filename);
+    if(dialog.exec())
+        return saveToDisk(dialog.selectedFiles().first());
+    else
+        return false;
 }
 
 void FileSystem::openRecentFile(const QString &file)
@@ -141,11 +158,10 @@ bool FileSystem::entryIsExist(const QString &dir) const
 
 void FileSystem::checkSelectedFileIsSupported(const QString &selectedFile) const
 {
-    QFileInfo fi(selectedFile);
     QString str;
-    str = "*." + fi.suffix();
+    str = "*." + fileSuffix(selectedFile);
 
-    bool support = Config::supportedFormats.contains(str, Qt::CaseInsensitive);
+    bool support = Config::supportedReadFormats().contains(str, Qt::CaseInsensitive);
 
     if (!support)
         throw std::runtime_error(QObject::tr("The file format is not supported.").toStdString());
