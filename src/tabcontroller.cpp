@@ -70,9 +70,14 @@ bool TabController::currentTabIsEmpty() const
     return getImageWidget()->isEmpty();
 }
 
-QString TabController::fileNameInTab()
+QString TabController::fileNameInTab() const
 {
     return tabText(currentIndex());
+}
+
+bool TabController::fileInTabIsChanged() const
+{
+    return getImageWidget()->isChanged();
 }
 
 void TabController::closeTab(const int index)

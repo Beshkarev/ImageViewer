@@ -24,7 +24,8 @@ public:
     void loadFiletoTab(const QString &file);
     void closeImage();
     bool currentTabIsEmpty() const;
-    QString fileNameInTab();
+    QString fileNameInTab() const;
+    bool fileInTabIsChanged() const;
 
 public slots:
     void closeTab(const int index);
