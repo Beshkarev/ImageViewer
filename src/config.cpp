@@ -3,6 +3,11 @@
 
 #include <QSettings>
 #include <thread>
+#include <QImageReader>
+#include <QImageWriter>
+#include <QDir>
+
+const QString Config::tempLocation = QDir::tempPath() + "/image_viewer_tmp";
 
 QStringList Config::recentFiles;
 
@@ -51,4 +56,58 @@ void Config::addRecentFile(const QString &filename)
 {
     recentFiles.removeAll(filename);
     recentFiles.prepend(filename);
+}
+
+QStringList Config::supportedReadMimeTypes()
+{
+    const auto &types = QImageReader::supportedMimeTypes();
+    QStringList list;
+    list.append("application/octet-stream");
+    std::for_each(types.begin(), types.end(),
+                  [&list](const QByteArray &name) mutable
+    {
+        list.append(name);
+    });
+
+    return list;
+}
+
+QStringList Config::supportedSaveMimeTypes()
+{
+    const auto &types = QImageWriter::supportedMimeTypes();
+    QStringList list;
+    std::for_each(types.cbegin(), types.cend(),
+                  [&list](const QByteArray &name) mutable
+    {
+        list.append(name);
+    });
+
+    return list;
+}
+
+QStringList Config::supportedReadFormats()
+{
+    const auto &types = QImageReader::supportedImageFormats();
+    QStringList list;
+    //list.append("All (*.*)");
+    std::for_each(types.cbegin(), types.cend(),
+                  [&list](const QByteArray &name) mutable
+    {
+        list.append("*." + name);
+    });
+
+    return list;
+}
+
+QStringList Config::supportedSaveFormats()
+{
+    const auto &types = QImageWriter::supportedImageFormats();
+    QStringList list;
+    std::for_each(types.cbegin(), types.cend(),
+                  [&list](const QByteArray &name) mutable
+    {
+        list.append("*." + name);
+    });
+
+    return list;
 }
