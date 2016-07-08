@@ -44,7 +44,7 @@ void Entry::entryList(const QString &pathWithFileName)
     QApplication::processEvents();
 
     QDir dir(FileSystem::absoluteFilePath(pathWithFileName));
-    *m_etryList = dir.entryInfoList(Config::supportedFormats,
+    *m_etryList = dir.entryInfoList(Config::supportedReadFormats(),
                                    QDir::Files,
                                    QDir::LocaleAware);
     if (m_etryList->isEmpty())
