@@ -26,6 +26,7 @@ public:
     static QString absoluteFilePath(const QString &dir);
     static QString fileName(const QString &file);
     static QString fileSuffix(const QString &file);
+    static bool fileMayBeSave(const QString &file);
     static bool isGIF(const QString &file);
 
     QString openFileDialog();

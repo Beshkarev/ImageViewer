@@ -42,11 +42,6 @@ bool ScreenImage::isEmpty() const
     return m_Image.isNull();
 }
 
-bool ScreenImage::isGIF() const
-{
-    return gifNeedShow;
-}
-
 void ScreenImage::loadImage(const QString &name)
 {
     if(SaveConfirmation::imageWasChanged(name))

@@ -20,7 +20,6 @@ public:
     ~ScreenImage();
     //true if image don't loaded
     bool isEmpty() const;
-    bool isGIF() const;
 
 public:
     //File menu

@@ -43,6 +43,12 @@ QString FileSystem::fileSuffix(const QString &file)
     return QFileInfo(file).suffix();
 }
 
+bool FileSystem::fileMayBeSave(const QString &file)
+{
+    return Config::supportedSaveFormats().contains("*." + fileSuffix(file),
+                                                   Qt::CaseInsensitive);
+}
+
 bool FileSystem::isGIF(const QString &file)
 {
     return QString("gif").contains(FileSystem::fileSuffix(file),

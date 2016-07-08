@@ -70,9 +70,9 @@ bool TabController::currentTabIsEmpty() const
     return getImageWidget()->isEmpty();
 }
 
-bool TabController::currentTabContainsGIF()
+QString TabController::fileNameInTab()
 {
-    return getImageWidget()->isGIF();
+    return tabText(currentIndex());
 }
 
 void TabController::closeTab(const int index)

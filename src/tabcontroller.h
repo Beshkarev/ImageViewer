@@ -24,7 +24,7 @@ public:
     void loadFiletoTab(const QString &file);
     void closeImage();
     bool currentTabIsEmpty() const;
-    bool currentTabContainsGIF();
+    QString fileNameInTab();
 
 public slots:
     void closeTab(const int index);
