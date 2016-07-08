@@ -84,6 +84,8 @@ void ScreenImage::closeImage()
     imageChanged = false;
     _pImageItem->setPixmap(QPixmap());
     m_Image = QImage();
+
+    resetGIFScene();
 }
 
 void ScreenImage::horizontalFlip()
@@ -183,7 +185,6 @@ void ScreenImage::mouseReleaseEvent(QMouseEvent *event)
 
 void ScreenImage::showImage()
 {
-//    QApplication::processEvents();
     if(!gifAlreadyShow && gifNeedShow)
     {
         //qDebug("!gifAlreadyShow && gifNeedShow");
@@ -231,10 +232,10 @@ void ScreenImage::imageWasChanged()
 
 void ScreenImage::bestImageGeometry()
 {
-    qreal imgWidth = static_cast<qreal>(m_Image.width());
-    qreal imgHeight = static_cast<qreal>(m_Image.height());
-    qreal screenWidth = static_cast<qreal>(width());
-    qreal screenHeight = static_cast<qreal>(height());
+    qint32 imgWidth = m_Image.width();
+    qint32 imgHeight = m_Image.height();
+    qint32 screenWidth = width();
+    qint32 screenHeight = height();
 
     if(imgHeight < screenHeight &&
             imgWidth < screenWidth)
@@ -287,13 +288,12 @@ void ScreenImage::resetGIFScene()
 {
     _pGIFMovie.reset();
     _pLabelForGIF.reset();
-    _pGIFScene->clear();
     _pGIFScene.reset();
 }
 
 void ScreenImage::setSceneTo(QGraphicsScene *pScene)
 {
-    qDebug("setScene");
+    //qDebug("setScene");
     setScene(pScene);
 }
 
