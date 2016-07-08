@@ -20,6 +20,7 @@ public:
     ~ScreenImage();
     //true if image don't loaded
     bool isEmpty() const;
+    bool isGIF() const;
 
 public:
     //File menu
@@ -31,13 +32,12 @@ public:
     void verticalFlip();
     void clockwiseRotate();
     void counterClockwiseRotate();
-    void zoomInImage();
-    void zoomOutImage();
     //View menu
+    void zoomInImage();
+    void zoomOutImage();    
     void fitImage();
 
 protected:
-    void resizeEvent(QResizeEvent *) override;
     void wheelEvent(QWheelEvent *) override;
     void mousePressEvent(QMouseEvent *) override;
     void mouseMoveEvent(QMouseEvent *) override;
@@ -57,11 +57,21 @@ private:
     void flipImge(const bool horizontal, const bool vertical);
     void rotateImage(qreal angle);
 
+    void initGIFScene();
+    void resetGIFScene();
+    void setSceneTo(QGraphicsScene *pScene);
+    void setMovieToLabel(QMovie *pMovie);
+
     std::unique_ptr<QGraphicsScene> _pScene;
+    std::unique_ptr<QGraphicsScene> _pGIFScene;
     std::unique_ptr<QGraphicsPixmapItem> _pImageItem;
     std::unique_ptr<QMovie> _pGIFMovie;
     std::unique_ptr<QLabel> _pLabelForGIF;
+
     QImage m_Image;
+
+    bool gifNeedShow;
+    bool gifAlreadyShow;
 
     const qint32 clockwiseValue;
     const qint32 counterClockwiseValue;

@@ -3,17 +3,18 @@
 
 #include <QImage>
 #include <QScrollBar>
-//#include <QDebug>
+#include <QDebug>
 #include <QMouseEvent>
 #include <thread>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QLabel>
 #include <QMovie>
-#include <QGraphicsProxyWidget>
 
 ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QGraphicsView(pWd),
-    _pScene(new QGraphicsScene(this)),
+    _pScene(new QGraphicsScene),
+    _pGIFScene(nullptr), _pGIFMovie(nullptr), _pLabelForGIF(nullptr),
+    gifNeedShow(false), gifAlreadyShow(false),
     clockwiseValue(90), counterClockwiseValue(-90),
     angle(0), imageChanged(false),
     zoomInValue(1.1), zoomOutValue(1.1),
@@ -23,14 +24,15 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QGraphicsView(pWd),
     connect(this, SIGNAL(showImageSignal()),
             this, SLOT(showImage()));
 
-    _pImageItem = std::unique_ptr<QGraphicsPixmapItem>(_pScene->addPixmap(QPixmap::fromImage(m_Image)));
+    _pImageItem = std::unique_ptr<QGraphicsPixmapItem>(_pScene->addPixmap(QPixmap()));
 
     setMouseTracking(true);
     _pImageItem->setTransformationMode(Qt::SmoothTransformation);
+
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     setResizeAnchor(QGraphicsView::AnchorViewCenter);
-    setScene(_pScene.get());
+    setSceneTo(_pScene.get());
 }
 
 ScreenImage::~ScreenImage() = default;
@@ -38,6 +40,11 @@ ScreenImage::~ScreenImage() = default;
 bool ScreenImage::isEmpty() const
 {
     return m_Image.isNull();
+}
+
+bool ScreenImage::isGIF() const
+{
+    return gifNeedShow;
 }
 
 void ScreenImage::loadImage(const QString &name)
@@ -49,6 +56,7 @@ void ScreenImage::loadImage(const QString &name)
 
     _fileName = name;
     imageChanged = false;
+    gifNeedShow = false;
 
     emit imageLoaded();
     emit showImageSignal();
@@ -56,7 +64,19 @@ void ScreenImage::loadImage(const QString &name)
 
 void ScreenImage::loadGIF(const QString &name)
 {
+    m_Image.load(name);
+    if(!_pGIFScene)
+        initGIFScene();  
+    else
+        _pGIFMovie->stop();
 
+    _pGIFMovie->setFileName(name);
+    _pLabelForGIF->resize(m_Image.size());
+
+    gifNeedShow = true;
+
+    emit imageLoaded();
+    emit showImageSignal();
 }
 
 void ScreenImage::closeImage()
@@ -115,19 +135,6 @@ void ScreenImage::fitImage()
     bestImageGeometry();
 }
 
-void ScreenImage::resizeEvent(QResizeEvent *event)
-{
-//    fitImage();
-    //bestImageGeometry();
-    //qDebug() << event->type();
-//    if(event->type() == QEvent::Resize)
-//        //event->ignore();
-//    //else
-//        bestImageGeometry();
-//    QGraphicsView::resizeEvent(event);
-
-}
-
 void ScreenImage::wheelEvent(QWheelEvent *pEvent)
 {
     if(pEvent->delta() > 0)
@@ -176,20 +183,42 @@ void ScreenImage::mouseReleaseEvent(QMouseEvent *event)
 
 void ScreenImage::showImage()
 {
-    _pScene->setSceneRect(0, 0, m_Image.width(), m_Image.height());
-    //QMovie *gif = new QMovie(_fileName);
+//    QApplication::processEvents();
+    if(!gifAlreadyShow && gifNeedShow)
+    {
+        //qDebug("!gifAlreadyShow && gifNeedShow");
+        setSceneTo(_pGIFScene.get());
 
-    //_pImageItem->setPixmap(QPixmap::fromImage(m_Image));
-    //QLabel *label = new QLabel;
-    //QGraphicsProxyWidget *Widget = new QGraphicsProxyWidget(_pImageItem.get());
-    //label->setMovie(gif);
-    //QGraphicsScene.add
-   // label->setAttribute(Qt::WA_NoSystemBackground);
-    //Widget->setWidget(label);
-    //_pScene->addWidget(label);
-   // gif->start();
-//    _pScene->addItem(_pImageItem.get());
-//    _pScene->setSceneRect(_pImageItem->boundingRect());
+        _pGIFScene->setSceneRect(0, 0, m_Image.width(), m_Image.height());
+        _pGIFMovie->start();
+
+        gifAlreadyShow = true;
+    }
+    else if(gifAlreadyShow && gifNeedShow)
+    {
+        //qDebug("gifAlreadyShow && gifNeedShow");;
+        _pGIFScene->setSceneRect(0, 0, m_Image.width(), m_Image.height());
+
+        _pGIFMovie->start();
+    }
+    else if(gifAlreadyShow && !gifNeedShow)
+    {
+        //qDebug("gifAlreadyShow && !gifNeedShow");
+        setSceneTo(_pScene.get());
+        resetGIFScene();
+
+        _pScene->setSceneRect(0, 0, m_Image.width(), m_Image.height());
+        _pImageItem->setPixmap(QPixmap::fromImage(m_Image));
+
+        gifAlreadyShow = false;
+    }
+    else
+    {
+        //qDebug("else");
+        _pScene->setSceneRect(0, 0, m_Image.width(), m_Image.height());
+        _pImageItem->setPixmap(QPixmap::fromImage(m_Image));
+    }
+
     bestImageGeometry();
 }
 
@@ -215,7 +244,7 @@ void ScreenImage::bestImageGeometry()
     }
    else
    {
-       fitInView(_pScene->sceneRect(), Qt::KeepAspectRatio);
+       fitInView(scene()->sceneRect(), Qt::KeepAspectRatio);
        zoomFactor = transform().m11();
    }
 }
@@ -239,4 +268,36 @@ void ScreenImage::rotateImage(qreal angle)
     m_Image = m_Image.transformed(transform);
 
     emit showImageSignal();
+}
+
+void ScreenImage::initGIFScene()
+{
+    _pGIFMovie = std::unique_ptr<QMovie>(new QMovie);
+    _pLabelForGIF = std::unique_ptr<QLabel>(new QLabel);
+    _pLabelForGIF->setAttribute(Qt::WA_NoSystemBackground);
+    _pLabelForGIF->setAlignment(Qt::AlignCenter);
+    _pLabelForGIF->setScaledContents(true);
+    _pLabelForGIF->setMovie(_pGIFMovie.get());
+
+    _pGIFScene = std::unique_ptr<QGraphicsScene>(new QGraphicsScene);
+    _pGIFScene->addWidget(_pLabelForGIF.get());
+}
+
+void ScreenImage::resetGIFScene()
+{
+    _pGIFMovie.reset();
+    _pLabelForGIF.reset();
+    _pGIFScene->clear();
+    _pGIFScene.reset();
+}
+
+void ScreenImage::setSceneTo(QGraphicsScene *pScene)
+{
+    qDebug("setScene");
+    setScene(pScene);
+}
+
+void ScreenImage::setMovieToLabel(QMovie *pMovie)
+{
+    _pLabelForGIF->setMovie(pMovie);
 }
