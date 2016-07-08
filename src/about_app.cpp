@@ -1,4 +1,6 @@
 #include "about_app.h"
+#include "config.h"
+
 #include <QTabWidget>
 #include <QLabel>
 #include <QTextEdit>
@@ -20,7 +22,7 @@ About::About(QWidget *parent) : QDialog(parent),
     setLayout(pVMainLayout);
     setWindowIcon(QIcon(":/icons/png-48px/business-card.png"));
     setWindowTitle(tr("About"));
-    setFixedSize(440, 267);
+    setFixedSize(440, 274);
 }
 
 About::~About() = default;
@@ -39,7 +41,8 @@ void About::createAboutSpace()
                           "<a href=\"https://github.com/Beshkarev/ImageViewer/blob/master/LICENSE\">GNU GPL</a> version 3."
                           "<br>Source code is available on "
                           "<a href=\"https://github.com/Beshkarev/ImageViewer\">GitHub</a>."
-                          "<br><br>Evgeniy Beshkarev©"));
+                          "<br>Version: %1."
+                          "<br><br>Evgeniy Beshkarev©").arg(str_const_toString(Config::version)));
     pTextEdit->setTextFormat(Qt::RichText);
     pTextEdit->setTextInteractionFlags(Qt::TextBrowserInteraction);
     pTextEdit->setOpenExternalLinks(true);
