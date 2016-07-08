@@ -98,12 +98,13 @@ void SaveConfirmation::saveImages()
     setVisible(false);
     auto itImageChanged = images.cbegin();
 
-    QImage img;
     for(auto itSelectedItems : _pListWidget->selectedItems())
     {
         itImageChanged = images.find(itSelectedItems->text());
-        img.load(itImageChanged.value());
-        img.save(itImageChanged.key());
+
+        FileSystem::moveFile(itImageChanged.key(),
+                             itImageChanged.value());
+
     }
 
     accept();
