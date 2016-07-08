@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QImage>
 #include <QObject>
+#include <QFile>
 
 FileSystem *FileSystem::_pInstance;
 
@@ -87,7 +88,9 @@ QString FileSystem::previousFile()
 
 bool FileSystem::saveFile()
 {
-    return saveToDisk(getCurrentAbsoluteFileName());
+    QString file = getCurrentAbsoluteFileName();
+    return moveFile(file,
+                    Config::tempLocation + fileName(file));
 }
 
 bool FileSystem::saveAsDialog()
@@ -99,10 +102,25 @@ bool FileSystem::saveAsDialog()
     dialog.setDirectory(getCurrentAbsoluteFileName());
     dialog.selectMimeTypeFilter("image/jpeg");
 
+    bool success;
     if(dialog.exec())
-        return saveToDisk(dialog.selectedFiles().first());
-    else
-        return false;
+    {
+        QImage img;
+        if(SaveConfirmation::imageWasChanged(getCurrentAbsoluteFileName()))
+        {
+            img = SaveConfirmation::getChagedImage(getCurrentAbsoluteFileName());
+            success = img.save(dialog.selectedFiles().first());
+            if(success)
+                SaveConfirmation::deleteImage(getCurrentAbsoluteFileName());
+        }
+        else
+        {
+            img.load(getCurrentAbsoluteFileName());
+            success = img.save(dialog.selectedFiles().first());
+        }
+    }
+
+    return success;
 }
 
 void FileSystem::openRecentFile(const QString &file)
@@ -180,19 +198,28 @@ QString FileSystem::getCurrentAbsoluteFileName()
     return en.absoluteFileName();
 }
 
-bool FileSystem::saveToDisk(const QString &locationForSaving)
+bool FileSystem::moveFile(const QString &locationTo,
+                          const QString &locationFrom)
 {
-    QImage img(getCurrentAbsoluteFileName());
-    bool success;
-    if(SaveConfirmation::imageWasChanged(getCurrentAbsoluteFileName()))
-    {
-        img = SaveConfirmation::getChagedImage(getCurrentAbsoluteFileName());
-        success = img.save(locationForSaving);
-        if(success)
-            SaveConfirmation::deleteImage(getCurrentAbsoluteFileName());
-    }
-    else
-        success = img.save(locationForSaving);
+//    QImage img(getCurrentAbsoluteFileName());
+//    bool success;
+//    if(SaveConfirmation::imageWasChanged(getCurrentAbsoluteFileName()))
+//    {
+//        img = SaveConfirmation::getChagedImage(getCurrentAbsoluteFileName());
+//        success = img.save(locationForSaving);
+//        if(success)
+//            SaveConfirmation::deleteImage(getCurrentAbsoluteFileName());
+//    }
+//    else
+//        success = img.save(locationForSaving);
+
+    QFile file;
+    if(file.exists(locationTo))
+        file.remove(locationTo);
+
+    bool success = file.copy(locationFrom, locationTo);
+    if(success)
+        SaveConfirmation::deleteImage(locationTo);
 
     return success;
 }

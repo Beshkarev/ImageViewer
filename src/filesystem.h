@@ -29,6 +29,9 @@ public:
     static bool fileMayBeSave(const QString &file);
     static bool isGIF(const QString &file);
 
+    static bool moveFile(const QString &locationTo,
+                         const QString &locationFrom);
+
     QString openFileDialog();
     QString nextFile();
     QString previousFile();
@@ -50,7 +53,6 @@ private:
     void checkSelectedFileIsSupported(const QString &selectedFile) const;
 
     QString getCurrentAbsoluteFileName();
-    bool saveToDisk(const QString &locationForSaving);
 
     QHash<QString, QWidget*> _directories;
     QHash<QWidget*, Entry> _entries;
