@@ -402,9 +402,10 @@ void MainWindow::checkTabState()
     //if exist at least one tab but the tab is empty
     if(count != 0 && tabEmpty)
         setButtonsEnabled(true, false);
-    //if tabs is exist and the tab not expty
+    //if tabs is exist and the tab not empty
     else if(count != 0 && !tabEmpty)
-        setButtonsEnabled(true, true, isfileMayBeSaved);
+        setButtonsEnabled(true, true,
+                          isfileMayBeSaved, _pTabController->fileInTabIsChanged());
 }
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
@@ -445,13 +446,18 @@ void MainWindow::loadFileRequest(const QString &file)
 }
 
 void MainWindow::setButtonsEnabled(bool openButt, bool imageIsLoad,
-                                   bool fileMayBeSaved)
+                                   bool fileMayBeSaved, bool fileInTabIsChanged)
 {
     _pOpenAction->setEnabled(openButt);
     _pCloseTabAction->setEnabled(openButt);
 
-    _pSaveAction->setEnabled(imageIsLoad && fileMayBeSaved);
-    _pSaveAsAction->setEnabled(imageIsLoad && fileMayBeSaved);
+    _pSaveAction->setEnabled(imageIsLoad &&
+                             fileMayBeSaved &&
+                             fileInTabIsChanged);
+
+    _pSaveAsAction->setEnabled(imageIsLoad &&
+                               fileMayBeSaved);
+
     _pNextFileAction->setEnabled(imageIsLoad);
     _pPreviousFileAction->setEnabled(imageIsLoad);
 
@@ -460,10 +466,17 @@ void MainWindow::setButtonsEnabled(bool openButt, bool imageIsLoad,
 
     _pCloseFileAction->setEnabled(imageIsLoad);
 
-    _pVerticalFlipAction->setEnabled(imageIsLoad && fileMayBeSaved);
-    _pHorizontalFlipAction->setEnabled(imageIsLoad && fileMayBeSaved);
-    _pClockwiseRotateAction->setEnabled(imageIsLoad && fileMayBeSaved);
-    _pCounterClockwiseRotateAction->setEnabled(imageIsLoad && fileMayBeSaved);
+    _pVerticalFlipAction->setEnabled(imageIsLoad &&
+                                     fileMayBeSaved);
+
+    _pHorizontalFlipAction->setEnabled(imageIsLoad &&
+                                       fileMayBeSaved);
+
+    _pClockwiseRotateAction->setEnabled(imageIsLoad &&
+                                        fileMayBeSaved);
+
+    _pCounterClockwiseRotateAction->setEnabled(imageIsLoad &&
+                                               fileMayBeSaved);
     _pFitAction->setEnabled(imageIsLoad);
     _pZoomInAction->setEnabled(imageIsLoad);
     _pZoomOutAction->setEnabled(imageIsLoad);

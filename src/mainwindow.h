@@ -61,7 +61,8 @@ private:
 
     void loadFileRequest(const QString &file);
     void setButtonsEnabled(bool openButt, bool imageIsLoad,
-                           bool fileMayBeSaved = false);
+                           bool fileMayBeSaved = false,
+                           bool fileInTabIsChanged = false);
 
     TabController *_pTabController;
     std::unique_ptr<FileSystem> _pFileSystem;
