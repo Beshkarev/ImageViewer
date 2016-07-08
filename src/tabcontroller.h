@@ -23,7 +23,9 @@ public:
     void createTab();
     void loadFiletoTab(const QString &file);
     void closeImage();
-    bool currentTabIsEmpty();
+    bool currentTabIsEmpty() const;
+    bool currentTabContainsGIF();
+
 public slots:
     void closeTab(const int index);
 signals:
@@ -41,7 +43,7 @@ public:
 private:
     static TabController *_instance;
 
-    ScreenImage *getImageWidget();
+    ScreenImage *getImageWidget() const;
     void updateTabNumber();
     void updateTabText(const int index, const QString &text);
     void deleteTab(const qint32 index);

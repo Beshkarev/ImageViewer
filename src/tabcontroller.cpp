@@ -44,10 +44,16 @@ void TabController::loadFiletoTab(const QString &file)
 
     updateTabText(currentIndex(),
                   FileSystem::fileName(file));
+    bool fileISGIF = FileSystem::isGIF(file);
+    if(fileISGIF)
+        wdg->loadGIF(file);
+    else
+    {
+        std::thread thr(&ScreenImage::loadImage, wdg,
+                        std::move(file));
 
-    std::thread thr(&ScreenImage::loadImage, wdg,
-                    std::move(file));
-    thr.detach();
+        thr.detach();
+    }
 }
 
 void TabController::closeImage()
@@ -59,9 +65,14 @@ void TabController::closeImage()
     emit tabStateChanged();
 }
 
-bool TabController::currentTabIsEmpty()
+bool TabController::currentTabIsEmpty() const
 {
-    return getImageWidget()->isEmpty() ? true : false;
+    return getImageWidget()->isEmpty();
+}
+
+bool TabController::currentTabContainsGIF()
+{
+    return getImageWidget()->isGIF();
 }
 
 void TabController::closeTab(const int index)
@@ -120,7 +131,7 @@ void TabController::fitImage()
     trd.detach();
 }
 
-ScreenImage *TabController::getImageWidget()
+ScreenImage *TabController::getImageWidget() const
 {
     return static_cast<ScreenImage*>(currentWidget());
 }
