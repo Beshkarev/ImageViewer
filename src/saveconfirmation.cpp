@@ -57,6 +57,7 @@ SaveConfirmation::~SaveConfirmation() = default;
 void SaveConfirmation::addImage(const QString &imageName,
                                 const QImage &image)
 {
+    //GIF format is don't supported for save
     QString tempLocationSave;
     tempLocationSave = Config::tempLocation + "/" + FileSystem::fileName(imageName);
     images.insert(imageName, tempLocationSave);

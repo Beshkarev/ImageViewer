@@ -55,10 +55,13 @@ private slots:
     void checkTabState();
 protected:
     void closeEvent(QCloseEvent *) override;
+    void resizeEvent(QResizeEvent *) override;
+
 private:
 
     void loadFileRequest(const QString &file);
-    void setButtonsEnabled(bool openButt, bool other);
+    void setButtonsEnabled(bool openButt, bool imageIsLoad,
+                           bool gif = false);
 
     TabController *_pTabController;
     std::unique_ptr<FileSystem> _pFileSystem;

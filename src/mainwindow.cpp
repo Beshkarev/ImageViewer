@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "tabcontroller.h"
 #include "saveconfirmation.h"
-//#include "app_properties.h"
 #include "about_app.h"
 #include "error.h"
 #include "filesystem.h"
@@ -42,9 +41,6 @@ MainWindow::MainWindow(QWidget *parent) :
     setButtonsEnabled(false, false);
     setWindowIcon(QIcon(":/icons/png-48px/image-outline.png"));
     QCoreApplication::setApplicationName(str_const_toString(Config::appName));
-
-//    QSettings set("Education", AppProperties::name());
-    //    restoreState(set.value("mainWindow/state").toByteArray());
 }
 
 MainWindow::~MainWindow() = default;
@@ -171,7 +167,6 @@ QToolBar *MainWindow::createToolBar()
     _pToolBar->setAllowedAreas(Qt::TopToolBarArea
                               | Qt::BottomToolBarArea);
 
-    //_pToolBar->move(500, 500);
     _pToolBar->addAction(_pPreviousFileAction);
     _pToolBar->addAction(_pNextFileAction);
     _pToolBar->addSeparator();
@@ -308,18 +303,7 @@ void MainWindow::saveFile()
 
 void MainWindow::saveAs()
 {
-    bool success;
-    try
-    {
-        success = _pFileSystem->saveAsDialog();
-    }
-    catch (std::runtime_error &err)
-    {
-        Error::showError(QString (err.what()));
-    }
-    catch (const QString &)
-    {}
-
+    bool success = _pFileSystem->saveAsDialog();
     if(success)
         showStatusBarMessage(tr("File was saved"));
     else if(!success)
@@ -351,8 +335,15 @@ void MainWindow::closeTabRequest()
 void MainWindow::openRecentFile()
 {
     QAction *pAction = qobject_cast<QAction *>(sender());
-    _pFileSystem->openRecentFile(pAction->data().toString());
-    loadFileRequest(pAction->data().toString());
+    try
+    {
+        _pFileSystem->openRecentFile(pAction->data().toString());
+        loadFileRequest(pAction->data().toString());
+    }
+    catch(std::runtime_error &err)
+    {
+        Error::showError(QString(err.what()));
+    }
 }
 
 void MainWindow::horizontalFlip()
@@ -407,12 +398,13 @@ void MainWindow::checkTabState()
     }
 
     bool tabEmpty = _pTabController->currentTabIsEmpty();
+    bool isGIF = _pTabController->currentTabContainsGIF();
     //if exist at least one tab but the tab is empty
     if(count != 0 && tabEmpty)
         setButtonsEnabled(true, false);
     //if tabs is exist and the tab not expty
     else if(count != 0 && !tabEmpty)
-        setButtonsEnabled(true, true);
+        setButtonsEnabled(true, true, isGIF);
 }
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
@@ -428,7 +420,6 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
         {
             Config::saveSettings();
             pClose->accept();
-            qDebug("accept mainwin");
         }
         else if(ret == QDialog::Rejected)
             pClose->ignore();
@@ -437,10 +428,13 @@ void MainWindow::closeEvent(QCloseEvent *pClose)
     {
         Config::saveSettings();
         pClose->accept();
-        qDebug("else accept");
     }
-//    QSettings set("Education", AppProperties::name());
-//    set.setValue("mainWindow/state", saveState());
+}
+
+void MainWindow::resizeEvent(QResizeEvent *)
+{
+    if(_pTabController->count() != 0)
+        _pTabController->fitImage();
 }
 
 void MainWindow::loadFileRequest(const QString &file)
@@ -450,27 +444,27 @@ void MainWindow::loadFileRequest(const QString &file)
     updateListRecentFiles();
 }
 
-void MainWindow::setButtonsEnabled(bool openButt, bool other)
+void MainWindow::setButtonsEnabled(bool openButt, bool imageIsLoad,
+                                   bool gif)
 {
-    //if at leat one tab is exist
     _pOpenAction->setEnabled(openButt);
     _pCloseTabAction->setEnabled(openButt);
 
-    _pSaveAction->setEnabled(other);
-    _pSaveAsAction->setEnabled(other);
-    _pNextFileAction->setEnabled(other);
-    _pPreviousFileAction->setEnabled(other);
+    _pSaveAction->setEnabled(imageIsLoad && !gif);
+    _pSaveAsAction->setEnabled(imageIsLoad && !gif);
+    _pNextFileAction->setEnabled(imageIsLoad);
+    _pPreviousFileAction->setEnabled(imageIsLoad);
 
     for(auto i = 0; i < _pRecentAction.size(); ++i)
         _pRecentAction[i]->setEnabled(openButt);
 
-    _pCloseFileAction->setEnabled(other);
+    _pCloseFileAction->setEnabled(imageIsLoad);
 
-    _pVerticalFlipAction->setEnabled(other);
-    _pHorizontalFlipAction->setEnabled(other);
-    _pClockwiseRotateAction->setEnabled(other);
-    _pCounterClockwiseRotateAction->setEnabled(other);
-    _pFitAction->setEnabled(other);
-    _pZoomInAction->setEnabled(other);
-    _pZoomOutAction->setEnabled(other);
+    _pVerticalFlipAction->setEnabled(imageIsLoad && !gif);
+    _pHorizontalFlipAction->setEnabled(imageIsLoad && !gif);
+    _pClockwiseRotateAction->setEnabled(imageIsLoad && !gif);
+    _pCounterClockwiseRotateAction->setEnabled(imageIsLoad && !gif);
+    _pFitAction->setEnabled(imageIsLoad);
+    _pZoomInAction->setEnabled(imageIsLoad);
+    _pZoomOutAction->setEnabled(imageIsLoad);
 }
