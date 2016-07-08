@@ -7,7 +7,7 @@
 #include <QImageWriter>
 #include <QDir>
 
-const QString Config::tempLocation = QDir::tempPath() + "/image_viewer_tmp";
+const QString Config::tempLocation = QDir::tempPath() + "/image_viewer_tmp/";
 
 QStringList Config::recentFiles;
 
@@ -82,6 +82,8 @@ QStringList Config::supportedSaveMimeTypes()
         list.append(name);
     });
 
+    list.removeOne("image/jp2");
+
     return list;
 }
 
@@ -89,12 +91,22 @@ QStringList Config::supportedReadFormats()
 {
     const auto &types = QImageReader::supportedImageFormats();
     QStringList list;
-    //list.append("All (*.*)");
+
     std::for_each(types.cbegin(), types.cend(),
                   [&list](const QByteArray &name) mutable
     {
         list.append("*." + name);
     });
+    list.append("*.jpe");
+    list.append("*.jpx");
+    list.append("*.jpf");
+    list.append("*.icb");
+    list.append("*.tpic");
+    list.append("*.vda");
+    list.append("*.vst");
+
+    list.removeOne("*.svgz");
+    list.removeOne("*.cur");
 
     return list;
 }
@@ -108,6 +120,9 @@ QStringList Config::supportedSaveFormats()
     {
         list.append("*." + name);
     });
+
+    list.removeOne("*.cur");
+//    list.removeOne("*.ico");
 
     return list;
 }
