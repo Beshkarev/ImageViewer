@@ -19,6 +19,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent, const QString &file);
     ~MainWindow();
 
     MainWindow(const MainWindow &) = delete;
@@ -26,6 +27,7 @@ public:
     MainWindow(MainWindow &&) = delete;
 
 private:
+    void createMainWindow();
     void createActions();
     void createMenu();
     QToolBar *createToolBar();
@@ -65,7 +67,7 @@ private:
                            bool fileInTabIsChanged = false);
 
     TabController *_pTabController;
-    std::unique_ptr<FileSystem> _pFileSystem;
+    FileSystem *_pFileSystem;
 
     QMenu *_pFileMenu;
     QMenu *_pEditMenu;

@@ -1,6 +1,8 @@
 #ifndef BASIC_TYPES_H
 #define BASIC_TYPES_H
 
+#include <stdexcept>
+
 class QString;
 
 // constexpr string

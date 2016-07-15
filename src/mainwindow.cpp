@@ -21,9 +21,29 @@
 #include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), _pTabController(TabController::instance()),
-    _pFileSystem(FileSystem::instance())
+    QMainWindow(parent)
 {
+    createMainWindow();
+}
+
+MainWindow::MainWindow(QWidget *parent, const QString &file) :
+    QMainWindow(parent)
+{
+    createMainWindow();
+
+    if(!file.isEmpty())
+    {
+        newTab();
+        _pFileSystem->openRecentFile(file);
+        loadFileRequest(file);
+    }
+}
+
+void MainWindow::createMainWindow()
+{
+    _pTabController = TabController::instance();
+    _pFileSystem = FileSystem::instance();
+
     Config::readSettings();
 
     createActions();
