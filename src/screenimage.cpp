@@ -26,10 +26,10 @@ ScreenImage::ScreenImage(QWidget *pWd /*=0*/): QGraphicsView(pWd),
 
     _pImageItem = std::unique_ptr<QGraphicsPixmapItem>(_pScene->addPixmap(QPixmap()));
 
-    setMouseTracking(true);
+//    setMouseTracking(true);
     _pImageItem->setTransformationMode(Qt::SmoothTransformation);
 
-    setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     setResizeAnchor(QGraphicsView::AnchorViewCenter);
     setSceneTo(_pScene.get());
@@ -55,13 +55,14 @@ void ScreenImage::loadImage(const QString &name)
         imageIsLoaded = true;
     }
     else
-        imageIsLoaded = m_Image.load(name);
+        m_Image.load(name);
+
+    imageIsLoaded = true;
 
     _fileName = name;
     imageChanged = false;
     gifNeedShow = false;
 
-    emit imageLoaded();
     emit showImageSignal();
 }
 
@@ -79,7 +80,6 @@ void ScreenImage::loadGIF(const QString &name)
     gifNeedShow = true;
     imageIsLoaded = true;
 
-    emit imageLoaded();
     emit showImageSignal();
 }
 
@@ -226,6 +226,7 @@ void ScreenImage::showImage()
     }
 
     bestImageGeometry();
+    emit imageLoaded();
 }
 
 void ScreenImage::imageWasChanged()

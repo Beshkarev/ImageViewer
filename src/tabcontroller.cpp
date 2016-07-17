@@ -5,6 +5,7 @@
 #include <QTabWidget>
 #include <QDebug>
 #include <thread>
+#include "error.h"
 
 TabController *TabController::_instance;
 
@@ -42,18 +43,19 @@ void TabController::loadFiletoTab(const QString &file)
 {
     ScreenImage *wdg = getImageWidget();
 
-    updateTabText(currentIndex(),
-                  FileSystem::fileName(file));
     bool fileISGIF = FileSystem::isGIF(file);
     if(fileISGIF)
         wdg->loadGIF(file);
     else
     {
         std::thread thr(&ScreenImage::loadImage, wdg,
-                        std::move(file));
+                        file);
 
         thr.detach();
     }
+
+    updateTabText(currentIndex(),
+                  FileSystem::fileName(file));
 }
 
 void TabController::closeImage()
