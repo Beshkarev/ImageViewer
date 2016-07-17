@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QTranslator>
+#include <QLibraryInfo>
 
 int main(int argc, char *argv[])
 {
@@ -14,9 +15,13 @@ int main(int argc, char *argv[])
     //a.installTranslator(&translate);
 
 //    qDebug() << QLocale::system().name();
-    //QTranslator qtTranslator;
-    //qtTranslator.load("qt_" + QString("ru_RU"), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    //a.installTranslator(&qtTranslator);
+    QTranslator qtTranslator;
+    qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    a.installTranslator(&qtTranslator);
+
+    QTranslator appTranslator;
+    appTranslator.load(":/translate/translations/ImageViewer_" + QLocale::system().name());
+    a.installTranslator(&appTranslator);
 
     std::unique_ptr<MainWindow> W(nullptr);
     try
