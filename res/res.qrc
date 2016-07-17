@@ -47,5 +47,8 @@
     <qresource prefix="/about">
         <file>CREDITS</file>
     </qresource>
-    <qresource prefix="/translate"/>
+    <qresource prefix="/translate">
+        <file>translations/ImageViewer_ru.qm</file>
+        <file>translations/ImageViewer_ua.qm</file>
+    </qresource>
 </RCC>
