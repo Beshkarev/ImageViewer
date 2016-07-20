@@ -22,7 +22,7 @@ About::About(QWidget *parent) : QDialog(parent),
     setLayout(pVMainLayout);
     setWindowIcon(QIcon(":/icons/png-48px/business-card.png"));
     setWindowTitle(tr("About"));
-    setFixedSize(440, 274);
+    //setFixedSize(440, 274);
 }
 
 About::~About() = default;
@@ -35,14 +35,14 @@ void About::createAboutSpace()
 
     QLabel *pTextEdit = new QLabel(this);
     pTextEdit->setAlignment(Qt::AlignCenter);
-    pTextEdit->setText(tr("A small application for view image."
-                          "<br>The programm developed for education and personal satisfaction."
-                          "<br><br>This software is licensed under "
-                          "<a href=\"https://github.com/Beshkarev/ImageViewer/blob/master/LICENSE\">GNU GPL</a> version 3."
-                          "<br>Source code is available on "
-                          "<a href=\"https://github.com/Beshkarev/ImageViewer\">GitHub</a>."
-                          "<br>Version: %1."
-                          "<br><br>Evgeniy Beshkarev©").arg(str_const_toString(Config::version)));
+    pTextEdit->setText(tr("A small application for view image.") +
+                       tr("<br>The programm developed for education and personal satisfaction.") +
+                       tr("<br><br>This software is licensed under ") +
+                       tr("<a href=\"https://github.com/Beshkarev/ImageViewer/blob/master/LICENSE\">GNU GPL</a> version 3.") +
+                       tr("<br>Source code is available on ") +
+                       tr("<a href=\"https://github.com/Beshkarev/ImageViewer\">GitHub</a>.") +
+                       tr("<br>Version: %1.").arg(str_const_toString(Config::version)) +
+                       tr("<br><br>Evgeniy Beshkarev") +"©");
     pTextEdit->setTextFormat(Qt::RichText);
     pTextEdit->setTextInteractionFlags(Qt::TextBrowserInteraction);
     pTextEdit->setOpenExternalLinks(true);

@@ -48,7 +48,7 @@
         <file>CREDITS</file>
     </qresource>
     <qresource prefix="/translate">
-        <file>translations/ImageViewer_ru.qm</file>
         <file>translations/ImageViewer_ua.qm</file>
+        <file>translations/ImageViewer_ru.qm</file>
     </qresource>
 </RCC>

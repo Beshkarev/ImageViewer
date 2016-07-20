@@ -45,5 +45,5 @@ FORMS    +=
 RESOURCES += \
     res/res.qrc
 
-TRANSLATIONS = res\translations\ImageViewer_ru.ts \
-               res\translations\ImageViewer_ua.ts
+#TRANSLATIONS = ImageViewer_ru.ts \
+#               ImageViewer_ua.ts
