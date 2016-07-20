@@ -123,7 +123,7 @@ bool FileSystem::saveAsDialog()
     return success;
 }
 
-void FileSystem::openRecentFile(const QString &file)
+void FileSystem::openFile(const QString &file)
 {
     prepareBeforeLoadFile(file);
 }

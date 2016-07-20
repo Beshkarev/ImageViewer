@@ -37,7 +37,7 @@ public:
     QString previousFile();
     bool saveFile();
     bool saveAsDialog();
-    void openRecentFile(const QString &file);
+    void openFile(const QString &file);
 
 private slots:
     void destroyEntry(QWidget *widg);

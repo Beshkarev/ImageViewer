@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &file) :
     if(!file.isEmpty())
     {
         newTab();
-        _pFileSystem->openRecentFile(file);
+        _pFileSystem->openFile(file);
         loadFileRequest(file);
     }
 }
@@ -357,7 +357,7 @@ void MainWindow::openRecentFile()
     QAction *pAction = qobject_cast<QAction *>(sender());
     try
     {
-        _pFileSystem->openRecentFile(pAction->data().toString());
+        _pFileSystem->openFile(pAction->data().toString());
         loadFileRequest(pAction->data().toString());
     }
     catch(std::runtime_error &err)
