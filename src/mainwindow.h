@@ -39,6 +39,7 @@ private slots:
     void openFile();
     void saveFile();
     void saveAs();
+    void print();
     void nextFile();
     void previousFile();
     void closeFileRequest();
@@ -77,6 +78,7 @@ private:
     QAction *_pOpenAction;
     QAction *_pSaveAction;
     QAction *_pSaveAsAction;
+    QAction *_pPrintAction;
     QAction *_pNextFileAction;
     QAction *_pPreviousFileAction;
     QAction *_pCloseFileAction;

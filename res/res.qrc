@@ -43,6 +43,7 @@
         <file>png-48px/minus.png</file>
         <file>png-48px/minus-outline.png</file>
         <file>png-48px/business-card.png</file>
+        <file>png-48px/printer.png</file>
     </qresource>
     <qresource prefix="/about">
         <file>CREDITS</file>

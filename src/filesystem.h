@@ -31,6 +31,7 @@ public:
 
     static bool moveFile(const QString &locationTo,
                          const QString &locationFrom);
+    QString currentAbsoluteFileName();
 
     QString openFileDialog();
     QString nextFile();

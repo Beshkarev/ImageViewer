@@ -223,3 +223,10 @@ bool FileSystem::moveFile(const QString &locationTo,
 
     return success;
 }
+
+QString FileSystem::currentAbsoluteFileName()
+{
+    auto &&entry = _entries.find(_pTabs->currentWidget());
+
+    return entry->absoluteFileName();
+}

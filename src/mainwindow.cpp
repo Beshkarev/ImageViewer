@@ -19,6 +19,11 @@
 #include <QStatusBar>
 #include <QFileInfo>
 #include <QSettings>
+#ifndef QT_NO_PRINTER
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QPainter>
+#endif
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -84,6 +89,10 @@ void MainWindow::createActions()
 
     _pSaveAsAction = new QAction(tr("Save file as"), this);
     _pSaveAsAction->setIcon(QIcon(":/icons/png-48px/th-list.png"));
+
+    _pPrintAction = new QAction(tr("Print"), this);
+    _pPrintAction->setIcon(QIcon(":/icons/png-48px/printer.png"));
+    _pPrintAction->setStatusTip(tr("Print this file"));
 
     _pNextFileAction = new QAction(tr("Next file"), this);
     _pNextFileAction->setShortcut(Qt::Key_Right);
@@ -151,6 +160,7 @@ void MainWindow::createMenu()
     _pFileMenu->addAction(_pOpenAction);
     _pFileMenu->addAction(_pSaveAction);
     _pFileMenu->addAction(_pSaveAsAction);
+    _pFileMenu->addAction(_pPrintAction);
     _pFileMenu->addSeparator();
 
     _pFileMenu->addAction(_pCloseFileAction);
@@ -213,6 +223,8 @@ void MainWindow::createConnectToSlots()
             this, SLOT(saveFile()));
     connect(_pSaveAsAction, SIGNAL(triggered(bool)),
             this, SLOT(saveAs()));
+    connect(_pPrintAction, SIGNAL(triggered(bool)),
+            this, SLOT(print()));
     connect(_pNextFileAction, SIGNAL(triggered(bool)),
             this, SLOT(nextFile()));
     connect(_pPreviousFileAction, SIGNAL(triggered(bool)),
@@ -330,6 +342,33 @@ void MainWindow::saveAs()
         showStatusBarMessage(tr("File not saved"));
 }
 
+void MainWindow::print()
+{
+#if !defined(QT_NO_PRINTER) && !defined(QT_NO_PRINTDIALOG)
+
+    QPrinter printer;
+    QPrintDialog dialog(&printer, this);
+
+    QPixmap pix;
+    if(SaveConfirmation::imageWasChanged(_pFileSystem->currentAbsoluteFileName()))
+        pix = QPixmap::fromImage(SaveConfirmation::getChagedImage(
+                                     _pFileSystem->currentAbsoluteFileName()));
+    else
+        pix.load(_pFileSystem->currentAbsoluteFileName());
+
+    if (dialog.exec())
+    {
+        QPainter painter(&printer);
+        QRect rect = painter.viewport();
+        QSize size = pix.size();
+        size.scale(rect.size(), Qt::KeepAspectRatio);
+        painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+        painter.setWindow(pix.rect());
+        painter.drawPixmap(0, 0, pix);
+    }
+#endif
+}
+
 void MainWindow::nextFile()
 {
     QString file = _pFileSystem->nextFile();
@@ -418,7 +457,9 @@ void MainWindow::checkTabState()
     }
 
     bool tabEmpty = _pTabController->currentTabIsEmpty();
-    bool isfileMayBeSaved = FileSystem::fileMayBeSave(_pTabController->fileNameInTab());
+    bool isfileMayBeSaved;
+    if(!tabEmpty)
+        isfileMayBeSaved = FileSystem::fileMayBeSave(_pFileSystem->currentAbsoluteFileName());
     //if exist at least one tab but the tab is empty
     if(count != 0 && tabEmpty)
         setButtonsEnabled(true, false);
@@ -477,6 +518,8 @@ void MainWindow::setButtonsEnabled(bool openButt, bool imageIsLoad,
 
     _pSaveAsAction->setEnabled(imageIsLoad &&
                                fileMayBeSaved);
+
+    _pPrintAction->setEnabled(imageIsLoad);
 
     _pNextFileAction->setEnabled(imageIsLoad);
     _pPreviousFileAction->setEnabled(imageIsLoad);

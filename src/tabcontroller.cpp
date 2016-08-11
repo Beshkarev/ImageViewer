@@ -1,6 +1,6 @@
 #include "tabcontroller.h"
 #include "screenimage.h"
-#include "saveconfirmation.h"
+//#include "saveconfirmation.h"
 #include "filesystem.h"
 #include <QTabWidget>
 #include <QDebug>
@@ -72,10 +72,10 @@ bool TabController::currentTabIsEmpty() const
     return getImageWidget()->isEmpty();
 }
 
-QString TabController::fileNameInTab() const
-{
-    return tabText(currentIndex());
-}
+//QString TabController::fileNameInTab() const
+//{
+//    return tabText(currentIndex());
+//}
 
 bool TabController::fileInTabIsChanged() const
 {
