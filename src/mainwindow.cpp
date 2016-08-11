@@ -91,6 +91,7 @@ void MainWindow::createActions()
     _pSaveAsAction->setIcon(QIcon(":/icons/png-48px/th-list.png"));
 
     _pPrintAction = new QAction(tr("Print"), this);
+    _pPrintAction->setShortcut(Qt::CTRL + Qt::Key_P);
     _pPrintAction->setIcon(QIcon(":/icons/png-48px/printer.png"));
     _pPrintAction->setStatusTip(tr("Print this file"));
 
