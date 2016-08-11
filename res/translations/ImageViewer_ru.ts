@@ -59,159 +59,169 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="70"/>
+        <location filename="../../src/mainwindow.cpp" line="75"/>
         <source>New Tab</source>
         <translation>Новая вкладка</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="72"/>
+        <location filename="../../src/mainwindow.cpp" line="77"/>
         <source>Create new empty tab</source>
         <translation>Создать новую пустую вкладку</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="75"/>
+        <location filename="../../src/mainwindow.cpp" line="80"/>
         <source>Open file</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="77"/>
+        <location filename="../../src/mainwindow.cpp" line="82"/>
         <source>Open new file</source>
         <translation>Открыть новый файл</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="80"/>
+        <location filename="../../src/mainwindow.cpp" line="85"/>
         <source>Save file</source>
         <translation>Сохранить файл</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="82"/>
+        <location filename="../../src/mainwindow.cpp" line="87"/>
         <source>Save the file</source>
         <translation>Сохранить этот файл</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="85"/>
+        <location filename="../../src/mainwindow.cpp" line="90"/>
         <source>Save file as</source>
         <translation>Сохранить файл как</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="88"/>
+        <location filename="../../src/mainwindow.cpp" line="93"/>
+        <source>Print</source>
+        <translation>Печать</translation>
+    </message>
+    <message>
+        <location filename="../../src/mainwindow.cpp" line="95"/>
+        <source>Print this file</source>
+        <translation>Распечатать этот файл</translation>
+    </message>
+    <message>
+        <location filename="../../src/mainwindow.cpp" line="97"/>
         <source>Next file</source>
         <translation>Следующий файл</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="92"/>
+        <location filename="../../src/mainwindow.cpp" line="101"/>
         <source>Previous file</source>
         <translation>Предыдущий файл</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="96"/>
+        <location filename="../../src/mainwindow.cpp" line="105"/>
         <source>Close image</source>
         <translation>Закрыть изображение</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="97"/>
+        <location filename="../../src/mainwindow.cpp" line="106"/>
         <source>Closing image</source>
         <translation>Закрытие изображения</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="100"/>
+        <location filename="../../src/mainwindow.cpp" line="109"/>
         <source>Close tab</source>
         <translation>Закрыть вкладку</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="102"/>
+        <location filename="../../src/mainwindow.cpp" line="111"/>
         <source>Close current tab</source>
         <translation>Закрыть текущую вкладку</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="111"/>
+        <location filename="../../src/mainwindow.cpp" line="120"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="113"/>
+        <location filename="../../src/mainwindow.cpp" line="122"/>
         <source>Close the application</source>
         <translation>Закрыть это приложение</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="116"/>
+        <location filename="../../src/mainwindow.cpp" line="125"/>
         <source>Vertical flip</source>
         <translation>Вертикальный переворот</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="119"/>
+        <location filename="../../src/mainwindow.cpp" line="128"/>
         <source>Horizontal flip</source>
         <translation>Горизонтальный переворот</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="122"/>
+        <location filename="../../src/mainwindow.cpp" line="131"/>
         <source>Rotate Clockwise</source>
         <translation>Повернуть по часовой</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="125"/>
+        <location filename="../../src/mainwindow.cpp" line="134"/>
         <source>Rotate Counter clockwise</source>
         <translation>Повернуть против часовой</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="128"/>
+        <location filename="../../src/mainwindow.cpp" line="137"/>
         <source>Fit to window</source>
         <translation>Поместить в окно</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="131"/>
+        <location filename="../../src/mainwindow.cpp" line="140"/>
         <source>Zoom in</source>
         <translation>Увеличить</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="135"/>
+        <location filename="../../src/mainwindow.cpp" line="144"/>
         <source>Zoom out</source>
         <translation>Уменьшить</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="139"/>
+        <location filename="../../src/mainwindow.cpp" line="148"/>
         <source>About</source>
         <translation>О приложении</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="142"/>
+        <location filename="../../src/mainwindow.cpp" line="151"/>
         <source>About Qt</source>
         <translation>О Qt</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="147"/>
+        <location filename="../../src/mainwindow.cpp" line="156"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="164"/>
+        <location filename="../../src/mainwindow.cpp" line="174"/>
         <source>&amp;Edit</source>
         <translation>&amp;Редактировать</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="173"/>
+        <location filename="../../src/mainwindow.cpp" line="183"/>
         <source>&amp;View</source>
         <translation>&amp;Просмотр</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="178"/>
+        <location filename="../../src/mainwindow.cpp" line="188"/>
         <source>&amp;Help</source>
         <translation>&amp;Помощь</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="283"/>
+        <location filename="../../src/mainwindow.cpp" line="295"/>
         <source>&amp;%1 %2</source>
         <translation>&amp;%1 %2</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="319"/>
-        <location filename="../../src/mainwindow.cpp" line="328"/>
+        <location filename="../../src/mainwindow.cpp" line="331"/>
+        <location filename="../../src/mainwindow.cpp" line="340"/>
         <source>File was saved</source>
         <translation>Файл был сохранен</translation>
     </message>
     <message>
-        <location filename="../../src/mainwindow.cpp" line="321"/>
-        <location filename="../../src/mainwindow.cpp" line="330"/>
+        <location filename="../../src/mainwindow.cpp" line="333"/>
+        <location filename="../../src/mainwindow.cpp" line="342"/>
         <source>File not saved</source>
         <translation>Файл не был сохранен</translation>
     </message>
