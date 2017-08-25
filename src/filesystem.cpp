@@ -228,5 +228,5 @@ QString FileSystem::currentAbsoluteFileName()
 {
     auto &&entry = _entries.find(_pTabs->currentWidget());
 
-    return entry->absoluteFileName();
+    return entry != _entries.end() ? entry->absoluteFileName() : QString{};
 }

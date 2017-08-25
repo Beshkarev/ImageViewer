@@ -466,8 +466,10 @@ void MainWindow::checkTabState()
         setButtonsEnabled(true, false);
     //if tabs is exist and the tab not empty
     else if(count != 0 && !tabEmpty)
-        setButtonsEnabled(true, true,
-                          isfileMayBeSaved, _pTabController->fileInTabIsChanged());
+        setButtonsEnabled(true,
+                          true,
+                          isfileMayBeSaved,
+                          _pTabController->fileInTabIsChanged());
 }
 
 void MainWindow::closeEvent(QCloseEvent *pClose)
@@ -507,8 +509,10 @@ void MainWindow::loadFileRequest(const QString &file)
     updateListRecentFiles();
 }
 
-void MainWindow::setButtonsEnabled(bool openButt, bool imageIsLoad,
-                                   bool fileMayBeSaved, bool fileInTabIsChanged)
+void MainWindow::setButtonsEnabled(bool openButt,
+                                   bool imageIsLoad,
+                                   bool fileMayBeSaved,
+                                   bool fileInTabIsChanged)
 {
     _pOpenAction->setEnabled(openButt);
     _pCloseTabAction->setEnabled(openButt);
