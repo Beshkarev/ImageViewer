@@ -42,7 +42,7 @@ void About::createAboutSpace()
                        tr("<br>Source code is available on ") +
                        tr("<a href=\"https://github.com/Beshkarev/ImageViewer\">GitHub</a>.") +
                        tr("<br>Version: %1.").arg(str_const_toString(Config::version)) +
-                       tr("<br><br>Evgeniy Beshkarev") +"©");
+                       tr("<br><br>Evgeniy Beshkarev") + "©");
     pTextEdit->setTextFormat(Qt::RichText);
     pTextEdit->setTextInteractionFlags(Qt::TextBrowserInteraction);
     pTextEdit->setOpenExternalLinks(true);

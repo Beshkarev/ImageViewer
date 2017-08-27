@@ -45,8 +45,7 @@ void Entry::entryList(const QString &pathWithFileName)
 
     QDir dir(FileSystem::absoluteFilePath(pathWithFileName));
     *m_etryList = dir.entryInfoList(Config::supportedReadFormats(),
-                                   QDir::Files,
-                                   QDir::LocaleAware);
+                                   QDir::Files);
     if (m_etryList->isEmpty())
         throw std::runtime_error(QObject::tr("Selected directory is empty.").toStdString());
 
