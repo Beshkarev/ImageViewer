@@ -83,7 +83,7 @@ private:
     QAction *_pPreviousFileAction;
     QAction *_pCloseFileAction;
     QAction *_pCloseTabAction;
-    const qint32 maxRecentFiles{5};
+    constexpr static qint32 maxRecentFiles{5};
     QVector<QAction*> _pRecentAction{maxRecentFiles};
     QAction *_pSeparatorAction;
     QAction *_pExitAction;

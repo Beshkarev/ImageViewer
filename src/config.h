@@ -6,7 +6,7 @@
 
 namespace Config
 {
-    constexpr str_const appName = "Image viewer";
+    constexpr str_const appName = "Image Viewer";
     constexpr str_const version = "1.0.1";
 
     extern const QString tempLocation;

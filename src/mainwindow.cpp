@@ -57,7 +57,6 @@ void MainWindow::createMainWindow()
     createConnectToSlots();
     showStatusBarMessage(QString());
 
-    QCoreApplication::setApplicationVersion(str_const_toString(Config::version));
     setGeometry(QRect(200, 200, 800, 500));
     setCentralWidget(_pTabController);
     updateListRecentFiles();
@@ -65,7 +64,9 @@ void MainWindow::createMainWindow()
     //init button state
     setButtonsEnabled(false, false);
     setWindowIcon(QIcon(":/icons/png-48px/image-outline.png"));
+    setWindowTitle(str_const_toString(Config::appName));
     QCoreApplication::setApplicationName(str_const_toString(Config::appName));
+    QCoreApplication::setApplicationVersion(str_const_toString(Config::version));
 }
 
 MainWindow::~MainWindow() = default;
